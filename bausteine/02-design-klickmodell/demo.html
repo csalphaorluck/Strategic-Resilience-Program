@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SRP – Baustein 2: Design &amp; Klickmodell (Entwurf)</title>
+<style>
+  /* ============================================================
+     2.2 — Grundlayout, Typografie, Ampelfarben
+     Reine Stil-/Layoutgrundlage. Baum (2.3) und Formular (2.1)
+     sind hier nur als Platzhalterflächen markiert.
+     ============================================================ */
+
+  :root {
+    /* Ampelfarben — kontrastgeprüft (WCAG AA, Text/Icon auf hellem Chip-BG) */
+    --srp-grau-text: #4B5563;
+    --srp-grau-bg: #F3F4F6;
+    --srp-gruen-text: #1B7A3D;
+    --srp-gruen-bg: #DCFCE7;
+    --srp-gelb-text: #92400E;
+    --srp-gelb-bg: #FEF3C7;
+    --srp-rot-text: #B91C1C;
+    --srp-rot-bg: #FEE2E2;
+
+    /* Neutrale Basisfarben */
+    --srp-bg: #FFFFFF;
+    --srp-bg-alt: #F9FAFB;
+    --srp-text: #111827;
+    --srp-text-muted: #6B7280;
+    --srp-border: #E5E7EB;
+    --srp-border-strong: #D1D5DB;
+    --srp-akzent: #1D4ED8;
+
+    --srp-font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: var(--srp-font);
+    color: var(--srp-text);
+    background: var(--srp-bg-alt);
+  }
+
+  header.srp-header {
+    background: var(--srp-bg);
+    border-bottom: 1px solid var(--srp-border);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  header.srp-header h1 {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  header.srp-header .srp-subtitle {
+    color: var(--srp-text-muted);
+    font-size: 0.85rem;
+  }
+
+  /* ---- Grundlayout: Baum links, Formular-Panel rechts ---- */
+
+  .srp-layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) 1fr;
+    gap: 1px;
+    min-height: calc(100vh - 52px);
+    background: var(--srp-border);
+  }
+
+  @media (max-width: 760px) {
+    /* Ab hier wird das Formular-Panel in 2.1 als Overlay realisiert,
+       statt als zweite Spalte. Hier nur als Layout-Hinweis vermerkt. */
+    .srp-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .srp-panel {
+    background: var(--srp-bg);
+    padding: 1rem 1.25rem;
+    overflow: auto;
+  }
+
+  .srp-panel h2 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--srp-text-muted);
+    margin: 0 0 0.75rem 0;
+  }
+
+  .srp-platzhalter {
+    border: 1px dashed var(--srp-border-strong);
+    border-radius: 6px;
+    padding: 1rem;
+    color: var(--srp-text-muted);
+    font-size: 0.85rem;
+  }
+
+  /* ---- Typografie-Skala für die 5 Ebenen (Vorschau, Baum folgt in 2.3) ---- */
+
+  .srp-ebenen-vorschau .srp-ebene {
+    border-left: 2px solid var(--srp-border);
+    margin-left: 0.4rem;
+    padding-left: 0.75rem;
+  }
+
+  .srp-e1 { font-size: 1rem;    font-weight: 700; margin: 0.6rem 0; }
+  .srp-e2 { font-size: 0.92rem; font-weight: 600; margin: 0.5rem 0; color: var(--srp-text); }
+  .srp-e3 { font-size: 0.86rem; font-weight: 500; margin: 0.4rem 0; color: var(--srp-text); }
+  .srp-e4 { font-size: 0.8rem;  font-weight: 400; margin: 0.35rem 0; color: var(--srp-text-muted); }
+  .srp-e5 { font-size: 0.75rem; font-weight: 400; margin: 0.3rem 0; color: var(--srp-text-muted); }
+
+  /* ---- Ampel-Chips: Farbe + Symbol (nicht nur Farbe) ---- */
+
+  .srp-ampel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    padding: 0.1rem 0.55rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+
+  .srp-ampel .srp-ampel-symbol {
+    font-weight: 700;
+  }
+
+  .srp-ampel--grau  { color: var(--srp-grau-text);  background: var(--srp-grau-bg); }
+  .srp-ampel--gruen { color: var(--srp-gruen-text); background: var(--srp-gruen-bg); }
+  .srp-ampel--gelb  { color: var(--srp-gelb-text);  background: var(--srp-gelb-bg); }
+  .srp-ampel--rot   { color: var(--srp-rot-text);   background: var(--srp-rot-bg); }
+
+  .srp-legende-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .srp-legende-zeile {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .srp-legende-zeile .srp-legende-erklaerung {
+    color: var(--srp-text-muted);
+  }
+
+  section.srp-stilguide {
+    background: var(--srp-bg);
+    border-top: 1px solid var(--srp-border);
+    padding: 1.25rem;
+  }
+
+  section.srp-stilguide h2 {
+    font-size: 0.9rem;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .srp-stilguide-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+</style>
+</head>
+<body>
+
+<header class="srp-header">
+  <h1>Strategic Resilience Program</h1>
+  <span class="srp-subtitle">Baustein 2 – Design &amp; Klickmodell · Entwurf 2.2 (Layout, Farben, Typografie)</span>
+</header>
+
+<div class="srp-layout">
+  <div class="srp-panel" aria-label="Baumbereich (Platzhalter)">
+    <h2>Baum</h2>
+    <div class="srp-platzhalter">
+      Baumdarstellung folgt in Unteraufgabe 2.3 (auf-/zuklappbar, 5 Ebenen).
+      Diese Fläche zeigt nur die Grundlayout-Position.
+    </div>
+  </div>
+
+  <div class="srp-panel" aria-label="Formular-Panel (Platzhalter)">
+    <h2>Formular-Panel</h2>
+    <div class="srp-platzhalter">
+      Formular zum Bearbeiten eines Knotens folgt in Unteraufgabe 2.1
+      (Sidebar-Panel, bei schmalem Fenster als Overlay). Diese Fläche zeigt
+      nur die Grundlayout-Position rechts neben dem Baum.
+    </div>
+  </div>
+</div>
+
+<section class="srp-stilguide">
+  <h2>Stilguide (Referenz für 2.3–2.5)</h2>
+  <div class="srp-stilguide-grid">
+
+    <div>
+      <h2 style="text-transform:none;letter-spacing:normal;color:var(--srp-text);font-size:0.85rem;">
+        Typografie je Ebene (1–5)
+      </h2>
+      <div class="srp-ebenen-vorschau">
+        <div class="srp-ebene">
+          <div class="srp-e1">Ebene 1 · Kategorie — Infrastruktur</div>
+          <div class="srp-ebene">
+            <div class="srp-e2">Ebene 2 · Unterkategorie — Technik</div>
+            <div class="srp-ebene">
+              <div class="srp-e3">Ebene 3 · Themenbereich — Landebahn</div>
+              <div class="srp-ebene">
+                <div class="srp-e4">Ebene 4 · Komponente — Beschilderung</div>
+                <div class="srp-ebene">
+                  <div class="srp-e5">Ebene 5 · Sub-Komponente — Kabel</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="srp-platzhalter" style="margin-top:0.75rem;">
+        Unterscheidung bewusst nur über Einrückung, Schriftgröße/-stärke und
+        Verbindungslinie — keine eigenen Icons pro Ebene, damit die
+        Ampel-Symbole das einzige Icon-Element im Baum bleiben.
+      </p>
+    </div>
+
+    <div>
+      <h2 style="text-transform:none;letter-spacing:normal;color:var(--srp-text);font-size:0.85rem;">
+        Ampelstatus (Farbe + Symbol)
+      </h2>
+      <div class="srp-legende-liste">
+        <div class="srp-legende-zeile">
+          <span class="srp-ampel srp-ampel--grau"><span class="srp-ampel-symbol">–</span> Grau</span>
+          <span class="srp-legende-erklaerung">nicht bewertetes Risiko</span>
+        </div>
+        <div class="srp-legende-zeile">
+          <span class="srp-ampel srp-ampel--gruen"><span class="srp-ampel-symbol">✓</span> Grün</span>
+          <span class="srp-legende-erklaerung">kein Risiko</span>
+        </div>
+        <div class="srp-legende-zeile">
+          <span class="srp-ampel srp-ampel--gelb"><span class="srp-ampel-symbol">!</span> Gelb</span>
+          <span class="srp-legende-erklaerung">tolerierbares Risiko — Maßnahme notwendig</span>
+        </div>
+        <div class="srp-legende-zeile">
+          <span class="srp-ampel srp-ampel--rot"><span class="srp-ampel-symbol">✕</span> Rot</span>
+          <span class="srp-legende-erklaerung">inakzeptables Risiko — Maßnahme-Definition erforderlich</span>
+        </div>
+      </div>
+      <p class="srp-platzhalter" style="margin-top:0.75rem;">
+        Jeder Status ist zusätzlich zur Farbe über ein eigenes Symbol
+        erkennbar (Strich, Haken, Ausrufezeichen, Kreuz) — wichtig bei
+        Rot-Grün-Schwäche. Farbwerte sind auf ≥ 4.5:1 Kontrast (Text/Symbol
+        zu Chip-Hintergrund) geprüft.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>
