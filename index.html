@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strategic Resilience Program &ndash; Prototyp</title>
+<style>
+  :root {
+    --grau: #9e9e9e;
+    --gruen: #2e7d32;
+    --gelb: #f9a825;
+    --rot: #c62828;
+    --bg: #f4f6fa;
+    --panel: #ffffff;
+    --border: #dde2ea;
+    --text: #1f2430;
+    --text-muted: #6b7280;
+    --accent: #0b3d91;
+    --accent-light: #e7edfb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  header h1 {
+    font-size: 17px;
+    margin: 0;
+    font-weight: 600;
+  }
+  header .phase-tag {
+    font-size: 11px;
+    background: rgba(255,255,255,0.15);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 10px;
+    font-weight: 400;
+  }
+  .role-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .role-bar select {
+    padding: 5px 8px;
+    border-radius: 6px;
+    border: none;
+    font-size: 13px;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    min-height: calc(100vh - 56px);
+  }
+  nav.tree {
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 14px;
+    overflow-y: auto;
+  }
+  nav.tree h2 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin: 14px 0 6px;
+  }
+  .cat-block { margin-bottom: 6px; }
+  .node-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13.5px;
+    line-height: 1.3;
+  }
+  .node-row:hover { background: var(--accent-light); }
+  .node-row.selected { background: var(--accent-light); font-weight: 600; }
+  .node-row .twisty {
+    width: 14px;
+    color: var(--text-muted);
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.15);
+  }
+  .dot.grau { background: var(--grau); }
+  .dot.gruen { background: var(--gruen); }
+  .dot.gelb { background: var(--gelb); }
+  .dot.rot { background: var(--rot); }
+  .badge-new {
+    font-size: 9.5px;
+    background: var(--accent);
+    color: #fff;
+    padding: 1px 5px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  .children { margin-left: 16px; }
+  main {
+    padding: 22px 28px;
+    overflow-y: auto;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+  }
+  .breadcrumb {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .breadcrumb b { color: var(--text); }
+  h2.node-title { margin: 2px 0 16px; font-size: 20px; }
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  select, textarea, input[type=text], input[type=date] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--text);
+  }
+  textarea { min-height: 64px; resize: vertical; }
+  .row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .row > div { flex: 1; min-width: 200px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text);
+  }
+  .btn:hover { background: var(--accent-light); }
+  .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn.primary:hover { opacity: 0.9; }
+  .btn.danger { color: var(--rot); border-color: var(--rot); }
+  .btn.danger:hover { background: #fdecea; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .track-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 14px;
+    background: #f0f0f0;
+  }
+  .track-status.done { background: #e6f4ea; color: var(--gruen); }
+  .track-status.open { background: #fdecea; color: var(--rot); }
+  .risk-compare {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    margin-top: 4px;
+  }
+  .risk-pill {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; padding: 5px 10px; border-radius: 16px;
+    background: #f0f0f0;
+  }
+  .arrow { color: var(--text-muted); font-size: 16px; }
+  .empty-state {
+    color: var(--text-muted);
+    font-size: 14px;
+    padding: 40px 10px;
+    text-align: center;
+  }
+  table.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  table.admin-table th, table.admin-table td {
+    text-align: left;
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.admin-table th {
+    color: var(--text-muted);
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .tab-btn {
+    padding: 8px 14px;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+    background: #eef1f6;
+    cursor: pointer;
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+  .tab-btn.active { background: var(--panel); color: var(--text); font-weight: 600; }
+  .muted { color: var(--text-muted); font-size: 12.5px; }
+  .footer-note {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 16px;
+  }
+  .toolbar-right { display: flex; gap: 8px; }
+  .small-select { width: auto; display: inline-block; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1 style="display:inline">Strategic Resilience Program<span class="phase-tag">Vorbereitung &middot; kein Produktivsystem</span></h1>
+  </div>
+  <div class="role-bar">
+    <label for="roleSelect">Rolle:</label>
+    <select id="roleSelect">
+      <option value="nutzer">Nutzer</option>
+      <option value="entwickler">Entwickler</option>
+      <option value="admin">Admin</option>
+    </select>
+    <span id="adminFachbereichWrap" style="display:none">
+      <label for="adminFachbereich">Fachbereich:</label>
+      <select id="adminFachbereich" class="small-select"></select>
+    </span>
+    <button class="btn" id="resetBtn" title="Demo-Daten zurücksetzen">Demo-Daten zur&uuml;cksetzen</button>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="tree" id="treeNav"></nav>
+  <main id="mainPanel"></main>
+</div>
+
+<div class="footer-note">Prototyp &middot; keine echten Betriebsdaten &middot; lokale Speicherung im Browser (localStorage)</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "srp_prototype_data_v1";
+  var CATEGORIES = ["Infrastruktur", "Flughafenbetrieb", "Personal & Governance"];
+  var RISK_LEVELS = ["grau", "gruen", "gelb", "rot"];
+  var RISK_LABEL = { grau: "Grau – nicht bewertet", gruen: "Grün – kein Risiko", gelb: "Gelb – tolerierbar", rot: "Rot – inakzeptabel" };
+
+  var uidCounter = 1;
+  function uid(prefix) { return prefix + "_" + (uidCounter++) + "_" + Math.random().toString(36).slice(2, 7); }
+
+  function makeNode(name, level, opts) {
+    opts = opts || {};
+    return {
+      id: opts.id || uid("n"),
+      name: name,
+      level: level,
+      category: opts.category || null,
+      children: opts.children || [],
+      entry: opts.entry || null,
+      isNew: !!opts.isNew,
+      createdBy: opts.createdBy || "entwickler",
+      createdAt: opts.createdAt || null
+    };
+  }
+
+  function makeEntry(risk, measure) {
+    return {
+      risk: risk || "grau",
+      riskNote: "",
+      measure: measure || "",
+      tracking: { done: false, date: "" },
+      residualRisk: "",
+      residualNote: ""
+    };
+  }
+
+  function seedData() {
+    var infra = makeNode("Infrastruktur", 1, { id: "cat_infra", category: "Infrastruktur" });
+    var technik = makeNode("Technik", 2, { id: "infra_technik", category: "Infrastruktur" });
+    var landebahn = makeNode("Landebahn", 3, { category: "Infrastruktur" });
+    var beschilderung = makeNode("Beschilderung", 4, { category: "Infrastruktur" });
+    var kabel = makeNode("Kabel", 5, {
+      category: "Infrastruktur",
+      createdBy: "nutzer",
+      entry: (function () {
+        var e = makeEntry("rot", "Neue Kabel verbauen, die bis 50°C ausgelegt sind.");
+        e.riskNote = "Kabel hält laut Datenblatt nur bis 42°C – bei angenommenen 40°C Außentemperatur besteht ein enges Sicherheitsfenster.";
+        e.tracking = { done: true, date: "2026-06-01" };
+        e.residualRisk = "gelb";
+        e.residualNote = "Neue Kabel installiert, Resttoleranz bis 50°C vorhanden.";
+        return e;
+      })()
+    });
+    var lesbarkeit = makeNode("Lesbarkeit / Verformung", 5, {
+      category: "Infrastruktur",
+      createdBy: "nutzer",
+      isNew: true,
+      createdAt: "2026-08-15",
+      entry: makeEntry("grau", "")
+    });
+    beschilderung.children = [kabel, lesbarkeit];
+    landebahn.children = [beschilderung];
+    technik.children = [landebahn];
+    infra.children = [technik];
+
+    var betrieb = makeNode("Flughafenbetrieb", 1, { id: "cat_betrieb", category: "Flughafenbetrieb" });
+    var vorfeld = makeNode("Vorfeldprozesse", 2, { id: "betrieb_vorfeld", category: "Flughafenbetrieb" });
+    var enteisung = makeNode("Kühlung von Bodengeräten", 3, {
+      category: "Flughafenbetrieb",
+      createdBy: "nutzer",
+      isNew: true,
+      createdAt: "2026-08-18",
+      entry: makeEntry("grau", "")
+    });
+    vorfeld.children = [enteisung];
+    betrieb.children = [vorfeld];
+
+    var personal = makeNode("Personal & Governance", 1, { id: "cat_personal", category: "Personal & Governance" });
+    var arbeitsschutz = makeNode("Arbeitsschutz", 2, { id: "personal_arbeitsschutz", category: "Personal & Governance" });
+    var hitzeschutz = makeNode("Hitzeschutz Personal Vorfeld", 3, {
+      category: "Personal & Governance",
+      entry: (function () {
+        var e = makeEntry("gelb", "Zusätzliche Trinkwasserstationen und Pausenregelung ab 35°C.");
+        e.tracking = { done: false, date: "" };
+        return e;
+      })()
+    });
+    arbeitsschutz.children = [hitzeschutz];
+    personal.children = [arbeitsschutz];
+
+    return [infra, betrieb, personal];
+  }
+
+  var state = {
+    data: null,
+    role: "nutzer",
+    adminFachbereich: "alle",
+    selectedId: "infra_technik",
+    expanded: {},
+    adminTab: "struktur"
+  };
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) { state.data = JSON.parse(raw); return; }
+    } catch (e) { /* ignore, fall back to seed */ }
+    state.data = seedData();
+  }
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data)); } catch (e) { /* storage unavailable */ }
+  }
+  function resetDemo() {
+    state.data = seedData();
+    state.selectedId = "infra_technik";
+    save();
+    render();
+  }
+
+  function findNode(id, nodes) {
+    nodes = nodes || state.data;
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].id === id) return nodes[i];
+      if (nodes[i].children && nodes[i].children.length) {
+        var found = findNode(id, nodes[i].children);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  function findPath(id, nodes, trail) {
+    nodes = nodes || state.data;
+    trail = trail || [];
+    for (var i = 0; i < nodes.length; i++) {
+      var next = trail.concat([nodes[i]]);
+      if (nodes[i].id === id) return next;
+      if (nodes[i].children && nodes[i].children.length) {
+        var found = findPath(id, nodes[i].children, next);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  function findParent(id, nodes, parent) {
+    nodes = nodes || state.data;
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].id === id) return parent;
+      if (nodes[i].children && nodes[i].children.length) {
+        var found = findParent(id, nodes[i].children, nodes[i]);
+        if (found !== undefined) return found;
+      }
+    }
+    return undefined;
+  }
+
+  function collectNewItems(nodes, out) {
+    nodes = nodes || state.data;
+    out = out || [];
+    nodes.forEach(function (n) {
+      if (n.isNew) out.push(n);
+      if (n.children && n.children.length) collectNewItems(n.children, out);
+    });
+    return out;
+  }
+
+  function escapeHtml(str) {
+    return String(str || "").replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  // ---------- Rendering: Tree ----------
+  function renderTree() {
+    var nav = document.getElementById("treeNav");
+    var html = "";
+    state.data.forEach(function (cat) {
+      html += '<div class="cat-block">' + renderNodeRow(cat) + '<div class="children">' + renderChildren(cat) + '</div></div>';
+    });
+    nav.innerHTML = html;
+
+    nav.querySelectorAll("[data-node-id]").forEach(function (el) {
+      el.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var id = el.getAttribute("data-node-id");
+        if (e.target.classList.contains("twisty")) {
+          state.expanded[id] = !state.expanded[id];
+        } else {
+          state.selectedId = id;
+          state.expanded[id] = true;
+        }
+        render();
+      });
+    });
+  }
+
+  function nodeDotColor(node) {
+    if (!node.entry) return null;
+    if (node.entry.tracking && node.entry.tracking.done && node.entry.residualRisk) return node.entry.residualRisk;
+    return node.entry.risk;
+  }
+
+  function renderNodeRow(node) {
+    var expanded = state.expanded[node.id] !== false && node.level === 1 ? true : !!state.expanded[node.id];
+    if (node.level === 1) expanded = state.expanded[node.id] !== false;
+    var hasChildren = node.children && node.children.length > 0;
+    var twisty = hasChildren ? (expanded ? "▾" : "▸") : "";
+    var dotColor = nodeDotColor(node);
+    var dot = dotColor ? '<span class="dot ' + dotColor + '" title="' + RISK_LABEL[dotColor] + '"></span>' : '<span class="dot" style="background:transparent;border:none"></span>';
+    var badge = node.isNew ? '<span class="badge-new">neu</span>' : "";
+    var sel = state.selectedId === node.id ? " selected" : "";
+    return '<div class="node-row' + sel + '" data-node-id="' + node.id + '">' +
+      '<span class="twisty">' + twisty + '</span>' + dot +
+      '<span>' + escapeHtml(node.name) + '</span>' + badge + '</div>';
+  }
+
+  function renderChildren(node) {
+    var expanded = state.expanded[node.id] !== false;
+    if (!expanded || !node.children || !node.children.length) return "";
+    return node.children.map(function (child) {
+      return '<div>' + renderNodeRow(child) + '<div class="children">' + renderChildren(child) + '</div></div>';
+    }).join("");
+  }
+
+  // ---------- Rendering: Main panel ----------
+  function render() {
+    document.getElementById("roleSelect").value = state.role;
+    document.getElementById("adminFachbereichWrap").style.display = state.role === "admin" ? "inline-flex" : "none";
+    renderTree();
+    if (state.role === "admin") {
+      renderAdminPanel();
+    } else {
+      var main = document.getElementById("mainPanel");
+      buildDetailMarkup(main, findNode(state.selectedId), state.role);
+    }
+    save();
+  }
+
+  // ---------- Admin panel ----------
+  function populateAdminFachbereichSelect() {
+    var sel = document.getElementById("adminFachbereich");
+    var html = '<option value="alle">Alle Fachbereiche</option>';
+    CATEGORIES.forEach(function (c) { html += '<option value="' + c + '">' + c + '</option>'; });
+    sel.innerHTML = html;
+    sel.value = state.adminFachbereich;
+  }
+
+  function renderAdminPanel() {
+    populateAdminFachbereichSelect();
+    var main = document.getElementById("mainPanel");
+    var html = '<div class="tabs">';
+    html += '<div class="tab-btn' + (state.adminTab === "struktur" ? " active" : "") + '" data-tab="struktur">Struktur bearbeiten</div>';
+    html += '<div class="tab-btn' + (state.adminTab === "neu" ? " active" : "") + '" data-tab="neu">Neue Nutzer-Items &Uuml;bersicht</div>';
+    html += '</div>';
+    main.innerHTML = html + '<div id="adminTabContent"></div>';
+
+    main.querySelectorAll(".tab-btn").forEach(function (el) {
+      el.addEventListener("click", function () {
+        state.adminTab = el.getAttribute("data-tab");
+        renderAdminPanel();
+      });
+    });
+
+    var content = document.getElementById("adminTabContent");
+    if (state.adminTab === "struktur") {
+      buildDetailMarkup(content, findNode(state.selectedId), "admin");
+    } else {
+      renderAdminNewItems(content);
+    }
+  }
+
+  function buildDetailMarkup(container, node, role) {
+    if (!node) {
+      container.innerHTML = '<div class="card"><div class="empty-state">Bitte links einen Punkt in der Struktur ausw&auml;hlen.</div></div>';
+      return;
+    }
+    var path = findPath(node.id);
+    var breadcrumb = path.map(function (n) { return escapeHtml(n.name); }).join(" &rsaquo; ");
+    var html = '<div class="card">';
+    html += '<div class="breadcrumb">' + breadcrumb + '</div>';
+    html += '<h2 class="node-title">' + escapeHtml(node.name) + ' <span class="muted">(Ebene ' + node.level + ')</span></h2>';
+
+    html += '<div class="btn-row">';
+    if (node.level >= 2 && node.level < 5) {
+      html += '<button class="btn" data-action="add-child">+ Neues Item (Ebene ' + (node.level + 1) + ')</button>';
+    }
+    if (role === "entwickler") {
+      if (node.level === 1) {
+        html += '<button class="btn primary" data-action="add-subcategory">+ Neue Unterkategorie (Ebene 2)</button>';
+      }
+      if (node.level >= 2) {
+        html += '<button class="btn" data-action="rename">Umbenennen</button>';
+        html += '<button class="btn danger" data-action="delete">L&ouml;schen</button>';
+      }
+    }
+    html += '</div>';
+
+    if (node.level >= 2) {
+      if (!node.entry) node.entry = makeEntry();
+      var e = node.entry;
+      html += '<div class="field"><label>Risikobewertung (individuell)</label>';
+      html += '<select data-field="risk">' + RISK_LEVELS.map(function (r) {
+        return '<option value="' + r + '"' + (e.risk === r ? " selected" : "") + '>' + RISK_LABEL[r] + '</option>';
+      }).join("") + '</select></div>';
+      html += '<div class="field"><label>Begr&uuml;ndung / Anmerkung zur Bewertung</label>';
+      html += '<textarea data-field="riskNote">' + escapeHtml(e.riskNote) + '</textarea></div>';
+      html += '<div class="field"><label>Ma&szlig;nahme</label>';
+      html += '<textarea data-field="measure">' + escapeHtml(e.measure) + '</textarea></div>';
+    } else {
+      html += '<div class="muted">Kategorie-Ebene &ndash; bitte eine Unterkategorie ausw&auml;hlen.</div>';
+    }
+    html += '</div>';
+    if (node.level >= 2) {
+      var e2 = node.entry;
+      html += '<div class="card"><h3 style="margin-top:0;font-size:14px">Tracking</h3>';
+      html += '<div class="row"><div><label class="muted" style="display:flex;align-items:center;gap:8px;font-size:13px">';
+      html += '<input type="checkbox" data-field="trackingDone"' + (e2.tracking.done ? " checked" : "") + '> Ma&szlig;nahme durchgef&uuml;hrt</label></div>';
+      html += '<div><label>Datum</label><input type="date" data-field="trackingDate" value="' + escapeHtml(e2.tracking.date) + '"></div></div></div>';
+
+      html += '<div class="card"><h3 style="margin-top:0;font-size:14px">Risiko nach Ma&szlig;nahme (Restrisiko)</h3>';
+      if (!e2.tracking.done) {
+        html += '<div class="muted">Verf&uuml;gbar, sobald die Ma&szlig;nahme im Tracking als durchgef&uuml;hrt markiert wurde.</div>';
+      } else {
+        var resid = e2.residualRisk || "grau";
+        html += '<div class="risk-compare"><span class="risk-pill"><span class="dot ' + e2.risk + '"></span> Vorher: ' + RISK_LABEL[e2.risk] + '</span>';
+        html += '<span class="arrow">&rarr;</span><span class="risk-pill"><span class="dot ' + resid + '"></span> Nachher (Rest): ' + RISK_LABEL[resid] + '</span></div>';
+        html += '<div class="field" style="margin-top:12px"><label>Restrisiko festlegen</label><select data-field="residualRisk">' + RISK_LEVELS.map(function (r) {
+          return '<option value="' + r + '"' + (resid === r ? " selected" : "") + '>' + RISK_LABEL[r] + '</option>';
+        }).join("") + '</select></div>';
+        html += '<div class="field"><label>Anmerkung zum Restrisiko</label><textarea data-field="residualNote">' + escapeHtml(e2.residualNote) + '</textarea></div>';
+      }
+      html += '</div>';
+    }
+    container.innerHTML = html;
+    container.querySelectorAll("[data-field]").forEach(function (el) {
+      var field = el.getAttribute("data-field");
+      var evt = (el.tagName === "SELECT" || el.type === "checkbox" || el.type === "date") ? "change" : "input";
+      el.addEventListener(evt, function () {
+        if (!node.entry) node.entry = makeEntry();
+        var e = node.entry;
+        switch (field) {
+          case "risk": e.risk = el.value; break;
+          case "riskNote": e.riskNote = el.value; break;
+          case "measure": e.measure = el.value; break;
+          case "trackingDone": e.tracking.done = el.checked; break;
+          case "trackingDate": e.tracking.date = el.value; break;
+          case "residualRisk": e.residualRisk = el.value; break;
+          case "residualNote": e.residualNote = el.value; break;
+        }
+        save();
+        renderTree();
+        if (field === "trackingDone") buildDetailMarkup(container, node, role);
+      });
+    });
+
+    var addChildBtn = container.querySelector('[data-action="add-child"]');
+    if (addChildBtn) addChildBtn.addEventListener("click", function () {
+      var name = prompt("Name des neuen Items (Ebene " + (node.level + 1) + "):");
+      if (!name) return;
+      var child = makeNode(name, node.level + 1, {
+        category: node.category,
+        createdBy: role === "entwickler" ? "entwickler" : "nutzer",
+        isNew: true,
+        createdAt: new Date().toISOString().slice(0, 10),
+        entry: makeEntry()
+      });
+      node.children.push(child);
+      state.expanded[node.id] = true;
+      state.selectedId = child.id;
+      render();
+    });
+
+    var addSubcatBtn = container.querySelector('[data-action="add-subcategory"]');
+    if (addSubcatBtn) addSubcatBtn.addEventListener("click", function () {
+      var name = prompt("Name der neuen Unterkategorie (Ebene 2) unter \"" + node.name + "\":");
+      if (!name) return;
+      var child = makeNode(name, 2, { category: node.category, createdBy: "entwickler" });
+      node.children.push(child);
+      state.expanded[node.id] = true;
+      state.selectedId = child.id;
+      render();
+    });
+
+    var renameBtn = container.querySelector('[data-action="rename"]');
+    if (renameBtn) renameBtn.addEventListener("click", function () {
+      var name = prompt("Neuer Name:", node.name);
+      if (!name) return;
+      node.name = name;
+      render();
+    });
+
+    var deleteBtn = container.querySelector('[data-action="delete"]');
+    if (deleteBtn) deleteBtn.addEventListener("click", function () {
+      if (!confirm('"' + node.name + '" inkl. aller Unterpunkte löschen?')) return;
+      var parent = findParent(node.id);
+      var list = parent ? parent.children : state.data;
+      var idx = list.indexOf(node);
+      if (idx > -1) list.splice(idx, 1);
+      state.selectedId = parent ? parent.id : (state.data[0] ? state.data[0].id : null);
+      render();
+    });
+  }
+
+  function renderAdminNewItems(container) {
+    var items = collectNewItems();
+    if (state.adminFachbereich !== "alle") {
+      items = items.filter(function (n) { return n.category === state.adminFachbereich; });
+    }
+    var html = '<div class="card">';
+    html += '<h3 style="margin-top:0">Neu angelegte Nutzer-Items';
+    html += '<span class="muted" style="font-weight:400"> &mdash; Fachbereich: ' + (state.adminFachbereich === "alle" ? "Alle" : escapeHtml(state.adminFachbereich)) + '</span></h3>';
+    if (!items.length) {
+      html += '<div class="empty-state">Keine neuen Nutzer-Items f&uuml;r diesen Fachbereich.</div>';
+    } else {
+      html += '<table class="admin-table"><thead><tr>' +
+        '<th>Pfad</th><th>Fachbereich</th><th>Angelegt von</th><th>Datum</th><th>Ampel</th><th></th>' +
+        '</tr></thead><tbody>';
+      items.forEach(function (n) {
+        var path = findPath(n.id).map(function (p) { return p.name; }).join(" › ");
+        var risk = n.entry ? n.entry.risk : "grau";
+        html += '<tr>';
+        html += '<td><a href="#" data-goto="' + n.id + '">' + escapeHtml(path) + '</a></td>';
+        html += '<td>' + escapeHtml(n.category || "") + '</td>';
+        html += '<td>' + escapeHtml(n.createdBy) + '</td>';
+        html += '<td>' + escapeHtml(n.createdAt || "–") + '</td>';
+        html += '<td><span class="dot ' + risk + '" style="display:inline-block;vertical-align:middle"></span> ' + RISK_LABEL[risk] + '</td>';
+        html += '<td><button class="btn" data-ack="' + n.id + '">Als gesehen markieren</button></td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+    }
+    html += '<div class="muted" style="margin-top:10px">Hinweis: Neue Items werden ohne Pr&uuml;fung direkt &uuml;bernommen. Diese &Uuml;bersicht dient der Governance-Sichtbarkeit, nicht einer Freigabe.</div>';
+    html += '</div>';
+    container.innerHTML = html;
+
+    container.querySelectorAll("[data-goto]").forEach(function (el) {
+      el.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        state.selectedId = el.getAttribute("data-goto");
+        state.adminTab = "struktur";
+        render();
+      });
+    });
+    container.querySelectorAll("[data-ack]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        var n = findNode(el.getAttribute("data-ack"));
+        if (n) n.isNew = false;
+        render();
+      });
+    });
+  }
+
+  // ---------- Init ----------
+  document.getElementById("roleSelect").addEventListener("change", function (e) {
+    state.role = e.target.value;
+    render();
+  });
+  document.getElementById("adminFachbereich").addEventListener("change", function (e) {
+    state.adminFachbereich = e.target.value;
+    renderAdminPanel();
+  });
+  document.getElementById("resetBtn").addEventListener("click", function () {
+    if (confirm("Alle lokalen &Auml;nderungen verwerfen und Demo-Daten neu laden?")) resetDemo();
+  });
+
+  load();
+  render();
+})();
+</script>
+
+</body>
+</html>
