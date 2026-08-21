@@ -102,6 +102,51 @@ body, .content-wrapper, .card, .card-body, .modal-body {
 
 .modal-dialog { margin-left: auto; margin-right: auto; }
 
+/* ---- Component 3: Leerzustand (generic empty state) ---- */
+.srp-empty-state {
+  text-align: center;
+  padding: 22px 10px;
+}
+.srp-empty-state-icon {
+  color: #adb5bd;
+  margin-bottom: 8px;
+}
+.srp-empty-state-title {
+  font-weight: 700;
+  font-size: 14.5px;
+  color: #343a40;
+  margin-bottom: 4px;
+}
+.srp-empty-state-text {
+  color: #6c757d;
+  font-size: 13px;
+  margin-bottom: 0;
+}
+.srp-empty-state-note {
+  margin-top: 8px;
+  min-height: 1em; /* reserve space so the demo action doesn't jump the layout */
+}
+
+/* ---- Component 4: Kurzeinstieg ---- */
+.srp-kurzeinstieg-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.srp-kurzeinstieg-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #d4edda;
+  color: #1e6b32;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 </style>
 </head>
 <body class="hold-transition layout-fixed">
@@ -132,14 +177,42 @@ body, .content-wrapper, .card, .card-body, .modal-body {
           </div>
           <div class="card-body">
             <p class="text-muted mb-0">
-              Diese Seite zeigt ausschlie&szlig;lich die beiden AP5-Bausteine (Szenario-Erkl&auml;rung
-              und Ampel-Skala-Legende) in Isolation. Beide sind inhaltlich unabh&auml;ngig vom
-              Rollensystem und als eigenst&auml;ndige Funktionen implementiert
-              (<code>renderSzenarioBanner()</code>, <code>renderAmpelLegende()</code>), damit sie sich
-              unver&auml;ndert in den AP4-Prototyp (Struktur &amp; Admin-Governance) einh&auml;ngen lassen.
+              Diese Seite zeigt ausschlie&szlig;lich die AP5-Bausteine (Szenario-Erkl&auml;rung,
+              Ampel-Skala-Legende, Leerzust&auml;nde, Kurzeinstieg) in Isolation. Alle sind inhaltlich
+              unabh&auml;ngig vom Rollensystem und als eigenst&auml;ndige Funktionen implementiert,
+              damit sie sich unver&auml;ndert in den AP4-Prototyp (Struktur &amp; Admin-Governance)
+              einh&auml;ngen lassen.
             </p>
           </div>
         </div>
+
+        <h3 class="mt-4 mb-3">Leerzust&auml;nde (Beispiele)</h3>
+        <p class="text-muted small">
+          Eine generische Komponente (<code>mountEmptyState()</code>), hier an drei typischen
+          Situationen demonstriert &ndash; gleiches Erscheinungsbild, unterschiedlicher Inhalt.
+        </p>
+        <div class="row">
+          <div class="col-12 col-lg-4 mb-3">
+            <div class="card h-100">
+              <div class="card-header py-2"><span class="small text-muted text-uppercase font-weight-bold">Beispiel: Unbewerteter Punkt</span></div>
+              <div class="card-body" id="emptyStateDemo1"></div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-4 mb-3">
+            <div class="card h-100">
+              <div class="card-header py-2"><span class="small text-muted text-uppercase font-weight-bold">Beispiel: Admin-&Uuml;bersicht leer</span></div>
+              <div class="card-body" id="emptyStateDemo2"></div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-4 mb-3">
+            <div class="card h-100">
+              <div class="card-header py-2"><span class="small text-muted text-uppercase font-weight-bold">Beispiel: Keine Suchtreffer</span></div>
+              <div class="card-body" id="emptyStateDemo3"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="kurzeinstiegSlot" class="mt-2"></div>
 
       </div>
     </section>
@@ -293,11 +366,131 @@ body, .content-wrapper, .card, .card-body, .modal-body {
   }
 
   // ---------------------------------------------------------------------
+  // Component 3: Leerzustand (generic empty state)
+  // One markup/style source for every "nothing here yet" situation
+  // (unbewerteter Punkt, leere Admin-Übersicht, keine Suchtreffer, ...).
+  // ---------------------------------------------------------------------
+  var EMPTY_STATE_ICONS = {
+    frage: '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9.2"/><path d="M9.3 9.4a2.7 2.7 0 1 1 3.9 2.4c-.9.5-1.2 1-1.2 2" stroke-linecap="round"/><circle cx="12" cy="16.6" r="0.15" fill="currentColor" stroke-width="1"/></svg>',
+    posteingang: '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 13.5 6.2 5h11.6l2.2 8.5" stroke-linejoin="round"/><path d="M4 13.5h4.6l1 2.3h4.8l1-2.3H20V19H4z" stroke-linejoin="round"/></svg>',
+    lupe: '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 20 20" stroke-linecap="round"/></svg>'
+  };
+
+  function mountEmptyState(container, opts) {
+    var actionHtml = opts.actionLabel
+      ? '<button type="button" class="btn btn-outline-secondary btn-sm mt-2" data-empty-action>' + opts.actionLabel + '</button>'
+      : "";
+    container.innerHTML =
+      '<div class="srp-empty-state" role="status">' +
+        '<div class="srp-empty-state-icon" aria-hidden="true">' + (EMPTY_STATE_ICONS[opts.icon] || EMPTY_STATE_ICONS.frage) + '</div>' +
+        '<div class="srp-empty-state-title">' + opts.title + '</div>' +
+        '<p class="srp-empty-state-text">' + opts.text + '</p>' +
+        actionHtml +
+        '<p class="srp-empty-state-note text-muted small mb-0" data-empty-note></p>' +
+      '</div>';
+
+    if (opts.actionLabel && opts.onAction) {
+      container.querySelector("[data-empty-action]").addEventListener("click", function () {
+        opts.onAction(container.querySelector("[data-empty-note]"));
+      });
+    }
+  }
+
+  // ---------------------------------------------------------------------
+  // Component 4: Kurzeinstieg ("So starten Sie in 3 Schritten")
+  // Placed at the end of the page (not the top banner): the banner answers
+  // "warum", this answers "wie fange ich an" once the user is oriented.
+  // Own dismiss state, independent of the Szenario-Banner's.
+  // ---------------------------------------------------------------------
+  var KURZEINSTIEG_DISMISSED_KEY = "srp_kurzeinstieg_dismissed_v1";
+
+  function isKurzeinstiegDismissed() {
+    try { return localStorage.getItem(KURZEINSTIEG_DISMISSED_KEY) === "1"; }
+    catch (e) { return false; }
+  }
+  function setKurzeinstiegDismissed(value) {
+    try { localStorage.setItem(KURZEINSTIEG_DISMISSED_KEY, value ? "1" : "0"); }
+    catch (e) { /* storage unavailable */ }
+  }
+
+  var KURZEINSTIEG_STEPS = [
+    { title: "Rolle wählen", text: "Oben rechts festlegen, ob Sie als Nutzer:in, Entwickler:in oder Admin arbeiten – das bestimmt, welche Aktionen verfügbar sind." },
+    { title: "Struktur durchsuchen & bewerten", text: "Passenden Punkt in der Baumstruktur wählen, Ampel-Status setzen und bei Gelb/Rot eine Maßnahme eintragen." },
+    { title: "Tracking & Restrisiko pflegen", text: "Nach Umsetzung der Maßnahme im Tracking abhaken und anschließend das Restrisiko neu bewerten." }
+  ];
+
+  function renderKurzeinstieg(container) {
+    if (isKurzeinstiegDismissed()) {
+      container.innerHTML =
+        '<button type="button" class="btn btn-link btn-sm px-0" data-action="show-kurzeinstieg">' +
+          '&#8635; Kurzeinstieg wieder anzeigen' +
+        '</button>';
+      container.querySelector('[data-action="show-kurzeinstieg"]').addEventListener("click", function () {
+        setKurzeinstiegDismissed(false);
+        renderKurzeinstieg(container);
+      });
+      return;
+    }
+
+    var stepsHtml = KURZEINSTIEG_STEPS.map(function (s, i) {
+      return (
+        '<div class="col-12 col-md-4 mb-3 mb-md-0">' +
+          '<div class="srp-kurzeinstieg-step">' +
+            '<span class="srp-kurzeinstieg-num">' + (i + 1) + '</span>' +
+            '<div>' +
+              '<div class="font-weight-bold">' + s.title + '</div>' +
+              '<div class="text-muted small">' + s.text + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join("");
+
+    container.innerHTML =
+      '<div class="card card-outline card-success srp-kurzeinstieg">' +
+        '<div class="card-header">' +
+          '<h3 class="card-title">So starten Sie in 3 Schritten</h3>' +
+        '</div>' +
+        '<div class="card-body">' +
+          '<div class="row">' + stepsHtml + '</div>' +
+        '</div>' +
+        '<div class="card-footer text-right">' +
+          '<button type="button" class="btn btn-outline-success btn-sm" data-action="dismiss-kurzeinstieg">Verstanden, ausblenden</button>' +
+        '</div>' +
+      '</div>';
+
+    container.querySelector('[data-action="dismiss-kurzeinstieg"]').addEventListener("click", function () {
+      setKurzeinstiegDismissed(true);
+      renderKurzeinstieg(container);
+    });
+  }
+
+  // ---------------------------------------------------------------------
   // Init
   // ---------------------------------------------------------------------
   renderSzenarioBanner(document.getElementById("szenarioBannerSlot"));
   renderSzenarioModalContent(document.getElementById("szenarioModalContent"));
   renderAmpelLegende(document.getElementById("ampelLegendeSlot"));
+
+  mountEmptyState(document.getElementById("emptyStateDemo1"), {
+    icon: "frage",
+    title: "Noch keine Risikobewertung",
+    text: "Für diesen Strukturpunkt liegt noch keine Ampel-Bewertung vor. Sobald ein/e Ausfüller:in eine Einschätzung einträgt, erscheint sie hier."
+  });
+  mountEmptyState(document.getElementById("emptyStateDemo2"), {
+    icon: "posteingang",
+    title: "Keine neuen Nutzer-Items",
+    text: "Für den gewählten Fachbereich wurden aktuell keine neuen Punkte durch Nutzer:innen angelegt."
+  });
+  mountEmptyState(document.getElementById("emptyStateDemo3"), {
+    icon: "lupe",
+    title: "Keine Treffer gefunden",
+    text: "Für Ihre Suche bzw. Filterung wurden keine passenden Strukturpunkte gefunden.",
+    actionLabel: "Filter zurücksetzen",
+    onAction: function (noteEl) { noteEl.textContent = "Demo: Aktion „Filter zurücksetzen“ ausgelöst."; }
+  });
+
+  renderKurzeinstieg(document.getElementById("kurzeinstiegSlot"));
 })();
 
 </script>
