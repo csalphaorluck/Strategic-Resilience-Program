@@ -29,6 +29,43 @@ für den angeklickten Knoten im rechten Panel.
 Bei schmalem Fenster (Breakpoint wird in 2.1 festgelegt) erscheint das Panel
 stattdessen als Overlay über dem Baum.
 
+### Umsetzung (2.1)
+
+- **Breakpoint für Overlay:** 760px — derselbe Wert, der in 2.2 bereits das
+  Grundlayout (Baum/Panel nebeneinander vs. gestapelt) steuert. Unterhalb
+  von 760px UND bei aktiver Auswahl wird das Formular-Panel per CSS zu
+  einem Vollbild-Overlay (`position: fixed; inset: 0;`) mit Schließen-Button
+  (×) oben rechts im Panel-Kopf. Ohne Auswahl bleibt es bei schmalem
+  Fenster ein normal gestapelter Block mit dem Leerzustand-Hinweistext,
+  kein Overlay ohne Inhalt.
+- **Schließen:** über den ×-Button im Panel-Kopf oder die Escape-Taste,
+  beides bei jeder Fensterbreite (nicht nur im Overlay-Fall), da "Auswahl
+  aufheben" auch am breiten Bildschirm ein sinnvoller Zustand ist.
+- **Panel-Kopf:** zeigt immer Knotenname + "Ebene X · <Ebenenbezeichnung>"
+  (Kategorie/Unterkategorie/Themenbereich/Komponente/Sub-Komponente).
+- **Fallunterscheidung** (Kernentscheidung, direkt aus CLAUDE.md abgeleitet
+  — Bewertung hängt am tiefsten befüllten Punkt):
+  - Knoten **ohne** Kinder → Bewertungsformular: Risikostatus (Auswahl aus
+    den 4 Ampelzuständen), Begründung, Maßnahme, Tracking
+    (durchgeführt-Checkbox + Datum), Restrisiko nach Maßnahme. Felder sind
+    vorbefüllt aus den (Platzhalter-)Daten des Knotens.
+  - Knoten **mit** Kindern → kein Formular, sondern Übersicht: derselbe
+    Ring-Chip + Zähler + Abdeckungsgrad wie im Baum, dazu eine Liste der
+    direkten Kinder mit ihrem jeweils eigenen Status (gefüllt oder Ring, je
+    nachdem ob das Kind selbst Kinder hat), plus Hinweistext, dass die
+    Bewertung am tiefsten befüllten Punkt erfolgt.
+- **Abgrenzung zu Baustein 3:** Die Formularfelder sind interaktiv
+  (ausfüllbar, mit Platzhalter-Werten vorbefüllt), aber nicht angebunden —
+  kein Speichern, keine Validierung, kein Feldverhalten über reines
+  Anzeigen/Vorbefüllen hinaus. Der "Speichern"-Button ist bewusst
+  deaktiviert und beschriftet mit "Speichern (folgt in Baustein 3)". Ein
+  Hinweistext oben im Formular macht das zusätzlich explizit. Diese Grenze
+  ist bewusst, damit Baustein 3 (Erfassungslogik) nicht vorweggenommen
+  wird.
+- **Leerzustand:** Solange kein Knoten ausgewählt ist, zeigt das Panel
+  einen kurzen Hinweistext ("Wähle einen Knoten im Baum aus, um seine
+  Bewertung oder Übersicht hier zu sehen.") statt einer leeren Fläche.
+
 ## 2. Ampelfarben & Symbole (2.2)
 
 Standard-Ampelfarben, kontrastgeprüft (WCAG AA, ≥ 4.5:1 für Text/Symbol auf

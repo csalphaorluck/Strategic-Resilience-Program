@@ -72,11 +72,23 @@
     background: var(--srp-border);
   }
 
+  /* Breakpoint fuer "schmales Fenster" — identischer Wert wie unten in
+     srpSchmalMql (JS), an dieser einen Stelle dokumentiert und bewusst
+     nicht dupliziert begruendet. */
   @media (max-width: 760px) {
-    /* Ab hier wird das Formular-Panel in 2.1 als Overlay realisiert,
-       statt als zweite Spalte. Hier nur als Layout-Hinweis vermerkt. */
     .srp-layout {
       grid-template-columns: 1fr;
+    }
+
+    /* Nur wenn tatsaechlich ein Knoten ausgewaehlt ist (Klasse wird per JS
+       gesetzt), wird das Formular-Panel zum Vollbild-Overlay ueber dem
+       Baum. Ohne Auswahl bleibt es ein normaler gestapelter Block mit dem
+       Leerzustand-Hinweistext. */
+    #srp-formular-panel.srp-panel--overlay-aktiv {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      overflow: auto;
     }
   }
 
@@ -264,6 +276,124 @@
     font-style: italic;
   }
 
+  /* ---- 2.1: Klickmodell / Formular-Panel ---- */
+
+  .srp-formular-kopf {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid var(--srp-border);
+  }
+
+  .srp-formular-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .srp-formular-ebene {
+    font-size: 0.78rem;
+    color: var(--srp-text-muted);
+    margin-top: 0.15rem;
+  }
+
+  .srp-formular-schliessen {
+    flex: 0 0 auto;
+    background: none;
+    border: 1px solid var(--srp-border-strong);
+    border-radius: 6px;
+    width: 1.75rem;
+    height: 1.75rem;
+    line-height: 1;
+    font-size: 1rem;
+    color: var(--srp-text-muted);
+    cursor: pointer;
+  }
+
+  .srp-formular-schliessen:hover {
+    background: var(--srp-bg-alt);
+  }
+
+  .srp-baustein3-hinweis {
+    background: var(--srp-bg-alt);
+    border: 1px solid var(--srp-border);
+    border-radius: 6px;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.78rem;
+    color: var(--srp-text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .srp-feld {
+    margin-bottom: 0.9rem;
+  }
+
+  .srp-feld label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .srp-feld select,
+  .srp-feld textarea,
+  .srp-feld input[type="date"] {
+    width: 100%;
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.5rem;
+    border: 1px solid var(--srp-border-strong);
+    border-radius: 6px;
+    background: var(--srp-bg);
+    color: var(--srp-text);
+  }
+
+  .srp-feld textarea {
+    resize: vertical;
+    min-height: 4.5rem;
+  }
+
+  .srp-feld-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .srp-feld-inline input[type="checkbox"] {
+    width: auto;
+  }
+
+  .srp-speichern-btn {
+    font: inherit;
+    font-size: 0.82rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 6px;
+    border: 1px solid var(--srp-border-strong);
+    background: var(--srp-bg-alt);
+    color: var(--srp-text-muted);
+    cursor: not-allowed;
+  }
+
+  .srp-uebersicht-zeile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--srp-border);
+    font-size: 0.85rem;
+  }
+
+  .srp-uebersicht-zeile:last-child {
+    border-bottom: none;
+  }
+
+  .srp-uebersicht-name {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
   details.srp-stilguide {
     background: var(--srp-bg);
     border-top: 1px solid var(--srp-border);
@@ -315,9 +445,8 @@
 
   .srp-chip-legende {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 1.25rem;
+    flex-direction: column;
+    gap: 0.4rem;
     padding: 0.5rem 0.6rem;
     margin-bottom: 0.75rem;
     background: var(--srp-bg-alt);
@@ -327,10 +456,23 @@
     color: var(--srp-text-muted);
   }
 
+  .srp-chip-legende-zeile {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+  }
+
+  .srp-chip-legende-zeile + .srp-chip-legende-zeile {
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--srp-border);
+  }
+
   .srp-chip-legende-eintrag {
     display: flex;
     align-items: center;
     gap: 0.4rem;
+    white-space: nowrap;
   }
 </style>
 </head>
@@ -338,32 +480,48 @@
 
 <header class="srp-header">
   <h1>Strategic Resilience Program</h1>
-  <span class="srp-subtitle">Baustein 2 – Design &amp; Klickmodell · Entwurf 2.2–2.3 (Layout, Farben, Typografie, Baumdarstellung)</span>
+  <span class="srp-subtitle">Baustein 2 – Design &amp; Klickmodell · Entwurf 2.1–2.5 (Layout, Farben, Typografie, Baumdarstellung, Verdichtung, Klickmodell)</span>
 </header>
 
 <div class="srp-layout">
   <div class="srp-panel" aria-label="Baumbereich">
     <h2>Baum</h2>
     <div class="srp-chip-legende">
-      <span class="srp-chip-legende-eintrag">
-        <span class="srp-ampel srp-ampel--rot"><span class="srp-ampel-symbol">✕</span></span>
-        eigene Bewertung
-      </span>
-      <span class="srp-chip-legende-eintrag">
-        <span class="srp-ampel srp-ampel--verdichtet srp-ampel--rot"><span class="srp-ampel-symbol">✕</span></span>
-        abgeleitet aus untergeordneten Einträgen
-      </span>
+      <div class="srp-chip-legende-zeile">
+        <span class="srp-chip-legende-eintrag">
+          <span class="srp-ampel srp-ampel--grau"><span class="srp-ampel-symbol">–</span></span>
+          Grau
+        </span>
+        <span class="srp-chip-legende-eintrag">
+          <span class="srp-ampel srp-ampel--gruen"><span class="srp-ampel-symbol">✓</span></span>
+          Grün
+        </span>
+        <span class="srp-chip-legende-eintrag">
+          <span class="srp-ampel srp-ampel--gelb"><span class="srp-ampel-symbol">!</span></span>
+          Gelb
+        </span>
+        <span class="srp-chip-legende-eintrag">
+          <span class="srp-ampel srp-ampel--rot"><span class="srp-ampel-symbol">✕</span></span>
+          Rot
+        </span>
+      </div>
+      <div class="srp-chip-legende-zeile">
+        <span class="srp-chip-legende-eintrag">
+          <span class="srp-ampel srp-ampel--rot"><span class="srp-ampel-symbol">✕</span></span>
+          eigene Bewertung
+        </span>
+        <span class="srp-chip-legende-eintrag">
+          <span class="srp-ampel srp-ampel--verdichtet srp-ampel--rot"><span class="srp-ampel-symbol">✕</span></span>
+          abgeleitet aus untergeordneten Einträgen
+        </span>
+      </div>
     </div>
     <div id="srp-baum"></div>
   </div>
 
-  <div class="srp-panel" aria-label="Formular-Panel (Platzhalter)">
+  <div class="srp-panel" id="srp-formular-panel" aria-label="Formular-Panel">
     <h2>Formular-Panel</h2>
-    <div class="srp-platzhalter">
-      Formular zum Bearbeiten eines Knotens folgt in Unteraufgabe 2.1
-      (Sidebar-Panel, bei schmalem Fenster als Overlay). Diese Fläche zeigt
-      nur die Grundlayout-Position rechts neben dem Baum.
-    </div>
+    <div id="srp-panel-inhalt"></div>
   </div>
 </div>
 
@@ -440,11 +598,11 @@
 <script src="mock-daten.js"></script>
 <script>
   /* ============================================================
+     2.1 — Klickmodell / Formular-Panel
      2.3 — Baumdarstellung (auf-/zuklappbar, Ebenen unterscheidbar)
      2.5 — Ampelstatus im Baum + Verdichtung nach oben
      Greift ausschliesslich ueber holeBaumDaten() auf die (Platzhalter-)
-     Daten zu. Formular-Oeffnung folgt in 2.1 — hier nur Struktur,
-     Klapp-Zustand, Auswahl-Hervorhebung und Ampel/Verdichtung.
+     Daten zu.
      ============================================================ */
 
   // Menge der IDs, deren Kinder-Liste aktuell aufgeklappt ist.
@@ -457,6 +615,23 @@
     }
     (knoten.kinder || []).forEach(srpDefaultZustandSetzen);
   }
+
+  // ---- 2.1: Knoten-Karte (id -> Knoten) fuer den Panel-Zugriff ----
+
+  const srpKnotenKarte = new Map();
+
+  function srpKnotenKarteBauen(knoten) {
+    srpKnotenKarte.set(knoten.id, knoten);
+    (knoten.kinder || []).forEach(srpKnotenKarteBauen);
+  }
+
+  const SRP_EBENEN_NAME = {
+    1: "Kategorie",
+    2: "Unterkategorie",
+    3: "Themenbereich",
+    4: "Komponente",
+    5: "Sub-Komponente",
+  };
 
   // ---- 2.5: Verdichtung "schlechtester Wert gewinnt" (Rot > Gelb > Gruen) ----
 
@@ -559,6 +734,245 @@
     return gruppe;
   }
 
+  // ============================================================
+  // 2.1 — Klickmodell / Formular-Panel
+  // ============================================================
+
+  // Breakpoint "schmales Fenster": identischer Wert wie die CSS-Media-Query
+  // oben (max-width: 760px) — dieselbe Schwelle steuert dort das Grundlayout
+  // und hier, ob das Panel bei aktiver Auswahl als Overlay dargestellt wird.
+  const srpSchmalMql = window.matchMedia("(max-width: 760px)");
+  let srpAusgewaehlteId = null;
+
+  function srpUeberlagerungAktualisieren() {
+    const panel = document.getElementById("srp-formular-panel");
+    const alsOverlay = srpSchmalMql.matches && srpAusgewaehlteId;
+    panel.classList.toggle("srp-panel--overlay-aktiv", Boolean(alsOverlay));
+  }
+  srpSchmalMql.addEventListener("change", srpUeberlagerungAktualisieren);
+
+  function srpBaustein3Hinweis() {
+    const hinweis = document.createElement("div");
+    hinweis.className = "srp-baustein3-hinweis";
+    hinweis.textContent =
+      "Klickmodell-Entwurf (Baustein 2): Felder sind interaktiv, aber " +
+      "nicht angebunden. Speichern, Validierung und Feldverhalten folgen " +
+      "in Baustein 3.";
+    return hinweis;
+  }
+
+  function srpFormularKopfBauen(knoten) {
+    const kopf = document.createElement("div");
+    kopf.className = "srp-formular-kopf";
+
+    const textBereich = document.createElement("div");
+    const name = document.createElement("div");
+    name.className = "srp-formular-name";
+    name.textContent = knoten.name;
+    const ebene = document.createElement("div");
+    ebene.className = "srp-formular-ebene";
+    ebene.textContent = "Ebene " + knoten.ebene + " · " + SRP_EBENEN_NAME[knoten.ebene];
+    textBereich.appendChild(name);
+    textBereich.appendChild(ebene);
+    kopf.appendChild(textBereich);
+
+    const schliessenBtn = document.createElement("button");
+    schliessenBtn.type = "button";
+    schliessenBtn.className = "srp-formular-schliessen";
+    schliessenBtn.setAttribute("aria-label", "Panel schließen");
+    schliessenBtn.textContent = "×";
+    schliessenBtn.addEventListener("click", srpKnotenAbwaehlen);
+    kopf.appendChild(schliessenBtn);
+
+    return kopf;
+  }
+
+  // Fall 1: Knoten ohne Kinder = tiefster befuellter Punkt -> Bewertungsformular.
+  function srpBewertungsformularBauen(knoten) {
+    const b = knoten.bewertung;
+    const container = document.createElement("div");
+    container.appendChild(srpFormularKopfBauen(knoten));
+    container.appendChild(srpBaustein3Hinweis());
+
+    const risikoFeld = document.createElement("div");
+    risikoFeld.className = "srp-feld";
+    const risikoLabel = document.createElement("label");
+    risikoLabel.textContent = "Risikostatus";
+    const risikoSelect = document.createElement("select");
+    ["grau", "gruen", "gelb", "rot"].forEach((wert) => {
+      const option = document.createElement("option");
+      option.value = wert;
+      option.textContent = SRP_LABEL[wert];
+      if ((b && b.risiko) === wert || (!b && wert === "grau")) option.selected = true;
+      risikoSelect.appendChild(option);
+    });
+    risikoFeld.appendChild(risikoLabel);
+    risikoFeld.appendChild(risikoSelect);
+    container.appendChild(risikoFeld);
+
+    const begruendungFeld = document.createElement("div");
+    begruendungFeld.className = "srp-feld";
+    const begruendungLabel = document.createElement("label");
+    begruendungLabel.textContent = "Begründung";
+    const begruendungText = document.createElement("textarea");
+    begruendungText.value = (b && b.beschreibung) || "";
+    begruendungText.placeholder = "Warum diese Risikoeinschätzung?";
+    begruendungFeld.appendChild(begruendungLabel);
+    begruendungFeld.appendChild(begruendungText);
+    container.appendChild(begruendungFeld);
+
+    const massnahmeFeld = document.createElement("div");
+    massnahmeFeld.className = "srp-feld";
+    const massnahmeLabel = document.createElement("label");
+    massnahmeLabel.textContent = "Maßnahme";
+    const massnahmeText = document.createElement("textarea");
+    massnahmeText.value = (b && b.massnahme) || "";
+    massnahmeText.placeholder = "Welche Maßnahme ist vorgesehen?";
+    massnahmeFeld.appendChild(massnahmeLabel);
+    massnahmeFeld.appendChild(massnahmeText);
+    container.appendChild(massnahmeFeld);
+
+    const trackingFeld = document.createElement("div");
+    trackingFeld.className = "srp-feld";
+    const trackingLabel = document.createElement("label");
+    trackingLabel.textContent = "Tracking";
+    const trackingInline = document.createElement("div");
+    trackingInline.className = "srp-feld-inline";
+    const durchgefuehrtCheckbox = document.createElement("input");
+    durchgefuehrtCheckbox.type = "checkbox";
+    durchgefuehrtCheckbox.id = "srp-tracking-durchgefuehrt";
+    durchgefuehrtCheckbox.checked = Boolean(b && b.tracking && b.tracking.durchgefuehrt);
+    const durchgefuehrtLabel = document.createElement("label");
+    durchgefuehrtLabel.htmlFor = "srp-tracking-durchgefuehrt";
+    durchgefuehrtLabel.style.marginBottom = "0";
+    durchgefuehrtLabel.textContent = "Maßnahme durchgeführt";
+    const datumInput = document.createElement("input");
+    datumInput.type = "date";
+    datumInput.value = (b && b.tracking && b.tracking.datum) || "";
+    trackingInline.appendChild(durchgefuehrtCheckbox);
+    trackingInline.appendChild(durchgefuehrtLabel);
+    trackingFeld.appendChild(trackingLabel);
+    trackingFeld.appendChild(trackingInline);
+    trackingFeld.appendChild(datumInput);
+    container.appendChild(trackingFeld);
+
+    const restrisikoFeld = document.createElement("div");
+    restrisikoFeld.className = "srp-feld";
+    const restrisikoLabel = document.createElement("label");
+    restrisikoLabel.textContent = "Restrisiko nach Maßnahme";
+    const restrisikoSelect = document.createElement("select");
+    const nochNichtOption = document.createElement("option");
+    nochNichtOption.value = "";
+    nochNichtOption.textContent = "Noch nicht bewertet";
+    restrisikoSelect.appendChild(nochNichtOption);
+    ["grau", "gruen", "gelb", "rot"].forEach((wert) => {
+      const option = document.createElement("option");
+      option.value = wert;
+      option.textContent = SRP_LABEL[wert];
+      if (b && b.risikoNachMassnahme === wert) option.selected = true;
+      restrisikoSelect.appendChild(option);
+    });
+    restrisikoFeld.appendChild(restrisikoLabel);
+    restrisikoFeld.appendChild(restrisikoSelect);
+    container.appendChild(restrisikoFeld);
+
+    const speichernBtn = document.createElement("button");
+    speichernBtn.type = "button";
+    speichernBtn.className = "srp-speichern-btn";
+    speichernBtn.textContent = "Speichern (folgt in Baustein 3)";
+    speichernBtn.disabled = true;
+    container.appendChild(speichernBtn);
+
+    return container;
+  }
+
+  // Fall 2: Knoten mit Kindern -> keine Bewertung, sondern Uebersicht.
+  function srpUebersichtBauen(knoten) {
+    const container = document.createElement("div");
+    container.appendChild(srpFormularKopfBauen(knoten));
+
+    const hinweis = document.createElement("div");
+    hinweis.className = "srp-baustein3-hinweis";
+    hinweis.textContent =
+      "Die Risikobewertung erfolgt am tiefsten befüllten Punkt eines Pfads " +
+      "— dieser Knoten selbst hat kein eigenes Bewertungsformular.";
+    container.appendChild(hinweis);
+
+    const statusZeile = document.createElement("div");
+    statusZeile.style.marginBottom = "1rem";
+    statusZeile.appendChild(srpStatusGruppeBauen(knoten, true));
+    container.appendChild(statusZeile);
+
+    const listeLabel = document.createElement("div");
+    listeLabel.className = "srp-formular-ebene";
+    listeLabel.style.marginBottom = "0.4rem";
+    listeLabel.textContent = "Untergeordnete Einträge:";
+    container.appendChild(listeLabel);
+
+    (knoten.kinder || []).forEach((kind) => {
+      const zeile = document.createElement("div");
+      zeile.className = "srp-uebersicht-zeile";
+      const kindHatKinder = kind.kinder && kind.kinder.length > 0;
+      const nameEl = document.createElement("span");
+      nameEl.className = "srp-uebersicht-name";
+      nameEl.textContent = kind.name;
+      zeile.appendChild(nameEl);
+      zeile.appendChild(srpStatusGruppeBauen(kind, kindHatKinder));
+      container.appendChild(zeile);
+    });
+
+    return container;
+  }
+
+  function srpLeerzustandBauen() {
+    const hinweis = document.createElement("div");
+    hinweis.className = "srp-platzhalter";
+    hinweis.textContent =
+      "Wähle einen Knoten im Baum aus, um seine Bewertung oder Übersicht hier zu sehen.";
+    return hinweis;
+  }
+
+  function srpPanelRendern() {
+    const inhalt = document.getElementById("srp-panel-inhalt");
+    inhalt.innerHTML = "";
+
+    if (!srpAusgewaehlteId) {
+      inhalt.appendChild(srpLeerzustandBauen());
+      return;
+    }
+
+    const knoten = srpKnotenKarte.get(srpAusgewaehlteId);
+    const hatKinder = knoten.kinder && knoten.kinder.length > 0;
+    inhalt.appendChild(hatKinder ? srpUebersichtBauen(knoten) : srpBewertungsformularBauen(knoten));
+  }
+
+  function srpKnotenAuswaehlen(knoten, zeileElement) {
+    const vorherAusgewaehlt = document.querySelector(".srp-knoten-zeile.srp-ausgewaehlt");
+    if (vorherAusgewaehlt) {
+      vorherAusgewaehlt.classList.remove("srp-ausgewaehlt");
+    }
+    zeileElement.classList.add("srp-ausgewaehlt");
+    srpAusgewaehlteId = knoten.id;
+    srpPanelRendern();
+    srpUeberlagerungAktualisieren();
+  }
+
+  function srpKnotenAbwaehlen() {
+    const vorherAusgewaehlt = document.querySelector(".srp-knoten-zeile.srp-ausgewaehlt");
+    if (vorherAusgewaehlt) {
+      vorherAusgewaehlt.classList.remove("srp-ausgewaehlt");
+    }
+    srpAusgewaehlteId = null;
+    srpPanelRendern();
+    srpUeberlagerungAktualisieren();
+  }
+
+  document.addEventListener("keydown", (ereignis) => {
+    if (ereignis.key === "Escape" && srpAusgewaehlteId) {
+      srpKnotenAbwaehlen();
+    }
+  });
+
   function srpKnotenElementBauen(knoten) {
     const li = document.createElement("li");
     li.className = "srp-knoten";
@@ -619,17 +1033,11 @@
       });
     }
 
-    // Klick auf den Knoten selbst waehlt ihn nur aus (Hervorhebung).
-    // Er veraendert bewusst NICHT den Auf-/Zuklapp-Zustand irgendeines
-    // Knotens — das Formular-Verhalten (2.1) haengt sich hier spaeter ein.
+    // Klick auf den Knoten selbst waehlt ihn aus und oeffnet ihn im
+    // Formular-Panel rechts. Veraendert bewusst NICHT den Auf-/Zuklapp-
+    // Zustand irgendeines Knotens.
     zeile.addEventListener("click", () => {
-      const vorherAusgewaehlt = document.querySelector(
-        ".srp-knoten-zeile.srp-ausgewaehlt"
-      );
-      if (vorherAusgewaehlt) {
-        vorherAusgewaehlt.classList.remove("srp-ausgewaehlt");
-      }
-      zeile.classList.add("srp-ausgewaehlt");
+      srpKnotenAuswaehlen(knoten, zeile);
     });
 
     return li;
@@ -639,7 +1047,11 @@
     const wurzel = holeBaumDaten();
     srpDefaultZustandSetzen(wurzel);
     srpStatistikKarte.clear();
-    wurzel.kinder.forEach((knoten) => srpStatistikBerechnen(knoten));
+    srpKnotenKarte.clear();
+    wurzel.kinder.forEach((knoten) => {
+      srpStatistikBerechnen(knoten);
+      srpKnotenKarteBauen(knoten);
+    });
 
     const liste = document.createElement("ul");
     liste.className = "srp-baum-liste";
@@ -650,6 +1062,8 @@
     const container = document.getElementById("srp-baum");
     container.innerHTML = "";
     container.appendChild(liste);
+
+    srpPanelRendern();
   }
 
   srpBaumRendern();
