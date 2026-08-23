@@ -309,6 +309,29 @@
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1.5rem;
   }
+
+  /* ---- Sichtbare Kurz-Legende: gefuellt vs. Ring (nicht im Stilguide,
+     da Nutzer den Unterschied sonst nicht von selbst verstehen) ---- */
+
+  .srp-chip-legende {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+    padding: 0.5rem 0.6rem;
+    margin-bottom: 0.75rem;
+    background: var(--srp-bg-alt);
+    border: 1px solid var(--srp-border);
+    border-radius: 6px;
+    font-size: 0.72rem;
+    color: var(--srp-text-muted);
+  }
+
+  .srp-chip-legende-eintrag {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
 </style>
 </head>
 <body>
@@ -321,6 +344,16 @@
 <div class="srp-layout">
   <div class="srp-panel" aria-label="Baumbereich">
     <h2>Baum</h2>
+    <div class="srp-chip-legende">
+      <span class="srp-chip-legende-eintrag">
+        <span class="srp-ampel srp-ampel--rot"><span class="srp-ampel-symbol">✕</span></span>
+        eigene Bewertung
+      </span>
+      <span class="srp-chip-legende-eintrag">
+        <span class="srp-ampel srp-ampel--verdichtet srp-ampel--rot"><span class="srp-ampel-symbol">✕</span></span>
+        abgeleitet aus untergeordneten Einträgen
+      </span>
+    </div>
     <div id="srp-baum"></div>
   </div>
 
@@ -502,7 +535,9 @@
 
     const chip = document.createElement("span");
     chip.className = "srp-ampel srp-ampel--verdichtet srp-ampel--" + effektiv;
-    chip.title = "Verdichtet: " + SRP_LABEL[effektiv] + ". " + abdeckungText + ".";
+    chip.title =
+      "Verdichtet — schlechtester Status der untergeordneten Einträge. " +
+      SRP_LABEL[effektiv] + ". " + abdeckungText + ".";
     chip.innerHTML = '<span class="srp-ampel-symbol">' + SRP_SYMBOL[effektiv] + "</span>";
     gruppe.appendChild(chip);
 

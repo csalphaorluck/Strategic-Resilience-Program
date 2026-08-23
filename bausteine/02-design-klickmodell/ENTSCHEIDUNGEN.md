@@ -104,6 +104,28 @@ Umsetzung (Konkretisierung beim Bauen):
   der Zähler entfällt dann (nichts zu zählen), der Abdeckungsgrad bleibt
   sichtbar (z. B. "0 von 8 bewertet").
 
+### Verständlichkeit gefüllt vs. Ring (Nachtrag)
+
+Beim ersten Ansehen der Demo war der Unterschied zwischen gefülltem Chip
+(eigene Bewertung) und Ring-Chip (verdichteter Status aus untergeordneten
+Einträgen) nicht selbsterklärend. Ergänzt deshalb:
+
+- Eine sichtbare Kurz-Legende direkt über dem Baum (nicht im eingeklappten
+  Stilguide, da dieser nur Entwicklerreferenz ist und Nutzer ihn nicht
+  zwangsläufig öffnen): zwei Beispiel-Chips nebeneinander, einer gefüllt
+  mit der Bezeichnung "eigene Bewertung", einer als Ring mit "abgeleitet
+  aus untergeordneten Einträgen".
+- Ein Tooltip auf jedem Ring-Chip: "Verdichtet — schlechtester Status der
+  untergeordneten Einträge." (ergänzt um den konkreten Status und den
+  Abdeckungsgrad des jeweiligen Knotens).
+
+**Wichtig für Baustein 5 (Erklärungen & Nutzerführung):** Die hier ergänzte
+Kurz-Legende und der Tooltip sind ein Minimalstand, kein Ersatz für eine
+richtige Erklärung. Baustein 5 muss diese Darstellung (gefüllt vs. Ring,
+Verdichtungsregel, Abdeckungsgrad) vertieft und nutzerfreundlich erklären
+(z. B. Onboarding-Hinweis, ausführlichere Hilfe-Texte) — das gehört
+inhaltlich dorthin, nicht nach Baustein 2.
+
 ## 5. Suche (2.4)
 
 Zwei getrennte Mechanismen:
