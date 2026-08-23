@@ -155,6 +155,66 @@
     color: var(--srp-text-muted);
   }
 
+  /* ---- 2.3: Baumdarstellung (auf-/zuklappbar) ---- */
+
+  .srp-baum-liste {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  ul.srp-kinder.srp-baum-liste {
+    margin-left: 0.5rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--srp-border);
+  }
+
+  ul.srp-kinder.srp-baum-liste[hidden] {
+    display: none;
+  }
+
+  .srp-knoten-zeile {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.15rem 0.3rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .srp-knoten-zeile:hover {
+    background: var(--srp-bg-alt);
+  }
+
+  .srp-knoten-zeile.srp-ausgewaehlt {
+    background: #EFF6FF;
+    outline: 1px solid var(--srp-akzent);
+    outline-offset: -1px;
+  }
+
+  .srp-toggle,
+  .srp-toggle-platzhalter {
+    width: 1rem;
+    flex: 0 0 auto;
+    text-align: center;
+  }
+
+  .srp-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--srp-text-muted);
+    font-size: 0.7rem;
+    padding: 0;
+    line-height: 1.4;
+  }
+
+  .srp-knoten-label.srp-knoten-e1 { font-size: 1rem;    font-weight: 700; }
+  .srp-knoten-label.srp-knoten-e2 { font-size: 0.92rem; font-weight: 600; }
+  .srp-knoten-label.srp-knoten-e3 { font-size: 0.86rem; font-weight: 500; }
+  .srp-knoten-label.srp-knoten-e4 { font-size: 0.8rem;  font-weight: 400; color: var(--srp-text-muted); }
+  .srp-knoten-label.srp-knoten-e5 { font-size: 0.75rem; font-weight: 400; color: var(--srp-text-muted); }
+
   section.srp-stilguide {
     background: var(--srp-bg);
     border-top: 1px solid var(--srp-border);
@@ -177,16 +237,13 @@
 
 <header class="srp-header">
   <h1>Strategic Resilience Program</h1>
-  <span class="srp-subtitle">Baustein 2 – Design &amp; Klickmodell · Entwurf 2.2 (Layout, Farben, Typografie)</span>
+  <span class="srp-subtitle">Baustein 2 – Design &amp; Klickmodell · Entwurf 2.2–2.3 (Layout, Farben, Typografie, Baumdarstellung)</span>
 </header>
 
 <div class="srp-layout">
-  <div class="srp-panel" aria-label="Baumbereich (Platzhalter)">
+  <div class="srp-panel" aria-label="Baumbereich">
     <h2>Baum</h2>
-    <div class="srp-platzhalter">
-      Baumdarstellung folgt in Unteraufgabe 2.3 (auf-/zuklappbar, 5 Ebenen).
-      Diese Fläche zeigt nur die Grundlayout-Position.
-    </div>
+    <div id="srp-baum"></div>
   </div>
 
   <div class="srp-panel" aria-label="Formular-Panel (Platzhalter)">
@@ -263,6 +320,118 @@
 
   </div>
 </section>
+
+<script src="mock-daten.js"></script>
+<script>
+  /* ============================================================
+     2.3 — Baumdarstellung (auf-/zuklappbar, Ebenen unterscheidbar)
+     Greift ausschliesslich ueber holeBaumDaten() auf die (Platzhalter-)
+     Daten zu. Ampelstatus/Verdichtung folgt in 2.5, Formular-Oeffnung
+     in 2.1 — hier nur Struktur + Klapp-Zustand + Auswahl-Hervorhebung.
+     ============================================================ */
+
+  // Menge der IDs, deren Kinder-Liste aktuell aufgeklappt ist.
+  // Default: Ebene 1 und 2 offen, alles ab Ebene 3 zu.
+  const srpAufgeklappt = new Set();
+
+  function srpDefaultZustandSetzen(knoten) {
+    if (knoten.ebene && knoten.ebene <= 2 && knoten.kinder && knoten.kinder.length > 0) {
+      srpAufgeklappt.add(knoten.id);
+    }
+    (knoten.kinder || []).forEach(srpDefaultZustandSetzen);
+  }
+
+  function srpKnotenElementBauen(knoten) {
+    const li = document.createElement("li");
+    li.className = "srp-knoten";
+
+    const zeile = document.createElement("div");
+    zeile.className = "srp-knoten-zeile";
+    zeile.dataset.id = knoten.id;
+
+    const hatKinder = knoten.kinder && knoten.kinder.length > 0;
+    let toggleBtn = null;
+    let kinderListe = null;
+
+    if (hatKinder) {
+      toggleBtn = document.createElement("button");
+      toggleBtn.type = "button";
+      toggleBtn.className = "srp-toggle";
+      toggleBtn.setAttribute("aria-label", "Ein-/Ausklappen: " + knoten.name);
+      zeile.appendChild(toggleBtn);
+    } else {
+      const spacer = document.createElement("span");
+      spacer.className = "srp-toggle-platzhalter";
+      zeile.appendChild(spacer);
+    }
+
+    const label = document.createElement("span");
+    label.className = "srp-knoten-label srp-knoten-e" + knoten.ebene;
+    label.textContent = knoten.name;
+    zeile.appendChild(label);
+
+    li.appendChild(zeile);
+
+    if (hatKinder) {
+      kinderListe = document.createElement("ul");
+      kinderListe.className = "srp-kinder srp-baum-liste";
+      knoten.kinder.forEach((kind) => {
+        kinderListe.appendChild(srpKnotenElementBauen(kind));
+      });
+      li.appendChild(kinderListe);
+
+      const srpZustandAnwenden = () => {
+        const offen = srpAufgeklappt.has(knoten.id);
+        kinderListe.hidden = !offen;
+        toggleBtn.textContent = offen ? "▾" : "▸";
+        toggleBtn.setAttribute("aria-expanded", String(offen));
+      };
+      srpZustandAnwenden();
+
+      toggleBtn.addEventListener("click", (ereignis) => {
+        ereignis.stopPropagation();
+        if (srpAufgeklappt.has(knoten.id)) {
+          srpAufgeklappt.delete(knoten.id);
+        } else {
+          srpAufgeklappt.add(knoten.id);
+        }
+        srpZustandAnwenden();
+      });
+    }
+
+    // Klick auf den Knoten selbst waehlt ihn nur aus (Hervorhebung).
+    // Er veraendert bewusst NICHT den Auf-/Zuklapp-Zustand irgendeines
+    // Knotens — das Formular-Verhalten (2.1) haengt sich hier spaeter ein.
+    zeile.addEventListener("click", () => {
+      const vorherAusgewaehlt = document.querySelector(
+        ".srp-knoten-zeile.srp-ausgewaehlt"
+      );
+      if (vorherAusgewaehlt) {
+        vorherAusgewaehlt.classList.remove("srp-ausgewaehlt");
+      }
+      zeile.classList.add("srp-ausgewaehlt");
+    });
+
+    return li;
+  }
+
+  function srpBaumRendern() {
+    const wurzel = holeBaumDaten();
+    srpDefaultZustandSetzen(wurzel);
+
+    const liste = document.createElement("ul");
+    liste.className = "srp-baum-liste";
+    wurzel.kinder.forEach((knoten) => {
+      liste.appendChild(srpKnotenElementBauen(knoten));
+    });
+
+    const container = document.getElementById("srp-baum");
+    container.innerHTML = "";
+    container.appendChild(liste);
+  }
+
+  srpBaumRendern();
+</script>
 
 </body>
 </html>

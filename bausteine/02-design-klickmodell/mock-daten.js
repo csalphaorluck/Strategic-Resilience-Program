@@ -97,7 +97,17 @@ const SRP_PLATZHALTER_DATEN = {
           ebene: 2,
           name: "Gebäude",
           kinder: [],
-          bewertung: null,
+          // Testfall: Zweig endet bereits auf Ebene 2 UND traegt eine
+          // Bewertung (laut CLAUDE.md ausdruecklich zulaessig, da Befuellung
+          // ab Ebene 2 moeglich ist, nicht zwingend bis Ebene 5).
+          bewertung: {
+            risiko: "gelb",
+            beschreibung:
+              "Klimatisierung in Bürogebäuden nicht auf Dauerhitze über 40°C ausgelegt.",
+            massnahme: "Kühlungskapazität prüfen und ggf. nachrüsten.",
+            tracking: { durchgefuehrt: false, datum: null },
+            risikoNachMassnahme: null,
+          },
         },
       ],
     },
