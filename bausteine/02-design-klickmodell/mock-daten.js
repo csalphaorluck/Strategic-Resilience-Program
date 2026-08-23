@@ -239,11 +239,14 @@ const SRP_PLATZHALTER_DATEN = {
                   ebene: 4,
                   name: "Sicherheitsventile",
                   kinder: [],
+                  // Testfall: zweites Rot in einer anderen Kategorie
+                  // (Flughafenbetrieb), Zweig endet auf Ebene 4.
                   bewertung: {
-                    risiko: "gelb",
+                    risiko: "rot",
                     beschreibung:
-                      "Ventile bei Hitze empfindlicher, Wartungsintervall aktuell nicht angepasst.",
-                    massnahme: "Wartungsintervall bei Extremhitze verkürzen.",
+                      "Ventile dichten bei anhaltender Hitze über 45°C nicht mehr zuverlässig ab.",
+                    massnahme:
+                      "Sofortige Nachrüstung mit hitzebeständigen Dichtungen.",
                     tracking: { durchgefuehrt: false, datum: null },
                     risikoNachMassnahme: null,
                   },
@@ -253,11 +256,15 @@ const SRP_PLATZHALTER_DATEN = {
                   ebene: 4,
                   name: "Leckageüberwachung",
                   kinder: [],
+                  // Testfall: zwei rote Geschwisterknoten unter demselben
+                  // Elternknoten (Tanklager) — Zaehler "2 rot" am
+                  // Elternknoten muss vorkommen.
                   bewertung: {
-                    risiko: "gruen",
+                    risiko: "rot",
                     beschreibung:
-                      "Überwachungssensorik für den relevanten Temperaturbereich ausgelegt.",
-                    massnahme: null,
+                      "Überwachungssensorik fällt bei Dauerhitze über 45°C zeitweise aus.",
+                    massnahme:
+                      "Sensorik durch hitzebeständige Variante ersetzen.",
                     tracking: { durchgefuehrt: false, datum: null },
                     risikoNachMassnahme: null,
                   },

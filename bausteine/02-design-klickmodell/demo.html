@@ -66,7 +66,7 @@
 
   .srp-layout {
     display: grid;
-    grid-template-columns: minmax(260px, 320px) 1fr;
+    grid-template-columns: minmax(340px, 460px) 1fr;
     gap: 1px;
     min-height: calc(100vh - 52px);
     background: var(--srp-border);
@@ -175,11 +175,17 @@
 
   .srp-knoten-zeile {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
+    align-items: flex-start;
     gap: 0.35rem;
-    padding: 0.15rem 0.3rem;
+    padding: 0.25rem 0.3rem;
     border-radius: 4px;
     cursor: pointer;
+  }
+
+  .srp-toggle,
+  .srp-toggle-platzhalter {
+    margin-top: 0.15rem;
   }
 
   .srp-knoten-zeile:hover {
@@ -218,6 +224,45 @@
   .srp-knoten-label.srp-knoten-e3 { font-size: 0.86rem; font-weight: 500; color: var(--srp-text); }
   .srp-knoten-label.srp-knoten-e4 { font-size: 0.8rem;  font-weight: 400; color: var(--srp-text); }
   .srp-knoten-label.srp-knoten-e5 { font-size: 0.75rem; font-weight: 400; color: var(--srp-text); }
+
+  /* Name bekommt den verbleibenden Platz und darf umbrechen; die
+     Status-Gruppe rechts bleibt einzeilig und wird nicht kleiner. */
+  .srp-knoten-label {
+    flex: 1 1 auto;
+    min-width: 8em;
+    overflow-wrap: break-word;
+    padding-top: 0.1rem;
+  }
+
+  .srp-knoten-status {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-left: auto;
+    padding-left: 0.5rem;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  /* ---- 2.5: Verdichtung — Ring-Chip fuer Elternknoten, optisch
+     unterscheidbar vom gefuellten Chip des eigenen Blatt-Status ---- */
+
+  .srp-ampel--verdichtet {
+    background: transparent;
+    border: 1.5px solid currentColor;
+    padding: 0.1rem 0.5rem;
+  }
+
+  .srp-zaehler {
+    font-size: 0.7rem;
+    color: var(--srp-text-muted);
+  }
+
+  .srp-abdeckung {
+    font-size: 0.7rem;
+    color: var(--srp-text-muted);
+    font-style: italic;
+  }
 
   details.srp-stilguide {
     background: var(--srp-bg);
@@ -363,9 +408,10 @@
 <script>
   /* ============================================================
      2.3 — Baumdarstellung (auf-/zuklappbar, Ebenen unterscheidbar)
+     2.5 — Ampelstatus im Baum + Verdichtung nach oben
      Greift ausschliesslich ueber holeBaumDaten() auf die (Platzhalter-)
-     Daten zu. Ampelstatus/Verdichtung folgt in 2.5, Formular-Oeffnung
-     in 2.1 — hier nur Struktur + Klapp-Zustand + Auswahl-Hervorhebung.
+     Daten zu. Formular-Oeffnung folgt in 2.1 — hier nur Struktur,
+     Klapp-Zustand, Auswahl-Hervorhebung und Ampel/Verdichtung.
      ============================================================ */
 
   // Menge der IDs, deren Kinder-Liste aktuell aufgeklappt ist.
@@ -377,6 +423,105 @@
       srpAufgeklappt.add(knoten.id);
     }
     (knoten.kinder || []).forEach(srpDefaultZustandSetzen);
+  }
+
+  // ---- 2.5: Verdichtung "schlechtester Wert gewinnt" (Rot > Gelb > Gruen) ----
+
+  const SRP_PRIORITAET = { rot: 3, gelb: 2, gruen: 1 };
+  const SRP_SYMBOL = { grau: "–", gruen: "✓", gelb: "!", rot: "✕" };
+  const SRP_LABEL = {
+    grau: "Grau – nicht bewertet",
+    gruen: "Grün – kein Risiko",
+    gelb: "Gelb – tolerierbares Risiko",
+    rot: "Rot – inakzeptables Risiko",
+  };
+
+  // Statistik pro Knoten wird einmal vorab berechnet (Map von id -> Statistik),
+  // damit beim Rendern nicht pro Knoten der ganze Teilbaum neu durchlaufen wird.
+  const srpStatistikKarte = new Map();
+
+  function srpStatistikBerechnen(knoten) {
+    const zaehler = { rot: 0, gelb: 0, gruen: 0 };
+    let bewertetAnzahl = 0;
+    let gesamtAnzahl = 1;
+    let bester = null;
+
+    if (knoten.bewertung && knoten.bewertung.risiko) {
+      zaehler[knoten.bewertung.risiko] = (zaehler[knoten.bewertung.risiko] || 0) + 1;
+      bewertetAnzahl += 1;
+      bester = knoten.bewertung.risiko;
+    }
+
+    (knoten.kinder || []).forEach((kind) => {
+      const kindStat = srpStatistikBerechnen(kind);
+      zaehler.rot += kindStat.zaehler.rot;
+      zaehler.gelb += kindStat.zaehler.gelb;
+      zaehler.gruen += kindStat.zaehler.gruen;
+      bewertetAnzahl += kindStat.bewertetAnzahl;
+      gesamtAnzahl += kindStat.gesamtAnzahl;
+      if (kindStat.effektiverStatus && (!bester || SRP_PRIORITAET[kindStat.effektiverStatus] > SRP_PRIORITAET[bester])) {
+        bester = kindStat.effektiverStatus;
+      }
+    });
+
+    const ergebnis = { effektiverStatus: bester, zaehler, bewertetAnzahl, gesamtAnzahl };
+    srpStatistikKarte.set(knoten.id, ergebnis);
+    return ergebnis;
+  }
+
+  function srpZaehlerText(zaehler) {
+    const teile = [];
+    if (zaehler.rot > 0) teile.push(zaehler.rot + " rot");
+    if (zaehler.gelb > 0) teile.push(zaehler.gelb + " gelb");
+    if (zaehler.gruen > 0) teile.push(zaehler.gruen + " grün");
+    return teile.join(", ");
+  }
+
+  // Blattknoten: gefuellter Chip mit dem EIGENEN bewerteten Status.
+  // Elternknoten: Ring-Chip (verdichtet) + Zaehler, optisch bewusst anders
+  // als der gefuellte Blatt-Chip, plus bei Kategorien (Ebene 1) sichtbar
+  // der Abdeckungsgrad ("X von Y bewertet"); auf tieferen Ebenen steht der
+  // Abdeckungsgrad als Tooltip am Ring-Chip, um die Zeile nicht zu ueberladen.
+  function srpStatusGruppeBauen(knoten, hatKinder) {
+    const gruppe = document.createElement("span");
+    gruppe.className = "srp-knoten-status";
+
+    if (!hatKinder) {
+      const risiko = knoten.bewertung && knoten.bewertung.risiko ? knoten.bewertung.risiko : "grau";
+      const chip = document.createElement("span");
+      chip.className = "srp-ampel srp-ampel--" + risiko;
+      chip.title = SRP_LABEL[risiko] + (knoten.bewertung && knoten.bewertung.beschreibung ? ". " + knoten.bewertung.beschreibung : "");
+      chip.innerHTML = '<span class="srp-ampel-symbol">' + SRP_SYMBOL[risiko] + "</span>";
+      gruppe.appendChild(chip);
+      return gruppe;
+    }
+
+    const stat = srpStatistikKarte.get(knoten.id);
+    const effektiv = stat.effektiverStatus || "grau";
+    const abdeckungText = stat.bewertetAnzahl + " von " + stat.gesamtAnzahl + " bewertet";
+
+    const chip = document.createElement("span");
+    chip.className = "srp-ampel srp-ampel--verdichtet srp-ampel--" + effektiv;
+    chip.title = "Verdichtet: " + SRP_LABEL[effektiv] + ". " + abdeckungText + ".";
+    chip.innerHTML = '<span class="srp-ampel-symbol">' + SRP_SYMBOL[effektiv] + "</span>";
+    gruppe.appendChild(chip);
+
+    const zaehlerText = srpZaehlerText(stat.zaehler);
+    if (zaehlerText) {
+      const zaehlerEl = document.createElement("span");
+      zaehlerEl.className = "srp-zaehler";
+      zaehlerEl.textContent = zaehlerText;
+      gruppe.appendChild(zaehlerEl);
+    }
+
+    if (knoten.ebene === 1) {
+      const abdeckungEl = document.createElement("span");
+      abdeckungEl.className = "srp-abdeckung";
+      abdeckungEl.textContent = abdeckungText;
+      gruppe.appendChild(abdeckungEl);
+    }
+
+    return gruppe;
   }
 
   function srpKnotenElementBauen(knoten) {
@@ -407,6 +552,8 @@
     label.className = "srp-knoten-label srp-knoten-e" + knoten.ebene;
     label.textContent = knoten.name;
     zeile.appendChild(label);
+
+    zeile.appendChild(srpStatusGruppeBauen(knoten, hatKinder));
 
     li.appendChild(zeile);
 
@@ -456,6 +603,8 @@
   function srpBaumRendern() {
     const wurzel = holeBaumDaten();
     srpDefaultZustandSetzen(wurzel);
+    srpStatistikKarte.clear();
+    wurzel.kinder.forEach((knoten) => srpStatistikBerechnen(knoten));
 
     const liste = document.createElement("ul");
     liste.className = "srp-baum-liste";

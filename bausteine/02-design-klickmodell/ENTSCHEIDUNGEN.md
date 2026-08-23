@@ -80,6 +80,30 @@ Knoten einen kleinen Zähler (z. B. „3 rot, 2 gelb"). Grau wird NICHT verdicht
 bzw. eingefärbt, sondern separat als Abdeckungsgrad ausgewiesen (z. B. „7 von
 20 bewertet").
 
+Umsetzung (Konkretisierung beim Bauen):
+
+- Blattknoten (keine Kinder) zeigen den GEFÜLLTEN Ampel-Chip aus 2.2 mit
+  ihrem eigenen bewerteten Status — auch wenn dieser Status "unbewertet"
+  (Grau) ist.
+- Knoten mit Kindern zeigen stattdessen einen RING-Chip (transparenter
+  Hintergrund, farbiger Rand + Symbol in derselben Farbe) mit dem
+  verdichteten Status seines gesamten Teilbaums (inkl. sich selbst, falls er
+  ausnahmsweise doch eine eigene Bewertung trägt). Gefüllt vs. Ring ist die
+  Regel, mit der sich "eigener Status" und "verdichteter Status" optisch
+  unterscheiden (Vorgabe aus Schritt 2.5).
+- Der Zähler neben dem Ring-Chip zählt alle rot/gelb/grün-Bewertungen im
+  gesamten Teilbaum (nicht nur direkte Kinder), Reihenfolge rot → gelb →
+  grün, Nullwerte werden weggelassen.
+- Der Abdeckungsgrad ("X von Y bewertet") wird für JEDEN Knoten mit Kindern
+  berechnet (Y = Anzahl Knoten im Teilbaum inkl. sich selbst, X = davon
+  bewertet), aber nur auf Kategorie-Ebene (Ebene 1) sichtbar als Text in der
+  Zeile angezeigt — auf tieferen Ebenen steht dieselbe Information als
+  Tooltip am Ring-Chip, um die Zeile nicht zu überladen.
+- Fehlt jeglicher Farbstatus in einem Teilbaum (alles Grau, wie bei
+  "Personal & Governance"), zeigt der Ring-Chip Grau statt einer Farbe;
+  der Zähler entfällt dann (nichts zu zählen), der Abdeckungsgrad bleibt
+  sichtbar (z. B. "0 von 8 bewertet").
+
 ## 5. Suche (2.4)
 
 Zwei getrennte Mechanismen:
