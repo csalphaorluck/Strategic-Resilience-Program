@@ -339,7 +339,7 @@
 
   .srp-feld select,
   .srp-feld textarea,
-  .srp-feld input[type="date"] {
+  .srp-feld input.srp-datum-feld {
     width: 100%;
     font: inherit;
     font-size: 0.85rem;
@@ -474,13 +474,149 @@
     gap: 0.4rem;
     white-space: nowrap;
   }
+
+  /* ---- 2.4: Suche ---- */
+
+  .srp-suche-zeile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .srp-suchfeld {
+    flex: 1 1 auto;
+    min-width: 0;
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--srp-border-strong);
+    border-radius: 6px;
+  }
+
+  .srp-such-status {
+    font-size: 0.75rem;
+    color: var(--srp-text-muted);
+    white-space: nowrap;
+  }
+
+  .srp-zuruecksetzen-btn {
+    font: inherit;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid var(--srp-border-strong);
+    background: var(--srp-bg-alt);
+    color: var(--srp-text);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .srp-zuruecksetzen-btn:hover {
+    background: var(--srp-border);
+  }
+
+  /* Hervorhebung eines Suchtreffers im Knotennamen */
+  .srp-knoten-label--treffer {
+    background: #FEF9C3;
+    border-radius: 3px;
+    padding: 0 0.2rem;
+  }
+
+  /* ---- 2.4: Statusfilter ---- */
+
+  .srp-filter-zeile {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .srp-filter-label {
+    font-size: 0.75rem;
+    color: var(--srp-text-muted);
+    margin-right: 0.2rem;
+  }
+
+  .srp-filter-chip {
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    cursor: pointer;
+    background: transparent;
+  }
+
+  .srp-filter-chip[data-status="grau"]  { border: 1.5px solid var(--srp-grau-text);  color: var(--srp-grau-text); }
+  .srp-filter-chip[data-status="gruen"] { border: 1.5px solid var(--srp-gruen-text); color: var(--srp-gruen-text); }
+  .srp-filter-chip[data-status="gelb"]  { border: 1.5px solid var(--srp-gelb-text);  color: var(--srp-gelb-text); }
+  .srp-filter-chip[data-status="rot"]   { border: 1.5px solid var(--srp-rot-text);   color: var(--srp-rot-text); }
+
+  .srp-filter-chip--aktiv[data-status="grau"]  { background: var(--srp-grau-bg); }
+  .srp-filter-chip--aktiv[data-status="gruen"] { background: var(--srp-gruen-bg); }
+  .srp-filter-chip--aktiv[data-status="gelb"]  { background: var(--srp-gelb-bg); }
+  .srp-filter-chip--aktiv[data-status="rot"]   { background: var(--srp-rot-bg); }
+
+  /* Kontext-Knoten bei aktivem Filter: sichtbar, aber ausgegraut */
+  .srp-knoten-zeile.srp-ausgegraut {
+    opacity: 0.4;
+  }
+
+  /* ---- 2.4: Pfadanzeige (Breadcrumb im Panel-Kopf) ---- */
+
+  .srp-breadcrumb {
+    font-size: 0.75rem;
+    color: var(--srp-text-muted);
+    margin-bottom: 0.3rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .srp-breadcrumb-link {
+    font: inherit;
+    font-size: inherit;
+    color: var(--srp-akzent);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .srp-breadcrumb-aktuell {
+    color: var(--srp-text-muted);
+  }
+
+  .srp-breadcrumb-trenner {
+    color: var(--srp-border-strong);
+  }
+
+  /* ---- 2.4: Kritische Eintraege in der Eltern-Uebersicht ---- */
+
+  .srp-uebersicht-zeile--klickbar {
+    cursor: pointer;
+  }
+
+  .srp-uebersicht-zeile--klickbar:hover {
+    background: var(--srp-bg-alt);
+  }
+
+  .srp-uebersicht-pfad {
+    font-size: 0.72rem;
+    color: var(--srp-text-muted);
+    margin-top: 0.1rem;
+  }
 </style>
 </head>
 <body>
 
 <header class="srp-header">
   <h1>Strategic Resilience Program</h1>
-  <span class="srp-subtitle">Baustein 2 – Design &amp; Klickmodell · Entwurf 2.1–2.5 (Layout, Farben, Typografie, Baumdarstellung, Verdichtung, Klickmodell)</span>
+  <span class="srp-subtitle">Baustein 2 – Design &amp; Klickmodell · Entwurf 2.1–2.5 (Layout, Farben, Typografie, Baumdarstellung, Verdichtung, Klickmodell, Pfadanzeige &amp; Suche)</span>
 </header>
 
 <div class="srp-layout">
@@ -516,6 +652,21 @@
         </span>
       </div>
     </div>
+
+    <div class="srp-suche-zeile">
+      <input type="search" id="srp-suchfeld" class="srp-suchfeld" placeholder="Suche nach Name oder Pfad …" aria-label="Suche nach Name oder Pfad">
+      <span id="srp-such-status" class="srp-such-status"></span>
+      <button type="button" id="srp-suche-zuruecksetzen" class="srp-zuruecksetzen-btn" hidden>Zurücksetzen</button>
+    </div>
+
+    <div class="srp-filter-zeile">
+      <span class="srp-filter-label">Filter:</span>
+      <button type="button" class="srp-filter-chip" data-status="rot">Rot</button>
+      <button type="button" class="srp-filter-chip" data-status="gelb">Gelb</button>
+      <button type="button" class="srp-filter-chip" data-status="gruen">Grün</button>
+      <button type="button" class="srp-filter-chip" data-status="grau">Nicht bewertet</button>
+    </div>
+
     <div id="srp-baum"></div>
   </div>
 
@@ -600,13 +751,16 @@
   /* ============================================================
      2.1 — Klickmodell / Formular-Panel
      2.3 — Baumdarstellung (auf-/zuklappbar, Ebenen unterscheidbar)
+     2.4 — Pfadanzeige und Suche (inkl. Statusfilter)
      2.5 — Ampelstatus im Baum + Verdichtung nach oben
      Greift ausschliesslich ueber holeBaumDaten() auf die (Platzhalter-)
      Daten zu.
      ============================================================ */
 
-  // Menge der IDs, deren Kinder-Liste aktuell aufgeklappt ist.
-  // Default: Ebene 1 und 2 offen, alles ab Ebene 3 zu.
+  // Menge der IDs, deren Kinder-Liste manuell aufgeklappt wurde.
+  // Default: Ebene 1 und 2 offen, alles ab Ebene 3 zu. Wird durch Suche/
+  // Filter NICHT veraendert (siehe srpIstEffektivOffen) — nur echte
+  // Klicks auf den Auf-/Zuklapp-Pfeil aendern diese Menge.
   const srpAufgeklappt = new Set();
 
   function srpDefaultZustandSetzen(knoten) {
@@ -616,13 +770,26 @@
     (knoten.kinder || []).forEach(srpDefaultZustandSetzen);
   }
 
-  // ---- 2.1: Knoten-Karte (id -> Knoten) fuer den Panel-Zugriff ----
+  // ---- Strukturkarten (einmalig aufgebaut, aendern sich nicht durch
+  // Interaktion): Knoten selbst, und sein vollstaendiger Pfad ab Kategorie. ----
 
   const srpKnotenKarte = new Map();
+  const srpPfadKarte = new Map();
 
-  function srpKnotenKarteBauen(knoten) {
+  function srpKnotenKarteBauen(knoten, vorfahren) {
+    const pfad = vorfahren.concat([knoten]);
     srpKnotenKarte.set(knoten.id, knoten);
-    (knoten.kinder || []).forEach(srpKnotenKarteBauen);
+    srpPfadKarte.set(knoten.id, pfad);
+    (knoten.kinder || []).forEach((kind) => srpKnotenKarteBauen(kind, pfad));
+  }
+
+  // Wandelt ein ISO-Datum ("YYYY-MM-DD") in deutsche Anzeige ("TT.MM.JJJJ").
+  function srpDatumDeutsch(isoDatum) {
+    if (!isoDatum) return "";
+    const teile = isoDatum.split("-");
+    if (teile.length !== 3) return isoDatum;
+    const [jahr, monat, tag] = teile;
+    return tag + "." + monat + "." + jahr;
   }
 
   const SRP_EBENEN_NAME = {
@@ -734,6 +901,107 @@
     return gruppe;
   }
 
+  function srpGefuellterChipBauen(risiko) {
+    const chip = document.createElement("span");
+    chip.className = "srp-ampel srp-ampel--" + risiko;
+    chip.innerHTML = '<span class="srp-ampel-symbol">' + SRP_SYMBOL[risiko] + "</span>";
+    return chip;
+  }
+
+  // ============================================================
+  // 2.4 — Suche und Statusfilter
+  // ============================================================
+
+  let srpSuchbegriff = "";
+  const srpAktiveFilter = new Set(); // Teilmenge von {"rot","gelb","gruen","grau"}
+  const srpSichtbarkeitsKarte = new Map(); // id -> enthaelt Teilbaum (inkl. sich selbst) einen Treffer?
+  let srpTrefferAnzahl = 0;
+
+  function srpSuchNorm() {
+    return srpSuchbegriff.trim().toLowerCase();
+  }
+
+  function srpIstSuchOderFilterAktiv() {
+    return srpSuchNorm() !== "" || srpAktiveFilter.size > 0;
+  }
+
+  // Freitext ueber Knotennamen UND Pfad (der Pfadtext enthaelt den eigenen
+  // Namen als letztes Element ohnehin mit).
+  function srpKnotenMatchtSuche(knoten) {
+    const norm = srpSuchNorm();
+    if (!norm) return true;
+    const pfad = srpPfadKarte.get(knoten.id) || [knoten];
+    const pfadText = pfad.map((k) => k.name).join(" › ").toLowerCase();
+    return pfadText.includes(norm);
+  }
+
+  // "Eigene Bewertung" fuer den Statusfilter: eigener Risikowert, falls
+  // vorhanden; bei einem Blatt ohne Bewertung zaehlt "grau" als echter
+  // unbewerteter Eintrag; eine reine Struktur-Kategorie ohne eigene
+  // Bewertung ist dagegen nicht filterbar (null) — sie ist kein "Eintrag".
+  function srpEigenerFilterStatus(knoten) {
+    if (knoten.bewertung && knoten.bewertung.risiko) return knoten.bewertung.risiko;
+    const hatKinder = knoten.kinder && knoten.kinder.length > 0;
+    return hatKinder ? null : "grau";
+  }
+
+  function srpKnotenMatchtFilter(knoten) {
+    if (srpAktiveFilter.size === 0) return true;
+    const status = srpEigenerFilterStatus(knoten);
+    return status !== null && srpAktiveFilter.has(status);
+  }
+
+  // Kombiniert (UND): ein Knoten ist nur dann "Treffer", wenn er sowohl
+  // die Suche als auch (falls aktiv) den Statusfilter selbst erfuellt.
+  function srpIstTreffer(knoten) {
+    return srpKnotenMatchtSuche(knoten) && srpKnotenMatchtFilter(knoten);
+  }
+
+  function srpSichtbarkeitBerechnen() {
+    srpSichtbarkeitsKarte.clear();
+    srpTrefferAnzahl = 0;
+    function rekursiv(knoten) {
+      const eigenerTreffer = srpIstTreffer(knoten);
+      if (eigenerTreffer) srpTrefferAnzahl += 1;
+      let sichtbar = eigenerTreffer;
+      (knoten.kinder || []).forEach((kind) => {
+        if (rekursiv(kind)) sichtbar = true;
+      });
+      srpSichtbarkeitsKarte.set(knoten.id, sichtbar);
+      return sichtbar;
+    }
+    holeBaumDaten().kinder.forEach(rekursiv);
+  }
+
+  function srpKeineTrefferBauen() {
+    const suchAktiv = srpSuchNorm() !== "";
+    const filterAktiv = srpAktiveFilter.size > 0;
+    const hinweis = document.createElement("div");
+    hinweis.className = "srp-platzhalter";
+    if (suchAktiv && filterAktiv) {
+      hinweis.textContent = "Keine Treffer für „" + srpSuchbegriff.trim() + "“ mit den gewählten Filtern.";
+    } else if (suchAktiv) {
+      hinweis.textContent = "Keine Treffer für „" + srpSuchbegriff.trim() + "“.";
+    } else {
+      hinweis.textContent = "Keine Einträge für die gewählten Filter.";
+    }
+    return hinweis;
+  }
+
+  function srpSucheUiAktualisieren() {
+    const suchAktiv = srpSuchNorm() !== "";
+
+    const statusEl = document.getElementById("srp-such-status");
+    statusEl.textContent = suchAktiv ? srpTrefferAnzahl + " Treffer" : "";
+
+    const resetBtn = document.getElementById("srp-suche-zuruecksetzen");
+    resetBtn.hidden = !suchAktiv;
+
+    document.querySelectorAll(".srp-filter-chip").forEach((chip) => {
+      chip.classList.toggle("srp-filter-chip--aktiv", srpAktiveFilter.has(chip.dataset.status));
+    });
+  }
+
   // ============================================================
   // 2.1 — Klickmodell / Formular-Panel
   // ============================================================
@@ -761,11 +1029,45 @@
     return hinweis;
   }
 
+  // 2.4: Breadcrumb-Pfadanzeige im Panel-Kopf. Alle Stufen ausser der
+  // letzten (= der aktuell angezeigte Knoten) sind anklickbar und springen
+  // zu diesem Knoten (springt+markiert+scrollt im Baum, siehe
+  // srpZuKnotenSpringen).
+  function srpBreadcrumbBauen(knoten) {
+    const pfad = srpPfadKarte.get(knoten.id) || [knoten];
+    const nav = document.createElement("div");
+    nav.className = "srp-breadcrumb";
+    pfad.forEach((stufe, index) => {
+      if (index > 0) {
+        const trenner = document.createElement("span");
+        trenner.className = "srp-breadcrumb-trenner";
+        trenner.textContent = "›";
+        nav.appendChild(trenner);
+      }
+      if (index === pfad.length - 1) {
+        const aktuell = document.createElement("span");
+        aktuell.className = "srp-breadcrumb-aktuell";
+        aktuell.textContent = stufe.name;
+        nav.appendChild(aktuell);
+      } else {
+        const link = document.createElement("button");
+        link.type = "button";
+        link.className = "srp-breadcrumb-link";
+        link.textContent = stufe.name;
+        link.addEventListener("click", () => srpZuKnotenSpringen(stufe.id));
+        nav.appendChild(link);
+      }
+    });
+    return nav;
+  }
+
   function srpFormularKopfBauen(knoten) {
     const kopf = document.createElement("div");
     kopf.className = "srp-formular-kopf";
 
     const textBereich = document.createElement("div");
+    textBereich.style.minWidth = "0";
+    textBereich.appendChild(srpBreadcrumbBauen(knoten));
     const name = document.createElement("div");
     name.className = "srp-formular-name";
     name.textContent = knoten.name;
@@ -846,9 +1148,18 @@
     durchgefuehrtLabel.htmlFor = "srp-tracking-durchgefuehrt";
     durchgefuehrtLabel.style.marginBottom = "0";
     durchgefuehrtLabel.textContent = "Maßnahme durchgeführt";
+    // Bewusst ein Textfeld statt <input type="date">: der native Datepicker
+    // richtet sich nach der Systemsprache des Betrachters, nicht nach der
+    // Seite (lang="de" auf dem Element hat darauf keinen zuverlaessigen
+    // Einfluss) — damit wuerde das Datum je nach Rechner z. B. als
+    // mm/dd/yyyy erscheinen. Ein Textfeld mit erzwungenem TT.MM.JJJJ ist
+    // fuer diesen Klickmodell-Entwurf verlaesslicher; echte Validierung
+    // folgt ohnehin erst in Baustein 3.
     const datumInput = document.createElement("input");
-    datumInput.type = "date";
-    datumInput.value = (b && b.tracking && b.tracking.datum) || "";
+    datumInput.type = "text";
+    datumInput.className = "srp-datum-feld";
+    datumInput.placeholder = "TT.MM.JJJJ";
+    datumInput.value = srpDatumDeutsch((b && b.tracking && b.tracking.datum) || "");
     trackingInline.appendChild(durchgefuehrtCheckbox);
     trackingInline.appendChild(durchgefuehrtLabel);
     trackingFeld.appendChild(trackingLabel);
@@ -886,6 +1197,21 @@
     return container;
   }
 
+  // Sammelt alle Nachkommen (nicht den Knoten selbst) mit eigener
+  // rot/gelb-Bewertung im gesamten Teilbaum, schlechtesten Status zuerst.
+  function srpKritischeEintraegeSammeln(knoten) {
+    const ergebnisse = [];
+    function rekursiv(k) {
+      if (k.bewertung && (k.bewertung.risiko === "rot" || k.bewertung.risiko === "gelb")) {
+        ergebnisse.push(k);
+      }
+      (k.kinder || []).forEach(rekursiv);
+    }
+    (knoten.kinder || []).forEach(rekursiv);
+    ergebnisse.sort((a, b) => SRP_PRIORITAET[b.bewertung.risiko] - SRP_PRIORITAET[a.bewertung.risiko]);
+    return ergebnisse;
+  }
+
   // Fall 2: Knoten mit Kindern -> keine Bewertung, sondern Uebersicht.
   function srpUebersichtBauen(knoten) {
     const container = document.createElement("div");
@@ -921,6 +1247,48 @@
       container.appendChild(zeile);
     });
 
+    // 2.4: Kritische Eintraege — sonst sieht man am Zaehler zwar "1 rot",
+    // aber nicht, WELCHER Eintrag im Teilbaum das ist.
+    const kritischeLabel = document.createElement("div");
+    kritischeLabel.className = "srp-formular-ebene";
+    kritischeLabel.style.marginTop = "1.25rem";
+    kritischeLabel.style.marginBottom = "0.4rem";
+    kritischeLabel.textContent = "Kritische Einträge (Rot/Gelb im gesamten Teilbaum):";
+    container.appendChild(kritischeLabel);
+
+    const kritische = srpKritischeEintraegeSammeln(knoten);
+    if (kritische.length === 0) {
+      const keineHinweis = document.createElement("div");
+      keineHinweis.className = "srp-platzhalter";
+      keineHinweis.textContent = "Keine kritischen Einträge im Teilbaum.";
+      container.appendChild(keineHinweis);
+    } else {
+      kritische.forEach((eintrag) => {
+        const zeile = document.createElement("div");
+        zeile.className = "srp-uebersicht-zeile srp-uebersicht-zeile--klickbar";
+        zeile.tabIndex = 0;
+
+        const textBereich = document.createElement("span");
+        textBereich.className = "srp-uebersicht-name";
+        const nameEl = document.createElement("div");
+        nameEl.textContent = eintrag.name;
+        const pfadOhneSelbst = (srpPfadKarte.get(eintrag.id) || [])
+          .slice(0, -1)
+          .map((k) => k.name)
+          .join(" › ");
+        const pfadEl = document.createElement("div");
+        pfadEl.className = "srp-uebersicht-pfad";
+        pfadEl.textContent = pfadOhneSelbst;
+        textBereich.appendChild(nameEl);
+        textBereich.appendChild(pfadEl);
+
+        zeile.appendChild(textBereich);
+        zeile.appendChild(srpGefuellterChipBauen(eintrag.bewertung.risiko));
+        zeile.addEventListener("click", () => srpZuKnotenSpringen(eintrag.id));
+        container.appendChild(zeile);
+      });
+    }
+
     return container;
   }
 
@@ -946,25 +1314,32 @@
     inhalt.appendChild(hatKinder ? srpUebersichtBauen(knoten) : srpBewertungsformularBauen(knoten));
   }
 
-  function srpKnotenAuswaehlen(knoten, zeileElement) {
-    const vorherAusgewaehlt = document.querySelector(".srp-knoten-zeile.srp-ausgewaehlt");
-    if (vorherAusgewaehlt) {
-      vorherAusgewaehlt.classList.remove("srp-ausgewaehlt");
-    }
-    zeileElement.classList.add("srp-ausgewaehlt");
-    srpAusgewaehlteId = knoten.id;
-    srpPanelRendern();
-    srpUeberlagerungAktualisieren();
+  function srpKnotenAuswaehlen(id) {
+    srpAusgewaehlteId = id;
+    srpBaumRendern();
   }
 
   function srpKnotenAbwaehlen() {
-    const vorherAusgewaehlt = document.querySelector(".srp-knoten-zeile.srp-ausgewaehlt");
-    if (vorherAusgewaehlt) {
-      vorherAusgewaehlt.classList.remove("srp-ausgewaehlt");
-    }
     srpAusgewaehlteId = null;
-    srpPanelRendern();
-    srpUeberlagerungAktualisieren();
+    srpBaumRendern();
+  }
+
+  // 2.4: Pfadanzeige/kritische Eintraege springen hierueber zu einem
+  // Knoten — klappt seine Vorfahren auf (falls noch zu), waehlt ihn aus
+  // und scrollt ihn in den sichtbaren Bereich.
+  function srpZuKnotenSpringen(zielId) {
+    const pfad = srpPfadKarte.get(zielId) || [];
+    pfad.forEach((stufe) => {
+      if (stufe.id !== zielId && stufe.kinder && stufe.kinder.length > 0) {
+        srpAufgeklappt.add(stufe.id);
+      }
+    });
+    srpAusgewaehlteId = zielId;
+    srpBaumRendern();
+    const zeile = document.querySelector('.srp-knoten-zeile[data-id="' + zielId + '"]');
+    if (zeile) {
+      zeile.scrollIntoView({ block: "center" });
+    }
   }
 
   document.addEventListener("keydown", (ereignis) => {
@@ -977,11 +1352,24 @@
     const li = document.createElement("li");
     li.className = "srp-knoten";
 
+    const istAktiv = srpIstSuchOderFilterAktiv();
+
     const zeile = document.createElement("div");
     zeile.className = "srp-knoten-zeile";
     zeile.dataset.id = knoten.id;
+    if (knoten.id === srpAusgewaehlteId) {
+      zeile.classList.add("srp-ausgewaehlt");
+    }
+    if (istAktiv && srpAktiveFilter.size > 0 && !srpKnotenMatchtFilter(knoten)) {
+      zeile.classList.add("srp-ausgegraut");
+    }
 
     const hatKinder = knoten.kinder && knoten.kinder.length > 0;
+    const sichtbareKinder = (knoten.kinder || []).filter(
+      (kind) => !istAktiv || srpSichtbarkeitsKarte.get(kind.id)
+    );
+    const effektivOffen = hatKinder && (srpAufgeklappt.has(knoten.id) || (istAktiv && sichtbareKinder.length > 0));
+
     let toggleBtn = null;
     let kinderListe = null;
 
@@ -1000,6 +1388,9 @@
     const label = document.createElement("span");
     label.className = "srp-knoten-label srp-knoten-e" + knoten.ebene;
     label.textContent = knoten.name;
+    if (istAktiv && srpSuchNorm() && srpKnotenMatchtSuche(knoten)) {
+      label.classList.add("srp-knoten-label--treffer");
+    }
     zeile.appendChild(label);
 
     zeile.appendChild(srpStatusGruppeBauen(knoten, hatKinder));
@@ -1009,18 +1400,13 @@
     if (hatKinder) {
       kinderListe = document.createElement("ul");
       kinderListe.className = "srp-kinder srp-baum-liste";
-      knoten.kinder.forEach((kind) => {
+      sichtbareKinder.forEach((kind) => {
         kinderListe.appendChild(srpKnotenElementBauen(kind));
       });
+      kinderListe.hidden = !effektivOffen;
+      toggleBtn.textContent = effektivOffen ? "▾" : "▸";
+      toggleBtn.setAttribute("aria-expanded", String(effektivOffen));
       li.appendChild(kinderListe);
-
-      const srpZustandAnwenden = () => {
-        const offen = srpAufgeklappt.has(knoten.id);
-        kinderListe.hidden = !offen;
-        toggleBtn.textContent = offen ? "▾" : "▸";
-        toggleBtn.setAttribute("aria-expanded", String(offen));
-      };
-      srpZustandAnwenden();
 
       toggleBtn.addEventListener("click", (ereignis) => {
         ereignis.stopPropagation();
@@ -1029,7 +1415,7 @@
         } else {
           srpAufgeklappt.add(knoten.id);
         }
-        srpZustandAnwenden();
+        srpBaumRendern();
       });
     }
 
@@ -1037,35 +1423,75 @@
     // Formular-Panel rechts. Veraendert bewusst NICHT den Auf-/Zuklapp-
     // Zustand irgendeines Knotens.
     zeile.addEventListener("click", () => {
-      srpKnotenAuswaehlen(knoten, zeile);
+      srpKnotenAuswaehlen(knoten.id);
     });
 
     return li;
   }
 
   function srpBaumRendern() {
+    srpSichtbarkeitBerechnen();
+    srpSucheUiAktualisieren();
+
     const wurzel = holeBaumDaten();
-    srpDefaultZustandSetzen(wurzel);
-    srpStatistikKarte.clear();
-    srpKnotenKarte.clear();
-    wurzel.kinder.forEach((knoten) => {
-      srpStatistikBerechnen(knoten);
-      srpKnotenKarteBauen(knoten);
-    });
-
-    const liste = document.createElement("ul");
-    liste.className = "srp-baum-liste";
-    wurzel.kinder.forEach((knoten) => {
-      liste.appendChild(srpKnotenElementBauen(knoten));
-    });
-
+    const istAktiv = srpIstSuchOderFilterAktiv();
     const container = document.getElementById("srp-baum");
     container.innerHTML = "";
-    container.appendChild(liste);
+
+    if (istAktiv && srpTrefferAnzahl === 0) {
+      container.appendChild(srpKeineTrefferBauen());
+    } else {
+      const liste = document.createElement("ul");
+      liste.className = "srp-baum-liste";
+      const sichtbareKategorien = wurzel.kinder.filter(
+        (k) => !istAktiv || srpSichtbarkeitsKarte.get(k.id)
+      );
+      sichtbareKategorien.forEach((knoten) => {
+        liste.appendChild(srpKnotenElementBauen(knoten));
+      });
+      container.appendChild(liste);
+    }
 
     srpPanelRendern();
+    srpUeberlagerungAktualisieren();
   }
 
+  // ---- Einmalige Grundstruktur aufbauen, dann erstes Rendern ----
+
+  function srpStrukturVorbereiten() {
+    const wurzel = holeBaumDaten();
+    srpDefaultZustandSetzen(wurzel);
+    wurzel.kinder.forEach((knoten) => {
+      srpStatistikBerechnen(knoten);
+      srpKnotenKarteBauen(knoten, []);
+    });
+  }
+
+  document.getElementById("srp-suchfeld").addEventListener("input", (ereignis) => {
+    srpSuchbegriff = ereignis.target.value;
+    srpBaumRendern();
+  });
+
+  document.getElementById("srp-suche-zuruecksetzen").addEventListener("click", () => {
+    srpSuchbegriff = "";
+    document.getElementById("srp-suchfeld").value = "";
+    srpBaumRendern();
+    document.getElementById("srp-suchfeld").focus();
+  });
+
+  document.querySelectorAll(".srp-filter-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const status = chip.dataset.status;
+      if (srpAktiveFilter.has(status)) {
+        srpAktiveFilter.delete(status);
+      } else {
+        srpAktiveFilter.add(status);
+      }
+      srpBaumRendern();
+    });
+  });
+
+  srpStrukturVorbereiten();
   srpBaumRendern();
 </script>
 

@@ -14,6 +14,12 @@
  * Fachbereich und sind Teil von Baustein 6 — sie ersetzen die Inhalte
  * dieser Datei, nicht nur einzelne Werte darin.
  *
+ * Begründungs- und Maßnahmentexte sind ABSICHTLICH generisch gehalten,
+ * ohne konkrete Temperaturen, Fristen oder Mengenangaben — in Demos vor
+ * Fachpublikum dürfen sie nicht wie echte fachliche Feststellungen wirken.
+ * Die tatsächlichen fachlichen Bewertungen liefert der Fachbereich in
+ * Baustein 6.
+ *
  * Regel: Der restliche Code in diesem Ordner greift NIE direkt auf
  * SRP_PLATZHALTER_DATEN zu, sondern immer nur über holeBaumDaten() unten.
  * Beim Austausch gegen das Baustein-1-Schema (und später Baustein-6-Inhalte)
@@ -64,9 +70,9 @@ const SRP_PLATZHALTER_DATEN = {
                       bewertung: {
                         risiko: "rot",
                         beschreibung:
-                          "Kabel hält nur bis 42°C, bei 40°C Außentemperatur kritisch.",
+                          "Material ist für anhaltende Hitzebelastung nicht ausreichend ausgelegt.",
                         massnahme:
-                          "Neue Kabel verbauen, die bis 50°C ausgelegt sind.",
+                          "Hitzebeständigere Ausführung prüfen und beschaffen.",
                         tracking: { durchgefuehrt: false, datum: null },
                         risikoNachMassnahme: null,
                       },
@@ -79,8 +85,8 @@ const SRP_PLATZHALTER_DATEN = {
                       bewertung: {
                         risiko: "gelb",
                         beschreibung:
-                          "Verformung der Schilder bei Extremhitze möglich, Lesbarkeit eingeschränkt.",
-                        massnahme: "Hitzebeständiges Material prüfen.",
+                          "Verformung bei anhaltender Hitze kann die Lesbarkeit beeinträchtigen.",
+                        massnahme: "Hitzebeständigeres Material prüfen.",
                         tracking: { durchgefuehrt: false, datum: null },
                         risikoNachMassnahme: null,
                       },
@@ -96,7 +102,7 @@ const SRP_PLATZHALTER_DATEN = {
                   bewertung: {
                     risiko: "gruen",
                     beschreibung:
-                      "Markierungsfarbe ist für dauerhafte Hitzeeinwirkung freigegeben.",
+                      "Material ist für anhaltende Hitzebelastung freigegeben.",
                     massnahme: null,
                     tracking: { durchgefuehrt: false, datum: null },
                     risikoNachMassnahme: null,
@@ -112,7 +118,7 @@ const SRP_PLATZHALTER_DATEN = {
               kinder: [],
               bewertung: {
                 risiko: "gruen",
-                beschreibung: "Notstromversorgung ausreichend hitzegetestet.",
+                beschreibung: "Notstromversorgung ist für Hitzeperioden ausreichend getestet.",
                 massnahme: null,
                 tracking: { durchgefuehrt: true, datum: "2026-05-10" },
                 risikoNachMassnahme: "gruen",
@@ -126,7 +132,7 @@ const SRP_PLATZHALTER_DATEN = {
               bewertung: {
                 risiko: "gelb",
                 beschreibung:
-                  "Kühlleistung der Serverraum-Klimatisierung bei Dauerhitze grenzwertig.",
+                  "Kühlleistung ist bei anhaltender Hitze grenzwertig.",
                 massnahme: "Redundante Kühlung prüfen.",
                 tracking: { durchgefuehrt: false, datum: null },
                 risikoNachMassnahme: null,
@@ -146,8 +152,8 @@ const SRP_PLATZHALTER_DATEN = {
           bewertung: {
             risiko: "gelb",
             beschreibung:
-              "Klimatisierung in Bürogebäuden nicht auf Dauerhitze über 40°C ausgelegt.",
-            massnahme: "Kühlungskapazität prüfen und ggf. nachrüsten.",
+              "Klimatisierung ist auf anhaltende Hitzeperioden nicht ausreichend ausgelegt.",
+            massnahme: "Kühlungskapazität prüfen und bei Bedarf nachrüsten.",
             tracking: { durchgefuehrt: false, datum: null },
             risikoNachMassnahme: null,
           },
@@ -173,8 +179,8 @@ const SRP_PLATZHALTER_DATEN = {
               bewertung: {
                 risiko: "gelb",
                 beschreibung:
-                  "Auslastungsspitzen bei Dauerhitze noch nicht systematisch geprüft.",
-                massnahme: "Lastprofil bei Extremhitze simulieren.",
+                  "Belastung bei anhaltender Hitze ist bisher nicht systematisch geprüft.",
+                massnahme: "Lastverhalten bei Hitzeperioden simulieren.",
                 tracking: { durchgefuehrt: false, datum: null },
                 risikoNachMassnahme: null,
               },
@@ -208,8 +214,8 @@ const SRP_PLATZHALTER_DATEN = {
               bewertung: {
                 risiko: "gelb",
                 beschreibung:
-                  "Überhitzungsrisiko bei elektrischen Bodengeräten ab 38°C.",
-                massnahme: "Kühlpausen und Schattenparkplätze einplanen.",
+                  "Überhitzungsrisiko bei elektrischen Geräten während Hitzeperioden.",
+                massnahme: "Kühlpausen und Schattenbereiche einplanen.",
                 tracking: { durchgefuehrt: false, datum: null },
                 risikoNachMassnahme: null,
               },
@@ -244,9 +250,9 @@ const SRP_PLATZHALTER_DATEN = {
                   bewertung: {
                     risiko: "rot",
                     beschreibung:
-                      "Ventile dichten bei anhaltender Hitze über 45°C nicht mehr zuverlässig ab.",
+                      "Ventile dichten bei anhaltender Hitze nicht mehr zuverlässig ab.",
                     massnahme:
-                      "Sofortige Nachrüstung mit hitzebeständigen Dichtungen.",
+                      "Nachrüstung mit hitzebeständigeren Dichtungen prüfen.",
                     tracking: { durchgefuehrt: false, datum: null },
                     risikoNachMassnahme: null,
                   },
@@ -262,9 +268,9 @@ const SRP_PLATZHALTER_DATEN = {
                   bewertung: {
                     risiko: "rot",
                     beschreibung:
-                      "Überwachungssensorik fällt bei Dauerhitze über 45°C zeitweise aus.",
+                      "Überwachungssensorik kann bei anhaltender Hitze zeitweise ausfallen.",
                     massnahme:
-                      "Sensorik durch hitzebeständige Variante ersetzen.",
+                      "Sensorik durch eine hitzebeständigere Variante ersetzen.",
                     tracking: { durchgefuehrt: false, datum: null },
                     risikoNachMassnahme: null,
                   },
@@ -290,8 +296,8 @@ const SRP_PLATZHALTER_DATEN = {
           bewertung: {
             risiko: "gelb",
             beschreibung:
-              "Fördergurte können bei anhaltender Hitze verspröden.",
-            massnahme: "Materialprüfung für hitzebeständige Gurte einleiten.",
+              "Material kann bei anhaltender Hitze verspröden.",
+            massnahme: "Hitzebeständigeres Material prüfen.",
             tracking: { durchgefuehrt: false, datum: null },
             risikoNachMassnahme: null,
           },
@@ -309,7 +315,7 @@ const SRP_PLATZHALTER_DATEN = {
               bewertung: {
                 risiko: "gruen",
                 beschreibung:
-                  "Kapazität auch bei erhöhtem Bedarf durch Hitzeperioden ausreichend.",
+                  "Kapazität ist auch bei erhöhtem Bedarf während Hitzeperioden ausreichend.",
                 massnahme: null,
                 tracking: { durchgefuehrt: false, datum: null },
                 risikoNachMassnahme: null,
@@ -323,8 +329,8 @@ const SRP_PLATZHALTER_DATEN = {
               bewertung: {
                 risiko: "gelb",
                 beschreibung:
-                  "Reservekapazität bei gleichzeitig hohem Kühlbedarf anderer Anlagen ungeprüft.",
-                massnahme: "Bedarfsrechnung für Hitzeperioden aktualisieren.",
+                  "Reservekapazität bei gleichzeitigem Bedarf anderer Anlagen ist ungeprüft.",
+                massnahme: "Bedarfsermittlung für Hitzeperioden aktualisieren.",
                 tracking: { durchgefuehrt: false, datum: null },
                 risikoNachMassnahme: null,
               },

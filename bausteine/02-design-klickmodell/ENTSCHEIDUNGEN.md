@@ -62,6 +62,14 @@ stattdessen als Overlay über dem Baum.
   Hinweistext oben im Formular macht das zusätzlich explizit. Diese Grenze
   ist bewusst, damit Baustein 3 (Erfassungslogik) nicht vorweggenommen
   wird.
+- **Datumsformat (Tracking):** Das Tracking-Datum ist ein Textfeld
+  (TT.MM.JJJJ), kein natives `<input type="date">`. Der native Datepicker
+  richtet sich nach der Systemsprache des Betrachters statt nach der
+  Seite — `lang="de"` auf dem Element hatte im Test keinen zuverlässigen
+  Effekt, das Datum erschien weiterhin z. B. als mm/dd/yyyy. Ein Textfeld
+  mit erzwungenem deutschem Format ist für den Klickmodell-Entwurf
+  verlässlicher; echte Eingabevalidierung folgt ohnehin erst in
+  Baustein 3.
 - **Leerzustand:** Solange kein Knoten ausgewählt ist, zeigt das Panel
   einen kurzen Hinweistext ("Wähle einen Knoten im Baum aus, um seine
   Bewertung oder Übersicht hier zu sehen.") statt einer leeren Fläche.
@@ -173,6 +181,47 @@ Zwei getrennte Mechanismen:
 Freitextsuche über Bewertungs-/Maßnahmentext ist bewusst nicht Teil von
 Baustein 2 (spätere Erweiterung).
 
+### Umsetzung (2.4)
+
+- **Pfadanzeige:** Im Panel-Kopf steht über dem Knotennamen ein Breadcrumb
+  (Kategorie › … › aktueller Knoten). Alle Stufen außer der letzten sind
+  anklickbar und springen zu diesem Knoten (klappt seine Vorfahren im Baum
+  auf, wählt ihn aus, scrollt ihn in den sichtbaren Bereich).
+- **Kritische Einträge in der Eltern-Übersicht:** zusätzlich zur Liste der
+  direkten Kinder eine Liste aller Rot-/Gelb-Einträge im GESAMTEN Teilbaum
+  (nicht nur direkte Kinder), sortiert Rot vor Gelb, mit vollem Pfad
+  (ohne den Eintrag selbst) und anklickbar (springt wie die Pfadanzeige).
+  Grund: Der Zähler zeigt zwar z. B. "1 rot", aber ohne diese Liste bleibt
+  unklar, welcher Eintrag das ist.
+- **Suche:** Freitext wird gegen den vollständigen Pfadtext geprüft
+  (Ahnen-Namen + eigener Name, durch " › " verbunden), case-insensitive.
+  Bei aktiver Suche wird der Baum auf Zweige mit mindestens einem Treffer
+  reduziert (nicht betroffene Zweige werden ausgeblendet, nicht nur
+  eingeklappt) und automatisch bis zu jedem Treffer aufgeklappt; der
+  Treffer-Name wird farblich hervorgehoben. Der manuelle Auf-/Zuklapp-
+  Zustand (`srpAufgeklappt`) wird von der Suche NIE verändert — die Suche
+  überlagert ihn nur zur Anzeige. Löschen des Suchtextes (Zurücksetzen-
+  Button oder Feld leeren) zeigt dadurch automatisch wieder exakt den
+  Klappzustand von vor der Suche.
+- **Trefferanzahl:** Anzahl der Knoten, die Suche UND (falls aktiv) Filter
+  gleichzeitig erfüllen, angezeigt neben dem Suchfeld. Kein Treffer im
+  gesamten Baum → Hinweistext statt leerem Baum, mit dem Suchbegriff bzw.
+  Hinweis auf die aktiven Filter im Text.
+- **Statusfilter:** "Eigene Bewertung" ist beim Filtern strikt genommen —
+  ein Knoten matcht einen Farbfilter nur über seine EIGENE Bewertung
+  (`bewertung.risiko`), nicht über einen verdichteten/geerbten Status.
+  "Nicht bewertet" matcht nur echte unbewertete Einträge (Blätter ohne
+  Bewertung) — eine reine Struktur-Kategorie ohne eigene Bewertung ist
+  nicht filterbar (weder Farbe noch "nicht bewertet"), da sie kein
+  "Eintrag" im Sinne von CLAUDE.md ist. Nicht direkt treffende
+  Vorfahren-Knoten bleiben als Kontext sichtbar, aber per Deckkraft
+  ausgegraut. Filter-Chips sind Mehrfachauswahl; aktive Chips sind farbig
+  gefüllt dargestellt und durch erneuten Klick einzeln entfernbar.
+- **Kombination (UND):** Ein Knoten zählt nur als Treffer, wenn er sowohl
+  die Suche als auch (falls Filter aktiv) den Statusfilter selbst erfüllt.
+  Das Baum-Pruning zeigt einen Knoten, sobald sein Teilbaum (inkl. sich
+  selbst) mindestens einen solchen kombinierten Treffer enthält.
+
 ## 6. Mock-Daten / Platzhalter-Schema
 
 Liegt in genau einer Datei: `mock-daten.js`. Deutlich als Platzhalter markiert.
@@ -180,6 +229,14 @@ Der restliche Demo-Code greift ausschließlich über eine Zugriffsfunktion
 (`holeBaumDaten()`) auf diese Datei zu — nicht direkt auf die Datenstruktur —
 damit der Austausch gegen das echte Schema aus Baustein 1 später nur diese
 eine Datei betrifft.
+
+**Nachtrag:** Begründungs- und Maßnahmentexte in `mock-daten.js` sind
+bewusst generisch formuliert — keine konkreten Temperaturen, Fristen oder
+Mengenangaben. Erste Fassungen enthielten Zahlen (z. B. "hält nur bis
+42°C"), die in einer Demo vor Fachpublikum wie echte fachliche
+Feststellungen gewirkt hätten. Die tatsächlichen fachlichen Inhalte liefert
+der Fachbereich in Baustein 6 — auch das ist im Dateikopf von
+`mock-daten.js` vermerkt.
 
 ## Offen / nicht Teil von Baustein 2
 
