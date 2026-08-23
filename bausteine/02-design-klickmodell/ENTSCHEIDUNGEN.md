@@ -65,6 +65,13 @@ Rein über: Einrückung + abnehmende Schriftgröße/-stärke von Ebene 1 zu Eben
 + dezente Verbindungslinien. Bewusst KEINE eigenen Icons pro Ebene — die Ampel
 ist das einzige Symbol im Baum und soll optisch dominant bleiben.
 
+Textfarbe ist über alle 5 Ebenen identisch (normale Textfarbe, nicht
+gedämpft). Korrektur gegenüber einem ersten Entwurf, der Ebene 4/5 gedämpft
+dargestellt hatte: Da die Bewertung am tiefsten befüllten Punkt hängt, sind
+Ebene-4/5-Knoten inhaltlich oft die wichtigsten im Baum — eine gedämpfte
+Farbe hätte das visuell falsch gewichtet. Die Hierarchie läuft ausschließlich
+über Einrückung, Schriftgröße und -stärke, nicht über Farbintensität.
+
 ## 4. Verdichtung nach oben (2.5)
 
 „Schlechtester Wert gewinnt": Ein rotes Element färbt den gesamten Strang bis

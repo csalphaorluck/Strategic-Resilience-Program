@@ -1,26 +1,41 @@
 /**
  * ============================================================================
- * PLATZHALTER-SCHEMA — NICHT Baustein 1
+ * TESTDATEN — NICHT Baustein 1, NICHT Baustein 6
  * ============================================================================
- * Dies ist ein minimales Mock-Datenschema für Baustein 2 (Design &
- * Klickmodell), solange das echte Datenmodell aus Baustein 1 noch nicht im
- * Repo vorliegt. Fiktive Beispieldaten, keine echten Flughafendaten.
+ * Dies ist ein minimales Mock-Datenschema mit fiktiven TESTDATEN für
+ * Baustein 2 (Design & Klickmodell), solange das echte Datenmodell aus
+ * Baustein 1 noch nicht im Repo vorliegt. Zweck: genug Knoten und
+ * Statusverteilung, um Baumdarstellung (2.3) und Verdichtung/Zähler (2.5)
+ * zu testen.
+ *
+ * WICHTIG: Namen, Beschreibungen und Maßnahmen hier sind erfundene
+ * Testfälle, keine echten Flughafendaten und keine redaktionell
+ * geprüften Fachinhalte. Die echten Beispielinhalte kommen aus dem
+ * Fachbereich und sind Teil von Baustein 6 — sie ersetzen die Inhalte
+ * dieser Datei, nicht nur einzelne Werte darin.
  *
  * Regel: Der restliche Code in diesem Ordner greift NIE direkt auf
  * SRP_PLATZHALTER_DATEN zu, sondern immer nur über holeBaumDaten() unten.
- * Beim Austausch gegen das Baustein-1-Schema muss im Idealfall nur diese
- * Datei ersetzt werden (holeBaumDaten() bleibt die einzige Schnittstelle).
+ * Beim Austausch gegen das Baustein-1-Schema (und später Baustein-6-Inhalte)
+ * muss im Idealfall nur diese Datei ersetzt werden (holeBaumDaten() bleibt
+ * die einzige Schnittstelle).
  * ============================================================================
  */
 
 // Ein Knoten kann eine Bewertung tragen (dann ist er der "tiefste befüllte
-// Punkt" seines Pfads) oder nicht (dann ist er nur strukturell / Grau).
+// Punkt" seines Pfads) oder nicht (dann ist er nur strukturell / Grau,
+// bewertung: null).
 // ebene: 1=Kategorie, 2=Unterkategorie, 3=Themenbereich, 4=Komponente, 5=Sub-Komponente
-// risiko: "grau" | "gruen" | "gelb" | "rot"
+// risiko: "grau" | "gruen" | "gelb" | "rot"  (nur gesetzt, wenn bewertung != null)
 const SRP_PLATZHALTER_DATEN = {
   id: "root",
   name: "Flughafen (Platzhalter)",
   kinder: [
+    // ========================================================================
+    // Kategorie 1: Infrastruktur
+    // Enthaelt den Testfall "Rot auf Ebene 5, muss bis zur Kategorie
+    // durchschlagen" (Kabel) sowie eine gemischte Statusverteilung.
+    // ========================================================================
     {
       id: "infrastruktur",
       ebene: 1,
@@ -73,6 +88,20 @@ const SRP_PLATZHALTER_DATEN = {
                   ],
                   bewertung: null,
                 },
+                {
+                  id: "infra-technik-landebahn-rollwegmarkierung",
+                  ebene: 4,
+                  name: "Rollwegmarkierung",
+                  kinder: [],
+                  bewertung: {
+                    risiko: "gruen",
+                    beschreibung:
+                      "Markierungsfarbe ist für dauerhafte Hitzeeinwirkung freigegeben.",
+                    massnahme: null,
+                    tracking: { durchgefuehrt: false, datum: null },
+                    risikoNachMassnahme: null,
+                  },
+                },
               ],
               bewertung: null,
             },
@@ -87,6 +116,20 @@ const SRP_PLATZHALTER_DATEN = {
                 massnahme: null,
                 tracking: { durchgefuehrt: true, datum: "2026-05-10" },
                 risikoNachMassnahme: "gruen",
+              },
+            },
+            {
+              id: "infra-technik-serverraeume",
+              ebene: 3,
+              name: "IT-Serverräume",
+              kinder: [],
+              bewertung: {
+                risiko: "gelb",
+                beschreibung:
+                  "Kühlleistung der Serverraum-Klimatisierung bei Dauerhitze grenzwertig.",
+                massnahme: "Redundante Kühlung prüfen.",
+                tracking: { durchgefuehrt: false, datum: null },
+                risikoNachMassnahme: null,
               },
             },
           ],
@@ -109,8 +152,44 @@ const SRP_PLATZHALTER_DATEN = {
             risikoNachMassnahme: null,
           },
         },
+        {
+          id: "infra-terminalklimatisierung",
+          ebene: 2,
+          name: "Terminalklimatisierung",
+          kinder: [
+            {
+              id: "infra-terminalklimatisierung-kaelteanlage",
+              ebene: 3,
+              name: "Zentrale Kälteanlage",
+              kinder: [
+                {
+                  id: "infra-terminalklimatisierung-kaelteanlage-verteilnetz",
+                  ebene: 4,
+                  name: "Verteilnetz",
+                  kinder: [],
+                  bewertung: null,
+                },
+              ],
+              bewertung: {
+                risiko: "gelb",
+                beschreibung:
+                  "Auslastungsspitzen bei Dauerhitze noch nicht systematisch geprüft.",
+                massnahme: "Lastprofil bei Extremhitze simulieren.",
+                tracking: { durchgefuehrt: false, datum: null },
+                risikoNachMassnahme: null,
+              },
+            },
+          ],
+          bewertung: null,
+        },
       ],
     },
+
+    // ========================================================================
+    // Kategorie 2: Flughafenbetrieb
+    // Ebenfalls gemischte Statusverteilung, mit Zweigen, die auf Ebene 2,
+    // 3 und 4 enden.
+    // ========================================================================
     {
       id: "betrieb",
       ebene: 1,
@@ -135,11 +214,125 @@ const SRP_PLATZHALTER_DATEN = {
                 risikoNachMassnahme: null,
               },
             },
+            {
+              id: "betrieb-bodenverkehr-schleppfahrzeuge",
+              ebene: 3,
+              name: "Schleppfahrzeuge",
+              kinder: [],
+              bewertung: null,
+            },
+          ],
+          bewertung: null,
+        },
+        {
+          id: "betrieb-betankung",
+          ebene: 2,
+          name: "Betankung",
+          kinder: [
+            {
+              id: "betrieb-betankung-tanklager",
+              ebene: 3,
+              name: "Tanklager",
+              kinder: [
+                {
+                  id: "betrieb-betankung-tanklager-sicherheitsventile",
+                  ebene: 4,
+                  name: "Sicherheitsventile",
+                  kinder: [],
+                  bewertung: {
+                    risiko: "gelb",
+                    beschreibung:
+                      "Ventile bei Hitze empfindlicher, Wartungsintervall aktuell nicht angepasst.",
+                    massnahme: "Wartungsintervall bei Extremhitze verkürzen.",
+                    tracking: { durchgefuehrt: false, datum: null },
+                    risikoNachMassnahme: null,
+                  },
+                },
+                {
+                  id: "betrieb-betankung-tanklager-leckageueberwachung",
+                  ebene: 4,
+                  name: "Leckageüberwachung",
+                  kinder: [],
+                  bewertung: {
+                    risiko: "gruen",
+                    beschreibung:
+                      "Überwachungssensorik für den relevanten Temperaturbereich ausgelegt.",
+                    massnahme: null,
+                    tracking: { durchgefuehrt: false, datum: null },
+                    risikoNachMassnahme: null,
+                  },
+                },
+              ],
+              bewertung: null,
+            },
+            {
+              id: "betrieb-betankung-fahrzeuge",
+              ebene: 3,
+              name: "Betankungsfahrzeuge",
+              kinder: [],
+              bewertung: null,
+            },
+          ],
+          bewertung: null,
+        },
+        {
+          id: "betrieb-gepaeckfoerderanlagen",
+          ebene: 2,
+          name: "Gepäckförderanlagen",
+          kinder: [],
+          bewertung: {
+            risiko: "gelb",
+            beschreibung:
+              "Fördergurte können bei anhaltender Hitze verspröden.",
+            massnahme: "Materialprüfung für hitzebeständige Gurte einleiten.",
+            tracking: { durchgefuehrt: false, datum: null },
+            risikoNachMassnahme: null,
+          },
+        },
+        {
+          id: "betrieb-wasserversorgung",
+          ebene: 2,
+          name: "Wasserversorgung",
+          kinder: [
+            {
+              id: "betrieb-wasserversorgung-trinkwasser",
+              ebene: 3,
+              name: "Trinkwasserversorgung",
+              kinder: [],
+              bewertung: {
+                risiko: "gruen",
+                beschreibung:
+                  "Kapazität auch bei erhöhtem Bedarf durch Hitzeperioden ausreichend.",
+                massnahme: null,
+                tracking: { durchgefuehrt: false, datum: null },
+                risikoNachMassnahme: null,
+              },
+            },
+            {
+              id: "betrieb-wasserversorgung-loeschwasser",
+              ebene: 3,
+              name: "Löschwasserversorgung",
+              kinder: [],
+              bewertung: {
+                risiko: "gelb",
+                beschreibung:
+                  "Reservekapazität bei gleichzeitig hohem Kühlbedarf anderer Anlagen ungeprüft.",
+                massnahme: "Bedarfsrechnung für Hitzeperioden aktualisieren.",
+                tracking: { durchgefuehrt: false, datum: null },
+                risikoNachMassnahme: null,
+              },
+            },
           ],
           bewertung: null,
         },
       ],
     },
+
+    // ========================================================================
+    // Kategorie 3: Personal & Governance
+    // Testfall: gesamte Kategorie ohne jede Bewertung (durchgehend Grau) —
+    // für die Abdeckungsgrad-Anzeige in 2.5.
+    // ========================================================================
     {
       id: "personal",
       ebene: 1,
@@ -150,6 +343,50 @@ const SRP_PLATZHALTER_DATEN = {
           ebene: 2,
           name: "Arbeitsschutz",
           kinder: [],
+          bewertung: null,
+        },
+        {
+          id: "personal-schichtplanung",
+          ebene: 2,
+          name: "Schichtplanung",
+          kinder: [
+            {
+              id: "personal-schichtplanung-hitzeschichten",
+              ebene: 3,
+              name: "Hitzeangepasste Schichtmodelle",
+              kinder: [],
+              bewertung: null,
+            },
+          ],
+          bewertung: null,
+        },
+        {
+          id: "personal-notfallkommunikation",
+          ebene: 2,
+          name: "Notfallkommunikation",
+          kinder: [],
+          bewertung: null,
+        },
+        {
+          id: "personal-schulung",
+          ebene: 2,
+          name: "Schulung",
+          kinder: [
+            {
+              id: "personal-schulung-hitzeschutz",
+              ebene: 3,
+              name: "Hitzeschutz-Schulung Personal",
+              kinder: [],
+              bewertung: null,
+            },
+            {
+              id: "personal-schulung-fuehrungskraefte",
+              ebene: 3,
+              name: "Schulung Führungskräfte",
+              kinder: [],
+              bewertung: null,
+            },
+          ],
           bewertung: null,
         },
       ],

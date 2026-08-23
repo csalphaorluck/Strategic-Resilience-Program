@@ -110,11 +110,11 @@
     padding-left: 0.75rem;
   }
 
-  .srp-e1 { font-size: 1rem;    font-weight: 700; margin: 0.6rem 0; }
+  .srp-e1 { font-size: 1rem;    font-weight: 700; margin: 0.6rem 0; color: var(--srp-text); }
   .srp-e2 { font-size: 0.92rem; font-weight: 600; margin: 0.5rem 0; color: var(--srp-text); }
   .srp-e3 { font-size: 0.86rem; font-weight: 500; margin: 0.4rem 0; color: var(--srp-text); }
-  .srp-e4 { font-size: 0.8rem;  font-weight: 400; margin: 0.35rem 0; color: var(--srp-text-muted); }
-  .srp-e5 { font-size: 0.75rem; font-weight: 400; margin: 0.3rem 0; color: var(--srp-text-muted); }
+  .srp-e4 { font-size: 0.8rem;  font-weight: 400; margin: 0.35rem 0; color: var(--srp-text); }
+  .srp-e5 { font-size: 0.75rem; font-weight: 400; margin: 0.3rem 0; color: var(--srp-text); }
 
   /* ---- Ampel-Chips: Farbe + Symbol (nicht nur Farbe) ---- */
 
@@ -209,19 +209,52 @@
     line-height: 1.4;
   }
 
-  .srp-knoten-label.srp-knoten-e1 { font-size: 1rem;    font-weight: 700; }
-  .srp-knoten-label.srp-knoten-e2 { font-size: 0.92rem; font-weight: 600; }
-  .srp-knoten-label.srp-knoten-e3 { font-size: 0.86rem; font-weight: 500; }
-  .srp-knoten-label.srp-knoten-e4 { font-size: 0.8rem;  font-weight: 400; color: var(--srp-text-muted); }
-  .srp-knoten-label.srp-knoten-e5 { font-size: 0.75rem; font-weight: 400; color: var(--srp-text-muted); }
+  /* Farbe bewusst einheitlich (--srp-text) ueber alle Ebenen: die Bewertung
+     haengt am tiefsten befuellten Punkt, Ebene 4/5 sind also inhaltlich
+     nicht "unwichtiger" als Ebene 1/2. Hierarchie kommt allein aus
+     Einrueckung, Schriftgroesse und -staerke. */
+  .srp-knoten-label.srp-knoten-e1 { font-size: 1rem;    font-weight: 700; color: var(--srp-text); }
+  .srp-knoten-label.srp-knoten-e2 { font-size: 0.92rem; font-weight: 600; color: var(--srp-text); }
+  .srp-knoten-label.srp-knoten-e3 { font-size: 0.86rem; font-weight: 500; color: var(--srp-text); }
+  .srp-knoten-label.srp-knoten-e4 { font-size: 0.8rem;  font-weight: 400; color: var(--srp-text); }
+  .srp-knoten-label.srp-knoten-e5 { font-size: 0.75rem; font-weight: 400; color: var(--srp-text); }
 
-  section.srp-stilguide {
+  details.srp-stilguide {
     background: var(--srp-bg);
     border-top: 1px solid var(--srp-border);
-    padding: 1.25rem;
   }
 
-  section.srp-stilguide h2 {
+  details.srp-stilguide summary {
+    cursor: pointer;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--srp-text-muted);
+    list-style: none;
+  }
+
+  details.srp-stilguide summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details.srp-stilguide summary::before {
+    content: "▸ ";
+  }
+
+  details.srp-stilguide[open] summary::before {
+    content: "▾ ";
+  }
+
+  details.srp-stilguide summary .srp-stilguide-hinweis {
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  details.srp-stilguide .srp-stilguide-inhalt {
+    padding: 0 1.25rem 1.25rem 1.25rem;
+  }
+
+  details.srp-stilguide h2 {
     font-size: 0.9rem;
     margin: 0 0 0.75rem 0;
   }
@@ -256,8 +289,12 @@
   </div>
 </div>
 
-<section class="srp-stilguide">
-  <h2>Stilguide (Referenz für 2.3–2.5)</h2>
+<details class="srp-stilguide">
+  <summary>
+    Entwicklerreferenz: Stilguide (2.2–2.5)
+    <span class="srp-stilguide-hinweis">— nicht Teil der Nutzeroberfläche, beim Merge in Baustein 6 entfernbar</span>
+  </summary>
+  <div class="srp-stilguide-inhalt">
   <div class="srp-stilguide-grid">
 
     <div>
@@ -319,7 +356,8 @@
     </div>
 
   </div>
-</section>
+  </div>
+</details>
 
 <script src="mock-daten.js"></script>
 <script>
