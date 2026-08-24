@@ -17,7 +17,81 @@
       "id": "kat-01",
       "name": "Infrastruktur",
       "ebene": 1,
-      "kinder": [],
+      "kinder": [
+        {
+          "id": "kat-01-01",
+          "name": "Technik",
+          "ebene": 2,
+          "kinder": [
+            {
+              "id": "kat-01-01-01",
+              "name": "Landebahn",
+              "ebene": 3,
+              "kinder": [
+                {
+                  "id": "kat-01-01-01-01",
+                  "name": "Beschilderung",
+                  "ebene": 4,
+                  "kinder": [
+                    {
+                      "id": "kat-01-01-01-01-01",
+                      "name": "Kabel",
+                      "ebene": 5,
+                      "kinder": [],
+                      "eintrag": {
+                        "risiko": "rot",
+                        "begruendung": "Verbautes Kabel ist bis 42 °C ausgelegt. Bei 40 °C Außentemperatur wird diese Grenze an der Oberfläche überschritten.",
+                        "massnahme": "Kabel ersetzen durch Ausführung bis 50 °C",
+                        "tracking": {
+                          "durchgefuehrt": true,
+                          "datum": "2026-08-24"
+                        },
+                        "restrisiko": "gelb",
+                        "istBeispiel": true
+                      }
+                    },
+                    {
+                      "id": "kat-01-01-01-01-02",
+                      "name": "Lesbarkeit/Verformung",
+                      "ebene": 5,
+                      "kinder": [],
+                      "eintrag": null
+                    }
+                  ],
+                  "eintrag": null
+                }
+              ],
+              "eintrag": null
+            }
+          ],
+          "eintrag": null
+        },
+        {
+          "id": "kat-01-02",
+          "name": "IT & Navigationstechnik",
+          "ebene": 2,
+          "kinder": [
+            {
+              "id": "kat-01-02-01",
+              "name": "Funknavigationsanlage",
+              "ebene": 3,
+              "kinder": [],
+              "eintrag": {
+                "risiko": "grau",
+                "begruendung": "",
+                "massnahme": "",
+                "tracking": {
+                  "durchgefuehrt": null,
+                  "datum": null
+                },
+                "restrisiko": "grau",
+                "istBeispiel": true
+              }
+            }
+          ],
+          "eintrag": null
+        }
+      ],
       "eintrag": null
     },
     {
