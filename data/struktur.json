@@ -1,0 +1,38 @@
+{
+  "konfiguration": {
+    "szenario": {
+      "name": "Extremhitze",
+      "schwellwert": 40,
+      "einheit": "C"
+    },
+    "ampel": {
+      "grau": "nicht bewertet",
+      "gruen": "kein Risiko",
+      "gelb": "tolerierbares Risiko, Maßnahme notwendig",
+      "rot": "inakzeptables Risiko, Maßnahme-Definition erforderlich"
+    }
+  },
+  "struktur": [
+    {
+      "id": "kat-01",
+      "name": "Infrastruktur",
+      "ebene": 1,
+      "kinder": [],
+      "eintrag": null
+    },
+    {
+      "id": "kat-02",
+      "name": "Flughafenbetrieb",
+      "ebene": 1,
+      "kinder": [],
+      "eintrag": null
+    },
+    {
+      "id": "kat-03",
+      "name": "Personal & Governance",
+      "ebene": 1,
+      "kinder": [],
+      "eintrag": null
+    }
+  ]
+}
