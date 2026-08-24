@@ -242,10 +242,9 @@
 </header>
 
 <div id="settings">
-  <label for="schwellwert-input">Schwellwert Außentemperatur:</label>
-  <input type="number" id="schwellwert-input" step="1">
-  <span>°C</span>
-  <span class="hint">– Grenzwert, ab dem Risikobewertungen vorgenommen werden (Parameter, nicht fest verdrahtet).</span>
+  <label>Schwellwert Außentemperatur:</label>
+  <span class="badge" id="schwellwert-display"></span>
+  <span class="hint">– Grenzwert, ab dem Risikobewertungen vorgenommen werden. Gilt einheitlich für das gesamte Tool (an einer Stelle im Code gepflegt, nicht pro Eintrag veränderbar).</span>
   <span class="badge" id="new-items-badge">0 neue Nutzer-Items</span>
 </div>
 
@@ -275,6 +274,11 @@
     rot:   { label: "Inakzeptables Risiko",       color: "var(--ampel-rot)" }
   };
   var AMPEL_ORDER = ["grau", "gruen", "gelb", "rot"];
+
+  // Schwellwert Außentemperatur: einheitlich für das gesamte Tool, an dieser
+  // einen Stelle gepflegt (kein UI-Feld, damit er nicht pro Nutzer/Eintrag
+  // auf abweichende Werte wie 41 °C oder 45 °C gesetzt werden kann).
+  var SCHWELLWERT_C = 40;
 
   var TRACKING_STATUS = {
     offen: "Offen / noch nicht geprüft",
@@ -385,7 +389,6 @@
 
   // ---- State --------------------------------------------------------------
   var state = loadState() || {
-    settings: { schwellwertC: 40 },
     tree: buildSeedTree(),
     expanded: { "infrastruktur": true, "infrastruktur/technik": true },
     selectedId: null
@@ -440,7 +443,6 @@
 
   // ---- Rendering: Baum ------------------------------------------------
   var treeRoot = document.getElementById("tree-root");
-  var schwellwertInput = document.getElementById("schwellwert-input");
   var newItemsBadge = document.getElementById("new-items-badge");
 
   function ampelColorOf(node) {
@@ -642,7 +644,7 @@
 
     form.appendChild(ampelField(
       "Risikobewertung (individuell)",
-      "Ampel-Einstufung bezogen auf eine Außentemperatur ab dem eingestellten Schwellwert von " + state.settings.schwellwertC + " °C.",
+      "Ampel-Einstufung bezogen auf eine Außentemperatur ab " + SCHWELLWERT_C + " °C.",
       "risikoIndividuell", entry.risikoIndividuell
     ));
 
@@ -803,14 +805,7 @@
     }
   }
 
-  // ---- Schwellwert (Parameter, nicht fest verdrahtet) --------------------
-  schwellwertInput.value = state.settings.schwellwertC;
-  schwellwertInput.addEventListener("change", function () {
-    var val = parseFloat(schwellwertInput.value);
-    state.settings.schwellwertC = isNaN(val) ? 40 : val;
-    saveState();
-    renderEntryPanel();
-  });
+  document.getElementById("schwellwert-display").textContent = SCHWELLWERT_C + " °C";
 
   // ---- Init ---------------------------------------------------------------
   renderTree();
