@@ -68,12 +68,12 @@
         },
         {
           "id": "kat-01-02",
-          "name": "IT & Navigationstechnik",
+          "name": "Anlagen",
           "ebene": 2,
           "kinder": [
             {
               "id": "kat-01-02-01",
-              "name": "Funknavigationsanlage",
+              "name": "Landebahnbefestigung",
               "ebene": 3,
               "kinder": [],
               "eintrag": {
