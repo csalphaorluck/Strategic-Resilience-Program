@@ -117,8 +117,6 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   min-width: 220px;
 }
 
-.empty-state { padding: 48px 10px; text-align: center; color: #6c757d; }
-
 /* Ensure the fixed navbar never overlaps content on very small screens
    even if items wrap to a second line */
 .main-header.navbar { min-height: 57px; height: auto; }
@@ -126,6 +124,106 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 @media (max-width: 575.98px) {
   .main-header .navbar-text { display: none; }
 }
+
+/* ---- AP5: Szenario-Erklärung banner ---- */
+.srp-szenario-banner {
+  position: relative;
+  padding-right: 44px; /* keep text clear of the close button at any width */
+}
+.srp-szenario-banner .close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 22px;
+  line-height: 1;
+  opacity: 0.6;
+}
+.srp-szenario-banner .close:hover { opacity: 1; }
+
+.srp-ampel-list li { margin-bottom: 6px; }
+
+/* ---- AP5: Ampel-Skala-Legende ---- */
+.srp-ampel-legende .card-body { padding-left: 14px; padding-right: 14px; }
+.srp-ampel-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+}
+.srp-ampel-caption {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #6c757d;
+  flex-shrink: 0;
+}
+.srp-ampel-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13.5px;
+  cursor: default;
+  white-space: normal;
+}
+.srp-ampel-chip:focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.srp-ampel-chip-text { color: #343a40; }
+.srp-ampel-chip-sep { margin: 0 4px; color: #adb5bd; }
+
+@media (max-width: 420px) {
+  .srp-ampel-caption { flex-basis: 100%; }
+}
+
+/* ---- AP5: Leerzustand (generic empty state) ---- */
+.srp-empty-state {
+  text-align: center;
+  padding: 22px 10px;
+}
+.srp-empty-state-icon {
+  color: #adb5bd;
+  margin-bottom: 8px;
+}
+.srp-empty-state-title {
+  font-weight: 700;
+  font-size: 14.5px;
+  color: #343a40;
+  margin-bottom: 4px;
+}
+.srp-empty-state-text {
+  color: #6c757d;
+  font-size: 13px;
+  margin-bottom: 0;
+}
+.srp-empty-state-note {
+  margin-top: 8px;
+  min-height: 1em;
+}
+
+/* ---- AP5: Kurzeinstieg ---- */
+.srp-kurzeinstieg-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.srp-kurzeinstieg-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #d4edda;
+  color: #1e6b32;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-dialog { margin-left: auto; margin-right: auto; }
 
 </style>
 </head>
@@ -142,6 +240,13 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     </ul>
     <span class="navbar-text font-weight-bold ml-2">Strategic Resilience Program</span>
     <span class="badge badge-secondary ml-2 d-none d-sm-inline-block">Vorbereitung &middot; kein Produktivsystem</span>
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <button type="button" id="szenarioInfoBtn" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#szenarioModal">
+          &#8505; Szenario &amp; Ampel-Skala
+        </button>
+      </li>
+    </ul>
   </nav>
 
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -158,6 +263,8 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   <div class="content-wrapper">
     <div class="content-header">
       <div class="container-fluid">
+        <div id="szenarioBannerSlot"></div>
+
         <div class="row align-items-center srp-toolbar">
           <div class="col-12 col-lg-auto mb-2 mb-lg-0">
             <label for="roleSelect" class="mr-1 mb-0 font-weight-bold small">Rolle</label>
@@ -177,11 +284,16 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
             </button>
           </div>
         </div>
+
+        <div id="ampelLegendeSlot" class="mt-2"></div>
       </div>
     </div>
 
     <section class="content pt-2">
-      <div class="container-fluid" id="mainPanel"></div>
+      <div class="container-fluid">
+        <div id="mainPanel"></div>
+        <div id="kurzeinstiegSlot" class="mt-3"></div>
+      </div>
     </section>
   </div>
 
@@ -189,6 +301,12 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     <small class="text-muted">Prototyp &middot; keine echten Betriebsdaten &middot; lokale Speicherung im Browser (localStorage)</small>
   </footer>
 
+</div>
+
+<div class="modal fade" id="szenarioModal" tabindex="-1" role="dialog" aria-labelledby="szenarioModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content" id="szenarioModalContent"></div>
+  </div>
 </div>
 
 <script>
@@ -513,7 +631,12 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 
   function buildDetailMarkup(container, node, role) {
     if (!node) {
-      container.innerHTML = '<div class="card"><div class="card-body"><div class="empty-state">Bitte links einen Punkt in der Struktur ausw&auml;hlen.</div></div></div>';
+      container.innerHTML = '<div class="card"><div class="card-body" id="emptyStateNoSelection"></div></div>';
+      mountEmptyState(document.getElementById("emptyStateNoSelection"), {
+        icon: "frage",
+        title: "Kein Punkt ausgewählt",
+        text: "Bitte links einen Punkt in der Struktur auswählen, um Details, Risikobewertung und Maßnahmen zu sehen."
+      });
       return;
     }
     var html = '<div class="card card-outline card-primary">';
@@ -665,7 +788,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     html += '<span class="text-muted font-weight-normal ml-2 small">Fachbereich: ' + (state.adminFachbereich === "alle" ? "Alle" : escapeHtml(state.adminFachbereich)) + '</span></h3></div>';
     html += '<div class="card-body">';
     if (!items.length) {
-      html += '<div class="empty-state">Keine neuen Nutzer-Items f&uuml;r diesen Fachbereich.</div>';
+      html += '<div id="emptyStateAdminNew"></div>';
     } else {
       html += '<div class="table-responsive"><table class="table table-hover table-sm">';
       html += '<thead><tr><th>Pfad</th><th>Fachbereich</th><th>Angelegt von</th><th>Datum</th><th>Ampel</th><th></th></tr></thead><tbody>';
@@ -687,6 +810,14 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     html += '</div></div>';
     container.innerHTML = html;
 
+    if (!items.length) {
+      mountEmptyState(document.getElementById("emptyStateAdminNew"), {
+        icon: "posteingang",
+        title: "Keine neuen Nutzer-Items",
+        text: "Für den gewählten Fachbereich wurden aktuell keine neuen Punkte durch Nutzer:innen angelegt."
+      });
+    }
+
     container.querySelectorAll("[data-goto]").forEach(function (el) {
       el.addEventListener("click", function (ev) {
         ev.preventDefault();
@@ -701,6 +832,214 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
         if (n) n.isNew = false;
         render();
       });
+    });
+  }
+
+  // =======================================================================
+  // AP5: Szenario-Erklärung, Ampel-Legende, Leerzustände, Kurzeinstieg
+  // Eingebettet aus feature/ap5_erklaerung_nutzerfuehrung (auf Wunsch des
+  // Reviewers). Inhaltlich unabhängig vom Rollensystem oben.
+  // =======================================================================
+
+  var BANNER_DISMISSED_KEY = "srp_szenario_banner_dismissed_v1";
+
+  var AMPEL = [
+    { key: "grau", label: "Grau", title: "Nicht bewertetes Risiko", text: "Für diesen Punkt liegt noch keine Einschätzung vor." },
+    { key: "gruen", label: "Grün", title: "Kein Risiko", text: "Im Hitze-Szenario unkritisch – keine Maßnahme erforderlich." },
+    { key: "gelb", label: "Gelb", title: "Tolerierbares Risiko", text: "Ein Risiko besteht, ist aber vertretbar – eine Maßnahme sollte definiert werden." },
+    { key: "rot", label: "Rot", title: "Inakzeptables Risiko", text: "Nicht hinnehmbar – eine Maßnahme muss zwingend definiert werden." }
+  ];
+
+  // ---------------------------------------------------------------------
+  // Component 1: Szenario-Erklärung (dismissible banner + modal)
+  // ---------------------------------------------------------------------
+  function isBannerDismissed() {
+    try { return localStorage.getItem(BANNER_DISMISSED_KEY) === "1"; }
+    catch (e) { return false; }
+  }
+  function setBannerDismissed(value) {
+    try { localStorage.setItem(BANNER_DISMISSED_KEY, value ? "1" : "0"); }
+    catch (e) { /* storage unavailable */ }
+  }
+
+  function renderSzenarioBanner(container) {
+    if (isBannerDismissed()) { container.innerHTML = ""; return; }
+    container.innerHTML =
+      '<div class="callout callout-info srp-szenario-banner" role="note">' +
+        '<button type="button" class="close" aria-label="Hinweis schließen" data-action="dismiss-banner">' +
+          '<span aria-hidden="true">&times;</span>' +
+        '</button>' +
+        '<h5>Worum geht es in diesem Tool?</h5>' +
+        '<p class="mb-2">' +
+          'Dieses Tool bereitet den Flughafenbetrieb systematisch auf Extremhitze-Szenarien vor ' +
+          '(z. B. ab 40 °C Außentemperatur). Fachbereiche bewerten ihr Risiko nach der ' +
+          'Ampel-Skala und hinterlegen Maßnahmen – so ist im Ernstfall vorbereitet, wer sonst ' +
+          'überrascht reagieren müsste.' +
+        '</p>' +
+        '<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#szenarioModal">Mehr erfahren</button>' +
+      '</div>';
+
+    container.querySelector('[data-action="dismiss-banner"]').addEventListener("click", function () {
+      setBannerDismissed(true);
+      container.innerHTML = "";
+    });
+  }
+
+  function renderSzenarioModalContent(container) {
+    var ampelRows = AMPEL.map(function (a) {
+      return '<li><span class="dot ' + a.key + '"></span> <strong>' + a.title + '</strong> – ' + a.text + '</li>';
+    }).join("");
+
+    container.innerHTML =
+      '<div class="modal-header">' +
+        '<h5 class="modal-title" id="szenarioModalLabel">Szenario &amp; Vorgehen</h5>' +
+        '<button type="button" class="close" data-dismiss="modal" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>' +
+      '</div>' +
+      '<div class="modal-body">' +
+        '<h6>Warum ein 40°C-Szenario?</h6>' +
+        '<p>' +
+          'Extremhitze wirkt auf einen Flughafen gleichzeitig auf mehreren Ebenen: technische Anlagen ' +
+          'haben physikalische Belastungsgrenzen (z. B. Materialtoleranzen), Betriebsabläufe können ' +
+          'sich verzögern oder verändern, und Personal benötigt Schutz vor Hitzebelastung. 40 °C ' +
+          'dient hier als beispielhafter Schwellenwert, um diese Belastungsgrenzen konkret durchzuspielen ' +
+          '– unabhängig vom tatsächlichen Standort.' +
+        '</p>' +
+        '<h6 class="mt-3">Wie wird bewertet?</h6>' +
+        '<p>Jeder Strukturpunkt (ab Ebene 2, bis maximal Ebene 5) erhält eine Ampel-Bewertung:</p>' +
+        '<ul class="srp-ampel-list list-unstyled">' + ampelRows + '</ul>' +
+        '<p>Zu Gelb und Rot gehört jeweils eine konkrete Maßnahme. Nach deren Umsetzung wird per ' +
+          '<strong>Tracking</strong> festgehalten, ob sie durchgeführt wurde, und anschließend das ' +
+          '<strong>Restrisiko</strong> (Risiko nach Maßnahme) neu bewertet – vorher und nachher bleiben ' +
+          'dabei sichtbar.</p>' +
+        '<h6 class="mt-3">Aktuelle Phase</h6>' +
+        '<p class="mb-0">Das Tool befindet sich in der <strong>Vorbereitungsphase</strong> und ist kein ' +
+          'Produktivsystem. Es enthält ausschließlich Beispieldaten – keine echten oder sensiblen ' +
+          'Betriebsdaten.</p>' +
+      '</div>' +
+      '<div class="modal-footer">' +
+        '<button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>' +
+      '</div>';
+  }
+
+  // ---------------------------------------------------------------------
+  // Component 2: Ampel-Skala-Legende (compact horizontal bar)
+  // ---------------------------------------------------------------------
+  function renderAmpelLegende(container) {
+    var chips = AMPEL.map(function (a) {
+      return (
+        '<div class="srp-ampel-chip" tabindex="0" aria-label="' + a.title + ': ' + a.text + '">' +
+          '<span class="dot ' + a.key + '"></span>' +
+          '<span class="srp-ampel-chip-text">' +
+            '<strong>' + a.label + '</strong><span class="srp-ampel-chip-sep">–</span>' + a.title +
+          '</span>' +
+        '</div>'
+      );
+    }).join("");
+
+    container.innerHTML =
+      '<div class="card card-outline card-light srp-ampel-legende mb-3">' +
+        '<div class="card-body py-2">' +
+          '<div class="srp-ampel-row">' +
+            '<span class="srp-ampel-caption">Ampel-Skala:</span>' +
+            chips +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  // ---------------------------------------------------------------------
+  // Component 3: Leerzustand (generic empty state)
+  // Used above for "kein Punkt ausgewählt" and "keine neuen Nutzer-Items".
+  // ---------------------------------------------------------------------
+  var EMPTY_STATE_ICONS = {
+    frage: '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9.2"/><path d="M9.3 9.4a2.7 2.7 0 1 1 3.9 2.4c-.9.5-1.2 1-1.2 2" stroke-linecap="round"/><circle cx="12" cy="16.6" r="0.15" fill="currentColor" stroke-width="1"/></svg>',
+    posteingang: '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 13.5 6.2 5h11.6l2.2 8.5" stroke-linejoin="round"/><path d="M4 13.5h4.6l1 2.3h4.8l1-2.3H20V19H4z" stroke-linejoin="round"/></svg>',
+    lupe: '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 20 20" stroke-linecap="round"/></svg>'
+  };
+
+  function mountEmptyState(container, opts) {
+    var actionHtml = opts.actionLabel
+      ? '<button type="button" class="btn btn-outline-secondary btn-sm mt-2" data-empty-action>' + opts.actionLabel + '</button>'
+      : "";
+    container.innerHTML =
+      '<div class="srp-empty-state" role="status">' +
+        '<div class="srp-empty-state-icon" aria-hidden="true">' + (EMPTY_STATE_ICONS[opts.icon] || EMPTY_STATE_ICONS.frage) + '</div>' +
+        '<div class="srp-empty-state-title">' + opts.title + '</div>' +
+        '<p class="srp-empty-state-text">' + opts.text + '</p>' +
+        actionHtml +
+        '<p class="srp-empty-state-note text-muted small mb-0" data-empty-note></p>' +
+      '</div>';
+
+    if (opts.actionLabel && opts.onAction) {
+      container.querySelector("[data-empty-action]").addEventListener("click", function () {
+        opts.onAction(container.querySelector("[data-empty-note]"));
+      });
+    }
+  }
+
+  // ---------------------------------------------------------------------
+  // Component 4: Kurzeinstieg ("So starten Sie in 3 Schritten")
+  // ---------------------------------------------------------------------
+  var KURZEINSTIEG_DISMISSED_KEY = "srp_kurzeinstieg_dismissed_v1";
+
+  function isKurzeinstiegDismissed() {
+    try { return localStorage.getItem(KURZEINSTIEG_DISMISSED_KEY) === "1"; }
+    catch (e) { return false; }
+  }
+  function setKurzeinstiegDismissed(value) {
+    try { localStorage.setItem(KURZEINSTIEG_DISMISSED_KEY, value ? "1" : "0"); }
+    catch (e) { /* storage unavailable */ }
+  }
+
+  var KURZEINSTIEG_STEPS = [
+    { title: "Rolle wählen", text: "Oben rechts festlegen, ob Sie als Nutzer:in, Entwickler:in oder Admin arbeiten – das bestimmt, welche Aktionen verfügbar sind." },
+    { title: "Struktur durchsuchen & bewerten", text: "Passenden Punkt in der Baumstruktur wählen, Ampel-Status setzen und bei Gelb/Rot eine Maßnahme eintragen." },
+    { title: "Tracking & Restrisiko pflegen", text: "Nach Umsetzung der Maßnahme im Tracking abhaken und anschließend das Restrisiko neu bewerten." }
+  ];
+
+  function renderKurzeinstieg(container) {
+    if (isKurzeinstiegDismissed()) {
+      container.innerHTML =
+        '<button type="button" class="btn btn-link btn-sm px-0" data-action="show-kurzeinstieg">' +
+          '&#8635; Kurzeinstieg wieder anzeigen' +
+        '</button>';
+      container.querySelector('[data-action="show-kurzeinstieg"]').addEventListener("click", function () {
+        setKurzeinstiegDismissed(false);
+        renderKurzeinstieg(container);
+      });
+      return;
+    }
+
+    var stepsHtml = KURZEINSTIEG_STEPS.map(function (s, i) {
+      return (
+        '<div class="col-12 col-md-4 mb-3 mb-md-0">' +
+          '<div class="srp-kurzeinstieg-step">' +
+            '<span class="srp-kurzeinstieg-num">' + (i + 1) + '</span>' +
+            '<div>' +
+              '<div class="font-weight-bold">' + s.title + '</div>' +
+              '<div class="text-muted small">' + s.text + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join("");
+
+    container.innerHTML =
+      '<div class="card card-outline card-success srp-kurzeinstieg">' +
+        '<div class="card-header">' +
+          '<h3 class="card-title">So starten Sie in 3 Schritten</h3>' +
+        '</div>' +
+        '<div class="card-body">' +
+          '<div class="row">' + stepsHtml + '</div>' +
+        '</div>' +
+        '<div class="card-footer text-right">' +
+          '<button type="button" class="btn btn-outline-success btn-sm" data-action="dismiss-kurzeinstieg">Verstanden, ausblenden</button>' +
+        '</div>' +
+      '</div>';
+
+    container.querySelector('[data-action="dismiss-kurzeinstieg"]').addEventListener("click", function () {
+      setKurzeinstiegDismissed(true);
+      renderKurzeinstieg(container);
     });
   }
 
@@ -719,6 +1058,11 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 
   load();
   render();
+
+  renderSzenarioBanner(document.getElementById("szenarioBannerSlot"));
+  renderSzenarioModalContent(document.getElementById("szenarioModalContent"));
+  renderAmpelLegende(document.getElementById("ampelLegendeSlot"));
+  renderKurzeinstieg(document.getElementById("kurzeinstiegSlot"));
 })();
 
 </script>
