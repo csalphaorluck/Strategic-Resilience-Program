@@ -750,6 +750,15 @@
     overflow: auto;
   }
 
+  /* Das [hidden]-Attribut allein reicht nicht: die UA-Default-Regel
+     "[hidden]{display:none}" hat gegenueber jeder Autoren-Regel mit
+     gleicher Spezifitaet die niedrigere Prioritaet, "display: flex" oben
+     wuerde also gewinnen und das Overlay staendig ueber der ganzen Seite
+     anzeigen. Deshalb hier explizit ueberschreiben. */
+  .srp-modal-hintergrund[hidden] {
+    display: none;
+  }
+
   .srp-modal {
     background: var(--srp-bg);
     border-radius: 10px;
@@ -766,6 +775,10 @@
     gap: 0.4rem;
     margin-bottom: 0.75rem;
     border-bottom: 1px solid var(--srp-border);
+  }
+
+  .srp-admin-tabs[hidden] {
+    display: none;
   }
 
   .srp-admin-tab {
