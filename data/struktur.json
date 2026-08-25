@@ -1,0 +1,251 @@
+{
+  "konfiguration": {
+    "szenario": {
+      "name": "Extremhitze",
+      "schwellwert": 40,
+      "einheit": "C"
+    },
+    "ampel": {
+      "grau": "nicht bewertet",
+      "gruen": "kein Risiko",
+      "gelb": "tolerierbares Risiko, Maßnahme notwendig",
+      "rot": "inakzeptables Risiko, Maßnahme-Definition erforderlich"
+    }
+  },
+  "struktur": [
+    {
+      "id": "kat-01",
+      "name": "Infrastruktur",
+      "ebene": 1,
+      "kinder": [
+        {
+          "id": "kat-01-01",
+          "name": "Technik",
+          "ebene": 2,
+          "kinder": [
+            {
+              "id": "kat-01-01-01",
+              "name": "Landebahn",
+              "ebene": 3,
+              "kinder": [
+                {
+                  "id": "kat-01-01-01-01",
+                  "name": "Beschilderung",
+                  "ebene": 4,
+                  "kinder": [
+                    {
+                      "id": "kat-01-01-01-01-01",
+                      "name": "Kabel",
+                      "ebene": 5,
+                      "kinder": [],
+                      "eintrag": {
+                        "risiko": "rot",
+                        "begruendung": "Verbautes Kabel ist bis 42 °C ausgelegt. Bei 40 °C Außentemperatur wird diese Grenze an der Oberfläche überschritten.",
+                        "massnahme": "Kabel ersetzen durch Ausführung bis 50 °C",
+                        "tracking": {
+                          "durchgefuehrt": true,
+                          "datum": "2026-08-24"
+                        },
+                        "restrisiko": "gelb",
+                        "istBeispiel": true
+                      }
+                    },
+                    {
+                      "id": "kat-01-01-01-01-02",
+                      "name": "Lesbarkeit/Verformung",
+                      "ebene": 5,
+                      "kinder": [],
+                      "eintrag": null
+                    }
+                  ],
+                  "eintrag": null
+                }
+              ],
+              "eintrag": null
+            }
+          ],
+          "eintrag": null
+        },
+        {
+          "id": "kat-01-02",
+          "name": "Anlagen",
+          "ebene": 2,
+          "kinder": [
+            {
+              "id": "kat-01-02-01",
+              "name": "Tanklager",
+              "ebene": 3,
+              "kinder": [],
+              "eintrag": {
+                "risiko": "grau",
+                "begruendung": "",
+                "massnahme": "",
+                "tracking": {
+                  "durchgefuehrt": null,
+                  "datum": null
+                },
+                "restrisiko": "grau",
+                "istBeispiel": true
+              }
+            }
+          ],
+          "eintrag": null
+        }
+      ],
+      "eintrag": null
+    },
+    {
+      "id": "kat-02",
+      "name": "Flughafenbetrieb",
+      "ebene": 1,
+      "kinder": [
+        {
+          "id": "kat-02-01",
+          "name": "Passagierprozesse",
+          "ebene": 2,
+          "kinder": [
+            {
+              "id": "kat-02-01-01",
+              "name": "Boarding",
+              "ebene": 3,
+              "kinder": [
+                {
+                  "id": "kat-02-01-01-01",
+                  "name": "Walkboarding",
+                  "ebene": 4,
+                  "kinder": [],
+                  "eintrag": {
+                    "risiko": "rot",
+                    "begruendung": "Beim Walkboarding queren Passagiere das Vorfeld zu Fuß ohne Beschattung. Ab 40 °C ist die Belastung für Reisende mit eingeschränkter Belastbarkeit nicht mehr zumutbar.",
+                    "massnahme": "Ab 38 °C auf Bustransfer umstellen; Schwelle in die Betriebsanweisung aufnehmen",
+                    "tracking": {
+                      "durchgefuehrt": false,
+                      "datum": null
+                    },
+                    "restrisiko": "gelb",
+                    "istBeispiel": true
+                  }
+                }
+              ],
+              "eintrag": null
+            }
+          ],
+          "eintrag": null
+        },
+        {
+          "id": "kat-02-02",
+          "name": "Flugzeugabfertigung",
+          "ebene": 2,
+          "kinder": [
+            {
+              "id": "kat-02-02-01",
+              "name": "Gepäckabfertigung",
+              "ebene": 3,
+              "kinder": [
+                {
+                  "id": "kat-02-02-01-01",
+                  "name": "Be- und Entladen im Flugzeug",
+                  "ebene": 4,
+                  "kinder": [],
+                  "eintrag": {
+                    "risiko": "rot",
+                    "begruendung": "Im Frachtraum staut sich die Hitze; bei 40 °C Außentemperatur liegt die Temperatur im Laderaum deutlich darüber. Die Tätigkeit ist körperlich schwer und findet ohne Belüftung statt.",
+                    "massnahme": "Rotationsintervalle verkürzen, Belüftung vor Beladebeginn, Trinkversorgung an der Position",
+                    "tracking": {
+                      "durchgefuehrt": false,
+                      "datum": null
+                    },
+                    "restrisiko": "gelb",
+                    "istBeispiel": true
+                  }
+                }
+              ],
+              "eintrag": null
+            }
+          ],
+          "eintrag": null
+        },
+        {
+          "id": "kat-02-03",
+          "name": "Vorfeldbetrieb",
+          "ebene": 2,
+          "kinder": [],
+          "eintrag": null
+        }
+      ],
+      "eintrag": null
+    },
+    {
+      "id": "kat-03",
+      "name": "Personal & Governance",
+      "ebene": 1,
+      "kinder": [
+        {
+          "id": "kat-03-01",
+          "name": "Organisatorische Maßnahmen",
+          "ebene": 2,
+          "kinder": [],
+          "eintrag": null
+        },
+        {
+          "id": "kat-03-02",
+          "name": "Persönliche Ausstattung",
+          "ebene": 2,
+          "kinder": [
+            {
+              "id": "kat-03-02-01",
+              "name": "Sonnenschutz",
+              "ebene": 3,
+              "kinder": [],
+              "eintrag": {
+                "risiko": "gruen",
+                "begruendung": "Sonnenschutzmittel und Kopfbedeckung werden gestellt und sind an allen Vorfeldstationen verfügbar.",
+                "massnahme": "",
+                "tracking": {
+                  "durchgefuehrt": null,
+                  "datum": null
+                },
+                "restrisiko": "gruen",
+                "istBeispiel": true
+              }
+            }
+          ],
+          "eintrag": null
+        },
+        {
+          "id": "kat-03-03",
+          "name": "Unterweisung & Vorsorge",
+          "ebene": 2,
+          "kinder": [],
+          "eintrag": null
+        },
+        {
+          "id": "kat-03-04",
+          "name": "Regelwerk & Zuständigkeiten",
+          "ebene": 2,
+          "kinder": [
+            {
+              "id": "kat-03-04-01",
+              "name": "Hitzerichtlinie",
+              "ebene": 3,
+              "kinder": [],
+              "eintrag": {
+                "risiko": "gelb",
+                "begruendung": "Richtlinie regelt Pausen und Trinkmengen ab 32 °C. Für 40 °C fehlt eine Regelung zur Aussetzung von Arbeiten auf dem Vorfeld.",
+                "massnahme": "Richtlinie um Schwelle ab 38 °C erweitern",
+                "tracking": {
+                  "durchgefuehrt": false,
+                  "datum": null
+                },
+                "restrisiko": "gruen",
+                "istBeispiel": true
+              }
+            }
+          ],
+          "eintrag": null
+        }
+      ],
+      "eintrag": null
+    }
+  ]
+}
