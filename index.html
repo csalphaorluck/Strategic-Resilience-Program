@@ -1220,9 +1220,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     var stats = leafStats(child);
     var badge = child.isNew ? '<span class="badge badge-info badge-new ml-1">neu</span>' : "";
     var isBranch = child.children && child.children.length;
-    var meta = isBranch
-      ? (stats.assessed + ' von ' + stats.total + ' bewertet')
-      : (color === "grau" ? "" : RISK_LABEL[color]);
+    var meta = isBranch ? (stats.assessed + ' von ' + stats.total + ' bewertet') : "";
     var trackChip = renderTrackingChip(child, isBranch);
     return '<button type="button" class="srp-browse-card" data-node-id="' + child.id + '">' +
       '<span class="srp-browse-card-top">' +
