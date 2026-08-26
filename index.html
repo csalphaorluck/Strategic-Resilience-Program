@@ -854,11 +854,9 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     }
 
     var html = state.data.map(function (cat) {
-      var color = aggregateStatus(cat);
       var stats = leafStats(cat);
       var sel = activeRootId === cat.id ? " selected" : "";
       return '<div class="node-row' + sel + '" data-node-id="' + cat.id + '">' +
-        '<span class="dot ' + color + '" title="' + RISK_LABEL[color] + '"></span>' +
         '<span class="label">' + escapeHtml(cat.name) + '</span>' +
         '<span class="cat-count">' + stats.assessed + '/' + stats.total + '</span>' +
         '</div>';
