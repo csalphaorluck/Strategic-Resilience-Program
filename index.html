@@ -50,37 +50,92 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 .dot.gelb { background: var(--gelb); }
 .dot.rot { background: var(--rot); }
 
-/* ---- Sidebar tree navigation (custom, up to 5 levels) ---- */
-.srp-tree { padding: 0 8px 16px; }
-.srp-tree .cat-block { margin-bottom: 4px; }
-.srp-tree .children { margin-left: 14px; }
+/* ---- Sidebar navigation: Ebene 1 (Kategorien) only ---- */
+.srp-tree { padding: 6px 8px 16px; }
 .srp-tree .node-row {
   display: flex;
-  align-items: flex-start;
-  gap: 7px;
-  padding: 6px 8px;
-  border-radius: 4px;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 10px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 13.5px;
-  line-height: 1.35;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.3;
   color: rgba(255, 255, 255, 0.85);
   white-space: normal;
+  margin-bottom: 3px;
 }
 .srp-tree .node-row:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
-.srp-tree .node-row.selected { background: #0d6efd; color: #fff; font-weight: 600; }
-.srp-tree .node-row .twisty {
-  width: 14px;
-  flex-shrink: 0;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 11px;
-  padding-top: 2px;
-}
-.srp-tree .node-row .dot { margin-top: 3px; }
+.srp-tree .node-row.selected { background: #0d6efd; color: #fff; }
 .srp-tree .node-row .label { flex: 1; min-width: 0; }
-.srp-tree .badge-new {
+.srp-tree .node-row .cat-count {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  font-variant-numeric: tabular-nums;
   flex-shrink: 0;
-  align-self: flex-start;
 }
+.srp-tree .node-row.selected .cat-count { color: rgba(255, 255, 255, 0.85); }
+
+/* ---- Klickmodell: Drill-down-Karten für Ebene 2-4 ---- */
+.srp-browse-meta {
+  color: #6c757d;
+  font-size: 12.5px;
+  margin-top: 2px;
+}
+.srp-browse-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+}
+.srp-browse-card {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 12px 30px 12px 14px;
+  cursor: pointer;
+  position: relative;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  font-family: inherit;
+}
+.srp-browse-card:hover, .srp-browse-card:focus-visible {
+  border-color: #0d6efd;
+  box-shadow: 0 2px 10px rgba(13, 110, 253, 0.14);
+  outline: none;
+}
+.srp-browse-card-top { display: flex; align-items: center; gap: 8px; }
+.srp-browse-card-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #212529;
+  flex: 1;
+  min-width: 0;
+}
+.srp-browse-card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: #6c757d;
+}
+.srp-browse-card-arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #adb5bd;
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* ---- Klickbarer Breadcrumb ---- */
+.breadcrumb-item a { color: #0d6efd; text-decoration: none; }
+.breadcrumb-item a:hover { text-decoration: underline; }
 
 /* ---- Content area helpers ---- */
 .node-title .badge { vertical-align: middle; }
@@ -702,7 +757,6 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     role: "nutzer",
     adminFachbereich: "alle",
     selectedId: null,
-    expanded: {},
     adminTab: "struktur"
   };
 
@@ -790,26 +844,31 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     }
   }
 
-  // ---------- Rendering: Tree ----------
+  // ---------- Rendering: Sidebar (nur Ebene 1) ----------
   function renderTree() {
     var nav = document.getElementById("treeNav");
-    var html = "";
-    state.data.forEach(function (cat) {
-      html += '<div class="cat-block">' + renderNodeRow(cat) + '<div class="children">' + renderChildren(cat) + '</div></div>';
-    });
+    var activeRootId = null;
+    if (state.selectedId) {
+      var path = findPath(state.selectedId);
+      if (path && path.length) activeRootId = path[0].id;
+    }
+
+    var html = state.data.map(function (cat) {
+      var color = aggregateStatus(cat);
+      var stats = leafStats(cat);
+      var sel = activeRootId === cat.id ? " selected" : "";
+      return '<div class="node-row' + sel + '" data-node-id="' + cat.id + '">' +
+        '<span class="dot ' + color + '" title="' + RISK_LABEL[color] + '"></span>' +
+        '<span class="label">' + escapeHtml(cat.name) + '</span>' +
+        '<span class="cat-count">' + stats.assessed + '/' + stats.total + '</span>' +
+        '</div>';
+    }).join("");
     nav.innerHTML = html;
 
     nav.querySelectorAll("[data-node-id]").forEach(function (el) {
-      el.addEventListener("click", function (e) {
-        e.stopPropagation();
-        var id = el.getAttribute("data-node-id");
-        if (e.target.classList.contains("twisty")) {
-          state.expanded[id] = !state.expanded[id];
-        } else {
-          state.selectedId = id;
-          state.expanded[id] = true;
-          closeSidebarOnNarrowViewport();
-        }
+      el.addEventListener("click", function () {
+        state.selectedId = el.getAttribute("data-node-id");
+        closeSidebarOnNarrowViewport();
         render();
       });
     });
@@ -821,25 +880,31 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     return node.entry.risk;
   }
 
-  function renderNodeRow(node) {
-    var expanded = state.expanded[node.id] !== false;
-    var hasChildren = node.children && node.children.length > 0;
-    var twisty = hasChildren ? (expanded ? "▾" : "▸") : "";
-    var dotColor = nodeDotColor(node);
-    var dot = dotColor ? '<span class="dot ' + dotColor + '" title="' + RISK_LABEL[dotColor] + '"></span>' : '<span style="width:10px;flex-shrink:0"></span>';
-    var badge = node.isNew ? '<span class="badge badge-info badge-new">neu</span>' : "";
-    var sel = state.selectedId === node.id ? " selected" : "";
-    return '<div class="node-row' + sel + '" data-node-id="' + node.id + '">' +
-      '<span class="twisty">' + twisty + '</span>' + dot +
-      '<span class="label">' + escapeHtml(node.name) + '</span>' + badge + '</div>';
+  // Schlechtester Ampelstatus unter allen Blättern eines Knotens (Rot > Gelb > Grau > Grün).
+  var STATUS_SEVERITY = { rot: 3, gelb: 2, grau: 1, gruen: 0 };
+  function aggregateStatus(node) {
+    if (!node.children || !node.children.length) return nodeDotColor(node) || "grau";
+    var worst = "gruen";
+    node.children.forEach(function (child) {
+      var s = aggregateStatus(child);
+      if (STATUS_SEVERITY[s] > STATUS_SEVERITY[worst]) worst = s;
+    });
+    return worst;
   }
 
-  function renderChildren(node) {
-    var expanded = state.expanded[node.id] !== false;
-    if (!expanded || !node.children || !node.children.length) return "";
-    return node.children.map(function (child) {
-      return '<div>' + renderNodeRow(child) + '<div class="children">' + renderChildren(child) + '</div></div>';
-    }).join("");
+  // Anzahl Blattpunkte unter einem Knoten sowie davon bereits bewertete (Ampel != grau).
+  function leafStats(node) {
+    if (!node.children || !node.children.length) {
+      var assessed = node.entry && node.entry.risk && node.entry.risk !== "grau";
+      return { total: 1, assessed: assessed ? 1 : 0 };
+    }
+    var total = 0, assessed = 0;
+    node.children.forEach(function (child) {
+      var s = leafStats(child);
+      total += s.total;
+      assessed += s.assessed;
+    });
+    return { total: total, assessed: assessed };
   }
 
   // ---------- Rendering: Main panel ----------
@@ -860,7 +925,10 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     var path = findPath(node.id);
     var items = path.map(function (n, i) {
       var isLast = i === path.length - 1;
-      return '<li class="breadcrumb-item' + (isLast ? " active" : "") + '"' + (isLast ? ' aria-current="page"' : "") + '>' + escapeHtml(n.name) + '</li>';
+      if (isLast) {
+        return '<li class="breadcrumb-item active" aria-current="page">' + escapeHtml(n.name) + '</li>';
+      }
+      return '<li class="breadcrumb-item"><a href="#" data-goto="' + n.id + '">' + escapeHtml(n.name) + '</a></li>';
     }).join("");
     return '<ol class="breadcrumb bg-transparent px-0 mb-2">' + items + '</ol>';
   }
@@ -899,24 +967,36 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     }
   }
 
+  // Klickmodell: ein Knoten mit Kindern wird als Drill-down-Liste dargestellt
+  // (renderBrowseView), ein Blattknoten als Bewertungsformular (renderLeafView).
   function buildDetailMarkup(container, node, role) {
     if (!node) {
       container.innerHTML = '<div class="card"><div class="card-body" id="emptyStateNoSelection"></div></div>';
       mountEmptyState(document.getElementById("emptyStateNoSelection"), {
         icon: "frage",
         title: "Kein Punkt ausgewählt",
-        text: "Bitte links einen Punkt in der Struktur auswählen, um Details, Risikobewertung und Maßnahmen zu sehen."
+        text: "Bitte links eine Kategorie auswählen und sich zum gewünschten Punkt durchklicken."
       });
       return;
     }
-    var html = '<div class="card card-outline card-primary">';
-    html += '<div class="card-header">';
-    html += renderBreadcrumb(node);
-    html += '<h3 class="card-title mb-0">' + escapeHtml(node.name) + ' <span class="badge badge-light font-weight-normal">Ebene ' + node.level + '</span></h3>';
-    html += '</div>';
-    html += '<div class="card-body">';
+    if (node.children && node.children.length) {
+      renderBrowseView(container, node, role);
+    } else {
+      renderLeafView(container, node, role);
+    }
+    container.querySelectorAll("[data-goto]").forEach(function (el) {
+      el.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        state.selectedId = el.getAttribute("data-goto");
+        render();
+      });
+    });
+  }
 
-    html += '<div class="btn-toolbar mb-3" style="gap:8px">';
+  // Werkzeugleiste (Neues Item / Neue Unterkategorie / Umbenennen / L&ouml;schen) &ndash;
+  // identisch nutzbar in Browse- und Blattansicht.
+  function renderNodeToolbar(node, role) {
+    var html = "";
     if (node.level >= 2 && node.level < 5) {
       html += '<button type="button" class="btn btn-outline-primary btn-sm" data-action="add-child">+ Neues Item (Ebene ' + (node.level + 1) + ')</button>';
     }
@@ -929,7 +1009,108 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
         html += '<button type="button" class="btn btn-outline-danger btn-sm" data-action="delete">L&ouml;schen</button>';
       }
     }
+    return html ? '<div class="btn-toolbar mb-3" style="gap:8px">' + html + '</div>' : "";
+  }
+
+  function wireNodeToolbar(container, node, role) {
+    var addChildBtn = container.querySelector('[data-action="add-child"]');
+    if (addChildBtn) addChildBtn.addEventListener("click", function () {
+      var name = prompt("Name des neuen Items (Ebene " + (node.level + 1) + "):");
+      if (!name) return;
+      var child = makeNode(name, node.level + 1, {
+        category: node.category,
+        createdBy: role === "entwickler" ? "entwickler" : "nutzer",
+        isNew: true,
+        createdAt: new Date().toISOString().slice(0, 10),
+        entry: makeEntry()
+      });
+      node.children.push(child);
+      state.selectedId = child.id;
+      render();
+    });
+
+    var addSubcatBtn = container.querySelector('[data-action="add-subcategory"]');
+    if (addSubcatBtn) addSubcatBtn.addEventListener("click", function () {
+      var name = prompt("Name der neuen Unterkategorie (Ebene 2) unter \"" + node.name + "\":");
+      if (!name) return;
+      var child = makeNode(name, 2, { category: node.category, createdBy: "entwickler" });
+      node.children.push(child);
+      state.selectedId = child.id;
+      render();
+    });
+
+    var renameBtn = container.querySelector('[data-action="rename"]');
+    if (renameBtn) renameBtn.addEventListener("click", function () {
+      var name = prompt("Neuer Name:", node.name);
+      if (!name) return;
+      node.name = name;
+      render();
+    });
+
+    var deleteBtn = container.querySelector('[data-action="delete"]');
+    if (deleteBtn) deleteBtn.addEventListener("click", function () {
+      if (!confirm('"' + node.name + '" inkl. aller Unterpunkte löschen?')) return;
+      var parent = findParent(node.id);
+      var list = parent ? parent.children : state.data;
+      var idx = list.indexOf(node);
+      if (idx > -1) list.splice(idx, 1);
+      state.selectedId = parent ? parent.id : (state.data[0] ? state.data[0].id : null);
+      render();
+    });
+  }
+
+  // ---------- Browse-Ansicht: Knoten mit Kindern (Ebene 1-4) ----------
+  function renderBrowseCard(child) {
+    var color = aggregateStatus(child);
+    var stats = leafStats(child);
+    var badge = child.isNew ? '<span class="badge badge-info badge-new ml-1">neu</span>' : "";
+    var isBranch = child.children && child.children.length;
+    var meta = isBranch
+      ? (stats.assessed + ' von ' + stats.total + ' bewertet')
+      : RISK_LABEL[color];
+    return '<button type="button" class="srp-browse-card" data-node-id="' + child.id + '">' +
+      '<span class="srp-browse-card-top">' +
+        '<span class="dot ' + color + '" title="' + RISK_LABEL[color] + '"></span>' +
+        '<span class="srp-browse-card-name">' + escapeHtml(child.name) + badge + '</span>' +
+      '</span>' +
+      '<span class="srp-browse-card-meta"><span>Ebene ' + child.level + '</span><span>' + meta + '</span></span>' +
+      '<span class="srp-browse-card-arrow" aria-hidden="true">&rsaquo;</span>' +
+    '</button>';
+  }
+
+  function renderBrowseView(container, node, role) {
+    var stats = leafStats(node);
+    var html = '<div class="card card-outline card-primary">';
+    html += '<div class="card-header">';
+    html += renderBreadcrumb(node);
+    html += '<h3 class="card-title mb-0">' + escapeHtml(node.name) + ' <span class="badge badge-light font-weight-normal">Ebene ' + node.level + '</span></h3>';
+    html += '<div class="srp-browse-meta">' + node.children.length + ' Unterpunkte &middot; ' + stats.assessed + ' von ' + stats.total + ' Punkten bewertet</div>';
     html += '</div>';
+    html += '<div class="card-body">';
+    html += renderNodeToolbar(node, role);
+    html += '<div class="srp-browse-grid">' + node.children.map(renderBrowseCard).join("") + '</div>';
+    html += '</div></div>';
+
+    container.innerHTML = html;
+    wireNodeToolbar(container, node, role);
+
+    container.querySelectorAll(".srp-browse-card").forEach(function (el) {
+      el.addEventListener("click", function () {
+        state.selectedId = el.getAttribute("data-node-id");
+        render();
+      });
+    });
+  }
+
+  // ---------- Blattansicht: Risikobewertung, Ma&szlig;nahme, Tracking, Restrisiko ----------
+  function renderLeafView(container, node, role) {
+    var html = '<div class="card card-outline card-primary">';
+    html += '<div class="card-header">';
+    html += renderBreadcrumb(node);
+    html += '<h3 class="card-title mb-0">' + escapeHtml(node.name) + ' <span class="badge badge-light font-weight-normal">Ebene ' + node.level + '</span></h3>';
+    html += '</div>';
+    html += '<div class="card-body">';
+    html += renderNodeToolbar(node, role);
 
     if (node.level >= 2) {
       if (!node.entry) node.entry = makeEntry();
@@ -943,7 +1124,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
       html += '<div class="form-group mb-0"><label class="font-weight-bold small text-uppercase text-muted">Ma&szlig;nahme</label>';
       html += '<textarea class="form-control" rows="2" data-field="measure" placeholder="Beschreibung der geplanten Ma&szlig;nahme...">' + escapeHtml(e.measure) + '</textarea></div>';
     } else {
-      html += '<p class="text-muted mb-0">Kategorie-Ebene &ndash; bitte eine Unterkategorie ausw&auml;hlen.</p>';
+      html += '<p class="text-muted mb-0">Bitte &uuml;ber &bdquo;Neue Unterkategorie&ldquo; Inhalte anlegen.</p>';
     }
     html += '</div></div>'; // card-body, card
 
@@ -979,6 +1160,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     }
 
     container.innerHTML = html;
+    wireNodeToolbar(container, node, role);
 
     container.querySelectorAll("[data-field]").forEach(function (el) {
       var field = el.getAttribute("data-field");
@@ -997,55 +1179,8 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
         }
         save();
         renderTree();
-        if (field === "trackingDone") buildDetailMarkup(container, node, role);
+        if (field === "trackingDone") renderLeafView(container, node, role);
       });
-    });
-
-    var addChildBtn = container.querySelector('[data-action="add-child"]');
-    if (addChildBtn) addChildBtn.addEventListener("click", function () {
-      var name = prompt("Name des neuen Items (Ebene " + (node.level + 1) + "):");
-      if (!name) return;
-      var child = makeNode(name, node.level + 1, {
-        category: node.category,
-        createdBy: role === "entwickler" ? "entwickler" : "nutzer",
-        isNew: true,
-        createdAt: new Date().toISOString().slice(0, 10),
-        entry: makeEntry()
-      });
-      node.children.push(child);
-      state.expanded[node.id] = true;
-      state.selectedId = child.id;
-      render();
-    });
-
-    var addSubcatBtn = container.querySelector('[data-action="add-subcategory"]');
-    if (addSubcatBtn) addSubcatBtn.addEventListener("click", function () {
-      var name = prompt("Name der neuen Unterkategorie (Ebene 2) unter \"" + node.name + "\":");
-      if (!name) return;
-      var child = makeNode(name, 2, { category: node.category, createdBy: "entwickler" });
-      node.children.push(child);
-      state.expanded[node.id] = true;
-      state.selectedId = child.id;
-      render();
-    });
-
-    var renameBtn = container.querySelector('[data-action="rename"]');
-    if (renameBtn) renameBtn.addEventListener("click", function () {
-      var name = prompt("Neuer Name:", node.name);
-      if (!name) return;
-      node.name = name;
-      render();
-    });
-
-    var deleteBtn = container.querySelector('[data-action="delete"]');
-    if (deleteBtn) deleteBtn.addEventListener("click", function () {
-      if (!confirm('"' + node.name + '" inkl. aller Unterpunkte löschen?')) return;
-      var parent = findParent(node.id);
-      var list = parent ? parent.children : state.data;
-      var idx = list.indexOf(node);
-      if (idx > -1) list.splice(idx, 1);
-      state.selectedId = parent ? parent.id : (state.data[0] ? state.data[0].id : null);
-      render();
     });
   }
 
