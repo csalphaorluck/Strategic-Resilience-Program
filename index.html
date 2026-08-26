@@ -336,7 +336,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 (function () {
   "use strict";
 
-  var STORAGE_KEY = "srp_prototype_data_v1";
+  var STORAGE_KEY = "srp_prototype_data_v2";
   var CATEGORIES = ["Infrastruktur", "Flughafenbetrieb", "Personal & Governance"];
   var RISK_LEVELS = ["grau", "gruen", "gelb", "rot"];
   var RISK_LABEL = { grau: "Grau – nicht bewertet", gruen: "Grün – kein Risiko", gelb: "Gelb – tolerierbar", rot: "Rot – inakzeptabel" };
@@ -372,57 +372,8 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 
   function seedData() {
     var infra = makeNode("Infrastruktur", 1, { id: "cat_infra", category: "Infrastruktur" });
-    var technik = makeNode("Technik", 2, { id: "infra_technik", category: "Infrastruktur" });
-    var landebahn = makeNode("Landebahn", 3, { category: "Infrastruktur" });
-    var beschilderung = makeNode("Beschilderung", 4, { category: "Infrastruktur" });
-    var kabel = makeNode("Kabel", 5, {
-      category: "Infrastruktur",
-      createdBy: "nutzer",
-      entry: (function () {
-        var e = makeEntry("rot", "Neue Kabel verbauen, die bis 50°C ausgelegt sind.");
-        e.riskNote = "Kabel hält laut Datenblatt nur bis 42°C – bei angenommenen 40°C Außentemperatur besteht ein enges Sicherheitsfenster.";
-        e.tracking = { done: true, date: "2026-06-01" };
-        e.residualRisk = "gelb";
-        e.residualNote = "Neue Kabel installiert, Resttoleranz bis 50°C vorhanden.";
-        return e;
-      })()
-    });
-    var lesbarkeit = makeNode("Lesbarkeit / Verformung", 5, {
-      category: "Infrastruktur",
-      createdBy: "nutzer",
-      isNew: true,
-      createdAt: "2026-08-15",
-      entry: makeEntry("grau", "")
-    });
-    beschilderung.children = [kabel, lesbarkeit];
-    landebahn.children = [beschilderung];
-    technik.children = [landebahn];
-    infra.children = [technik];
-
     var betrieb = makeNode("Flughafenbetrieb", 1, { id: "cat_betrieb", category: "Flughafenbetrieb" });
-    var vorfeld = makeNode("Vorfeldprozesse", 2, { id: "betrieb_vorfeld", category: "Flughafenbetrieb" });
-    var enteisung = makeNode("Kühlung von Bodengeräten", 3, {
-      category: "Flughafenbetrieb",
-      createdBy: "nutzer",
-      isNew: true,
-      createdAt: "2026-08-18",
-      entry: makeEntry("grau", "")
-    });
-    vorfeld.children = [enteisung];
-    betrieb.children = [vorfeld];
-
     var personal = makeNode("Personal & Governance", 1, { id: "cat_personal", category: "Personal & Governance" });
-    var arbeitsschutz = makeNode("Arbeitsschutz", 2, { id: "personal_arbeitsschutz", category: "Personal & Governance" });
-    var hitzeschutz = makeNode("Hitzeschutz Personal Vorfeld", 3, {
-      category: "Personal & Governance",
-      entry: (function () {
-        var e = makeEntry("gelb", "Zusätzliche Trinkwasserstationen und Pausenregelung ab 35°C.");
-        e.tracking = { done: false, date: "" };
-        return e;
-      })()
-    });
-    arbeitsschutz.children = [hitzeschutz];
-    personal.children = [arbeitsschutz];
 
     return [infra, betrieb, personal];
   }
@@ -431,7 +382,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     data: null,
     role: "nutzer",
     adminFachbereich: "alle",
-    selectedId: "infra_technik",
+    selectedId: null,
     expanded: {},
     adminTab: "struktur"
   };
@@ -448,7 +399,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   }
   function resetDemo() {
     state.data = seedData();
-    state.selectedId = "infra_technik";
+    state.selectedId = null;
     save();
     render();
   }
