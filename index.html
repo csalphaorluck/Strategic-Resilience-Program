@@ -115,6 +115,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 
 /* ---- Klickmodell: Drill-down-Karten für Ebene 2-4 ---- */
 .srp-browse-meta {
+  clear: both;
   color: #6c757d;
   font-size: 12.5px;
   margin-top: 2px;
@@ -368,6 +369,31 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 
 .modal-dialog { margin-left: auto; margin-right: auto; }
 
+/* ---- Card-Style-Dialog (ersetzt native prompt()/confirm()) ---- */
+.srp-dialog { max-width: 420px; }
+.srp-dialog .modal-content { border-radius: 10px; border: none; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2); }
+.srp-dialog .modal-header { border-bottom: 1px solid #eef0f2; padding: 16px 18px; }
+.srp-dialog .modal-title { font-size: 16px; font-weight: 700; }
+.srp-dialog .modal-body { padding: 18px; }
+.srp-dialog .modal-body input.form-control {
+  padding: 10px 12px;
+  font-size: 16px; /* verhindert Auto-Zoom bei Fokus auf iOS */
+  min-height: 44px;
+}
+.srp-dialog .modal-footer {
+  border-top: 1px solid #eef0f2;
+  padding: 12px 18px;
+  gap: 8px;
+}
+.srp-dialog .modal-footer .btn {
+  min-height: 44px;
+  padding: 8px 18px;
+  flex: 1 1 0;
+}
+@media (max-width: 420px) {
+  .srp-dialog { max-width: calc(100% - 24px); }
+}
+
 </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -456,6 +482,19 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 <div class="modal fade" id="szenarioModal" tabindex="-1" role="dialog" aria-labelledby="szenarioModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content" id="szenarioModalContent"></div>
+  </div>
+</div>
+
+<div class="modal fade" id="srpDialogModal" tabindex="-1" role="dialog" aria-labelledby="srpDialogModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered srp-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="srpDialogModalLabel"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Schlie&szlig;en"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body" id="srpDialogModalBody"></div>
+      <div class="modal-footer" id="srpDialogModalFooter"></div>
+    </div>
   </div>
 </div>
 
@@ -961,11 +1000,15 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   // keeps covering the content area and blocking clicks underneath it.
   function closeSidebarOnNarrowViewport() {
     if (window.innerWidth >= 992) return;
+    // Nur "sidebar-open" entfernen: das ist bereits der (voll verborgene)
+    // Ausgangszustand auf schmalen Viewports. "sidebar-collapse" zusätzlich zu
+    // setzen würde stattdessen den Desktop-Mini-Rail auslösen (sidebar-mini +
+    // sidebar-collapse ist nicht auf Desktopbreiten beschränkt) und einen
+    // schmalen dunklen Streifen stehen lassen.
     if (window.jQuery) {
-      window.jQuery("body").removeClass("sidebar-open").addClass("sidebar-collapse");
+      window.jQuery("body").removeClass("sidebar-open");
     } else {
       document.body.classList.remove("sidebar-open");
-      document.body.classList.add("sidebar-collapse");
     }
   }
 
@@ -1155,50 +1198,128 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     return html ? '<div class="btn-toolbar mb-3" style="gap:8px">' + html + '</div>' : "";
   }
 
+  // ---------- Card-Style-Dialog (ersetzt native prompt()/confirm()) ----------
+  // Ein Eingabe-Dialog (Name anlegen/umbenennen) im selben visuellen Stil wie
+  // der Rest des Tools, mit Bootstraps Modal-Mechanik (mobilfreundlich: volle
+  // Breite mit Rand auf schmalen Screens, große Touch-Ziele in der Fußzeile).
+  function openPromptDialog(opts) {
+    var modalEl = document.getElementById("srpDialogModal");
+    document.getElementById("srpDialogModalLabel").textContent = opts.title;
+    var body = document.getElementById("srpDialogModalBody");
+    body.innerHTML =
+      '<div class="form-group mb-0"><label class="font-weight-bold small text-uppercase text-muted" for="srpDialogInput">' +
+      escapeHtml(opts.label) + '</label>' +
+      '<input type="text" class="form-control" id="srpDialogInput" autocomplete="off">' +
+      '<div class="invalid-feedback" id="srpDialogInputError">Bitte einen Namen eingeben.</div></div>';
+    document.getElementById("srpDialogModalFooter").innerHTML =
+      '<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Abbrechen</button>' +
+      '<button type="button" class="btn btn-primary" id="srpDialogConfirmBtn">' + escapeHtml(opts.confirmText || "Speichern") + '</button>';
+
+    var input = document.getElementById("srpDialogInput");
+    input.value = opts.value || "";
+    var $modal = window.jQuery(modalEl);
+    $modal.modal("show");
+    modalEl.addEventListener("shown.bs.modal", function onShown() {
+      modalEl.removeEventListener("shown.bs.modal", onShown);
+      input.focus();
+      input.select();
+    });
+
+    function confirmValue() {
+      var val = input.value.trim();
+      if (!val) { input.classList.add("is-invalid"); input.focus(); return; }
+      $modal.modal("hide");
+      opts.onConfirm(val);
+    }
+    document.getElementById("srpDialogConfirmBtn").addEventListener("click", confirmValue);
+    input.addEventListener("input", function () { input.classList.remove("is-invalid"); });
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); confirmValue(); } });
+  }
+
+  function openConfirmDialog(opts) {
+    var modalEl = document.getElementById("srpDialogModal");
+    document.getElementById("srpDialogModalLabel").textContent = opts.title;
+    document.getElementById("srpDialogModalBody").innerHTML = '<p class="mb-0">' + escapeHtml(opts.message) + '</p>';
+    document.getElementById("srpDialogModalFooter").innerHTML =
+      '<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Abbrechen</button>' +
+      '<button type="button" class="btn ' + (opts.danger ? "btn-danger" : "btn-primary") + '" id="srpDialogConfirmBtn">' +
+      escapeHtml(opts.confirmText || "Bestätigen") + '</button>';
+
+    var $modal = window.jQuery(modalEl);
+    $modal.modal("show");
+    document.getElementById("srpDialogConfirmBtn").addEventListener("click", function () {
+      $modal.modal("hide");
+      opts.onConfirm();
+    });
+  }
+
   function wireNodeToolbar(container, node, role) {
     var addChildBtn = container.querySelector('[data-action="add-child"]');
     if (addChildBtn) addChildBtn.addEventListener("click", function () {
-      var name = prompt("Name des neuen Items (Ebene " + (node.level + 1) + "):");
-      if (!name) return;
-      var child = makeNode(name, node.level + 1, {
-        category: node.category,
-        createdBy: role === "entwickler" ? "entwickler" : "nutzer",
-        isNew: true,
-        createdAt: new Date().toISOString().slice(0, 10),
-        entry: makeEntry()
+      openPromptDialog({
+        title: "Neues Item anlegen",
+        label: "Name des neuen Items (Ebene " + (node.level + 1) + ")",
+        confirmText: "Anlegen",
+        onConfirm: function (name) {
+          var child = makeNode(name, node.level + 1, {
+            category: node.category,
+            createdBy: role === "entwickler" ? "entwickler" : "nutzer",
+            isNew: true,
+            createdAt: new Date().toISOString().slice(0, 10),
+            entry: makeEntry()
+          });
+          node.children.push(child);
+          state.selectedId = child.id;
+          render();
+        }
       });
-      node.children.push(child);
-      state.selectedId = child.id;
-      render();
     });
 
     var addSubcatBtn = container.querySelector('[data-action="add-subcategory"]');
     if (addSubcatBtn) addSubcatBtn.addEventListener("click", function () {
-      var name = prompt("Name der neuen Unterkategorie (Ebene 2) unter \"" + node.name + "\":");
-      if (!name) return;
-      var child = makeNode(name, 2, { category: node.category, createdBy: "entwickler" });
-      node.children.push(child);
-      state.selectedId = child.id;
-      render();
+      openPromptDialog({
+        title: "Neue Unterkategorie anlegen",
+        label: "Name der neuen Unterkategorie (Ebene 2) unter „" + node.name + "“",
+        confirmText: "Anlegen",
+        onConfirm: function (name) {
+          var child = makeNode(name, 2, { category: node.category, createdBy: "entwickler" });
+          node.children.push(child);
+          state.selectedId = child.id;
+          render();
+        }
+      });
     });
 
     var renameBtn = container.querySelector('[data-action="rename"]');
     if (renameBtn) renameBtn.addEventListener("click", function () {
-      var name = prompt("Neuer Name:", node.name);
-      if (!name) return;
-      node.name = name;
-      render();
+      openPromptDialog({
+        title: "Punkt umbenennen",
+        label: "Neuer Name",
+        value: node.name,
+        confirmText: "Speichern",
+        onConfirm: function (name) {
+          node.name = name;
+          render();
+        }
+      });
     });
 
     var deleteBtn = container.querySelector('[data-action="delete"]');
     if (deleteBtn) deleteBtn.addEventListener("click", function () {
-      if (!confirm('"' + node.name + '" inkl. aller Unterpunkte löschen?')) return;
-      var parent = findParent(node.id);
-      var list = parent ? parent.children : state.data;
-      var idx = list.indexOf(node);
-      if (idx > -1) list.splice(idx, 1);
-      state.selectedId = parent ? parent.id : (state.data[0] ? state.data[0].id : null);
-      render();
+      openConfirmDialog({
+        title: "Punkt löschen?",
+        message: '„' + node.name + '“ inkl. aller Unterpunkte löschen? Dies kann nicht rückgängig gemacht werden.',
+        confirmText: "Löschen",
+        danger: true,
+        onConfirm: function () {
+          var parent = findParent(node.id);
+          var list = parent ? parent.children : state.data;
+          var idx = list.indexOf(node);
+          if (idx > -1) list.splice(idx, 1);
+          state.selectedId = parent ? parent.id : (state.data[0] ? state.data[0].id : null);
+          render();
+        }
+      });
     });
   }
 
@@ -1275,9 +1396,9 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
         return '<option value="' + r + '"' + (e.risk === r ? " selected" : "") + '>' + RISK_LABEL[r] + '</option>';
       }).join("") + '</select></div>';
       html += '<div class="form-group"><label class="font-weight-bold small text-uppercase text-muted">Begr&uuml;ndung / Anmerkung zur Bewertung</label>';
-      html += '<textarea class="form-control" rows="2" data-field="riskNote" placeholder="z. B. Belastungsgrenze, Szenario-Annahme...">' + escapeHtml(e.riskNote) + '</textarea></div>';
+      html += '<textarea class="form-control" rows="3" data-field="riskNote" placeholder="z. B. Belastungsgrenze, Szenario-Annahme...">' + escapeHtml(e.riskNote) + '</textarea></div>';
       html += '<div class="form-group mb-0"><label class="font-weight-bold small text-uppercase text-muted">Ma&szlig;nahme</label>';
-      html += '<textarea class="form-control" rows="2" data-field="measure" placeholder="Beschreibung der geplanten Ma&szlig;nahme...">' + escapeHtml(e.measure) + '</textarea></div>';
+      html += '<textarea class="form-control" rows="3" data-field="measure" placeholder="Beschreibung der geplanten Ma&szlig;nahme...">' + escapeHtml(e.measure) + '</textarea></div>';
     } else {
       html += '<p class="text-muted mb-0">Bitte &uuml;ber &bdquo;Neue Unterkategorie&ldquo; Inhalte anlegen.</p>';
     }
@@ -1309,7 +1430,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
           return '<option value="' + r + '"' + (resid === r ? " selected" : "") + '>' + RISK_LABEL[r] + '</option>';
         }).join("") + '</select></div>';
         html += '<div class="form-group mb-0"><label class="font-weight-bold small text-uppercase text-muted">Anmerkung zum Restrisiko</label>';
-        html += '<textarea class="form-control" rows="2" data-field="residualNote">' + escapeHtml(e2.residualNote) + '</textarea></div>';
+        html += '<textarea class="form-control" rows="3" data-field="residualNote">' + escapeHtml(e2.residualNote) + '</textarea></div>';
       }
       html += '</div></div>';
     }
