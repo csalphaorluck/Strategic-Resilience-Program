@@ -371,11 +371,330 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   }
 
   function seedData() {
-    var infra = makeNode("Infrastruktur", 1, { id: "cat_infra", category: "Infrastruktur" });
-    var betrieb = makeNode("Flughafenbetrieb", 1, { id: "cat_betrieb", category: "Flughafenbetrieb" });
-    var personal = makeNode("Personal & Governance", 1, { id: "cat_personal", category: "Personal & Governance" });
+    // Jede Zeile: [Kategorie, Ebene-2-Gruppe, Ebene-3, Ebene-4?, Ebene-5?]
+    var RAW = [
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Runway 1 (Asphalt)","Asphaltdeckschicht","Spurrinnenbildung"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Runway 1 (Asphalt)","Asphaltdeckschicht","Bindemittelerweichung / Ausbluten"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Runway 1 (Asphalt)","Fugenverguss"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Runway 1 (Asphalt)","Markierungsfarbe"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Runway 2 (Beton)","Betondeckschicht","Plattenaufwölbung / Blow-ups"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Runway 2 (Beton)","Betondeckschicht","Rissbildung durch Wärmedehnung"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Runway 2 (Beton)","Dehnungsfugen"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Runway 2 (Beton)","Markierungsfarbe"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Rollbahnen (Taxiways)","Betonplatten / Fugen"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Rollbahnen (Taxiways)","Asphaltbeläge"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Vorfeldflächen / Standplätze","Betonoberflächen"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Vorfeldflächen / Standplätze","Lastaufnahmefähigkeit bei Hitze"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Runway-/Rollbahnbefeuerung","Kabeltrassen"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Runway-/Rollbahnbefeuerung","Leuchtenkörper / Elektronik"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Beschilderung Runway/Rollbahn","Kabel"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Beschilderung Runway/Rollbahn","Lesbarkeit / Verformung"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Vorfeldbeleuchtung","Kabel"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Vorfeldbeleuchtung","Leuchtmittel / Elektronik"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Standplatzmarkierungen (Farbe/Hitzebeständigkeit)"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Entwässerungssystem Runway/Vorfeld"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Meteorologische Messtechnik","Wetterstation / Sensorik Flugfeld"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Meteorologische Messtechnik","Windmesser (Anemometer)"],
+["Infrastruktur","Start- und Landebahnen & Vorfeld","Meteorologische Messtechnik","Sichtweitenmessgeräte (Transmissometer)"],
 
-    return [infra, betrieb, personal];
+["Infrastruktur","Terminalgebäude","Terminal 1 – Klimaanlage","Kältemaschinen / Chiller"],
+["Infrastruktur","Terminalgebäude","Terminal 1 – Klimaanlage","Lüftungskanäle"],
+["Infrastruktur","Terminalgebäude","Terminal 1 – Klimaanlage","Kühltürme"],
+["Infrastruktur","Terminalgebäude","Terminal 2 – Klimaanlage","Kältemaschinen / Chiller"],
+["Infrastruktur","Terminalgebäude","Terminal 2 – Klimaanlage","Lüftungskanäle"],
+["Infrastruktur","Terminalgebäude","Terminal 2 – Klimaanlage","Kühltürme"],
+["Infrastruktur","Terminalgebäude","Gebäudeleittechnik (BMS)","Temperatursensorik"],
+["Infrastruktur","Terminalgebäude","Gebäudeleittechnik (BMS)","Regelalgorithmen / Automatisierung"],
+["Infrastruktur","Terminalgebäude","Terminal 1 – Gebäudehülle","Dachabdichtung"],
+["Infrastruktur","Terminalgebäude","Terminal 1 – Gebäudehülle","Glasfassaden"],
+["Infrastruktur","Terminalgebäude","Terminal 1 – Gebäudehülle","Verschattungssysteme"],
+["Infrastruktur","Terminalgebäude","Terminal 2 – Gebäudehülle","Dachabdichtung"],
+["Infrastruktur","Terminalgebäude","Terminal 2 – Gebäudehülle","Glasfassaden"],
+["Infrastruktur","Terminalgebäude","Terminal 2 – Gebäudehülle","Verschattungssysteme"],
+["Infrastruktur","Terminalgebäude","Fluggastbrücken","Materialermüdung bei Hitze"],
+["Infrastruktur","Terminalgebäude","Fluggastbrücken","Hydraulik- / Antriebssysteme"],
+["Infrastruktur","Terminalgebäude","Fluggastbrücken","Dichtungen zum Flugzeug"],
+["Infrastruktur","Terminalgebäude","Fluggastbrücken","Klimatisierung Brückeninnenraum"],
+["Infrastruktur","Terminalgebäude","Personenbeförderung im Gebäude","Fahrsteige (People Mover)"],
+["Infrastruktur","Terminalgebäude","Personenbeförderung im Gebäude","Aufzüge","Antriebstechnik"],
+["Infrastruktur","Terminalgebäude","Personenbeförderung im Gebäude","Aufzüge","Steuerungselektronik"],
+["Infrastruktur","Terminalgebäude","Personenbeförderung im Gebäude","Fahrtreppen"],
+["Infrastruktur","Terminalgebäude","Personenbeförderung im Gebäude","Notabschaltung bei Übertemperatur"],
+["Infrastruktur","Terminalgebäude","Gepäckförderanlage (BHS)","Fördermotoren / Antriebe"],
+["Infrastruktur","Terminalgebäude","Gepäckförderanlage (BHS)","Sortieranlagen-Elektronik"],
+["Infrastruktur","Terminalgebäude","Gepäckförderanlage (BHS)","Gepäckscanner (CT-Scanner)"],
+["Infrastruktur","Terminalgebäude","Gepäckförderanlage (BHS)","Steuerungssoftware / Server BHS"],
+["Infrastruktur","Terminalgebäude","Gepäckförderanlage (BHS)","Förderbänder / Gurtmaterial"],
+["Infrastruktur","Terminalgebäude","Wasserversorgung / Sanitär","Trinkwasserleitungen"],
+["Infrastruktur","Terminalgebäude","Wasserversorgung / Sanitär","Löschwasseranlagen"],
+["Infrastruktur","Terminalgebäude","Wasserversorgung / Sanitär","Abwasserpumpen"],
+["Infrastruktur","Terminalgebäude","Brandschutzanlagen","Sprinkleranlagen"],
+["Infrastruktur","Terminalgebäude","Brandschutzanlagen","Rauchmelder / Brandmeldeanlage"],
+["Infrastruktur","Terminalgebäude","Brandschutzanlagen","Rauch- / Wärmeabzugsanlagen (RWA)"],
+
+["Infrastruktur","Energieversorgung","Trafostationen","Trafo Terminal 1"],
+["Infrastruktur","Energieversorgung","Trafostationen","Trafo Terminal 2"],
+["Infrastruktur","Energieversorgung","Trafostationen","Trafo Vorfeld"],
+["Infrastruktur","Energieversorgung","Trafostationen","Kühlung Trafostation"],
+["Infrastruktur","Energieversorgung","Notstromversorgung","Diesel-Notstromaggregate"],
+["Infrastruktur","Energieversorgung","Notstromversorgung","USV-Anlagen zentral"],
+["Infrastruktur","Energieversorgung","Kabeltrassen / Mittelspannungsnetz","Kabelalterung bei Dauerhitze"],
+["Infrastruktur","Energieversorgung","Photovoltaikanlagen","Wechselrichter"],
+["Infrastruktur","Energieversorgung","Photovoltaikanlagen","Modulwirkungsgrad bei Hitze"],
+
+["Infrastruktur","IT- & Kommunikationsinfrastruktur","Rechenzentrum / Serverräume","Kühlsysteme Serverraum"],
+["Infrastruktur","IT- & Kommunikationsinfrastruktur","Rechenzentrum / Serverräume","USV IT"],
+["Infrastruktur","IT- & Kommunikationsinfrastruktur","Rechenzentrum / Serverräume","Brandfrüherkennung"],
+["Infrastruktur","IT- & Kommunikationsinfrastruktur","Rechenzentrum / Serverräume","Redundanz-Kühlung (N+1)"],
+["Infrastruktur","IT- & Kommunikationsinfrastruktur","Netzwerkinfrastruktur","Switches / Router-Racks"],
+["Infrastruktur","IT- & Kommunikationsinfrastruktur","Netzwerkinfrastruktur","Glasfaserverbindungen Außenbereich"],
+["Infrastruktur","IT- & Kommunikationsinfrastruktur","Flugsicherungs-Schnittstellen","Datenübertragung DFS"],
+["Infrastruktur","IT- & Kommunikationsinfrastruktur","Funk- und Navigationstechnik","Antennenanlagen"],
+["Infrastruktur","IT- & Kommunikationsinfrastruktur","Funk- und Navigationstechnik","Radaranlagen"],
+["Infrastruktur","IT- & Kommunikationsinfrastruktur","WLAN-Infrastruktur Passagierbereiche"],
+["Infrastruktur","IT- & Kommunikationsinfrastruktur","Kameraüberwachung (CCTV)","Außenkameras Hitzebeständigkeit"],
+
+["Infrastruktur","Fracht- & Kraftstoffinfrastruktur","Cargo-Halle","Kühllagerbereiche"],
+["Infrastruktur","Fracht- & Kraftstoffinfrastruktur","Cargo-Halle","Kühlkette Pharmafracht"],
+["Infrastruktur","Fracht- & Kraftstoffinfrastruktur","Cargo-Halle","Elektro- / Kühlaggregate"],
+["Infrastruktur","Fracht- & Kraftstoffinfrastruktur","Kerosin-Tanklager","Tankwandtemperatur"],
+["Infrastruktur","Fracht- & Kraftstoffinfrastruktur","Kerosin-Tanklager","Belüftungssysteme"],
+["Infrastruktur","Fracht- & Kraftstoffinfrastruktur","Betankungsleitungen (Hydranten-System)"],
+
+["Infrastruktur","Landseitige Infrastruktur & Wassermanagement","Parkhäuser","Lüftungssysteme"],
+["Infrastruktur","Landseitige Infrastruktur & Wassermanagement","Parkhäuser","Elektroinstallation"],
+["Infrastruktur","Landseitige Infrastruktur & Wassermanagement","Parkhäuser","Ladeinfrastruktur E-Fahrzeuge"],
+["Infrastruktur","Landseitige Infrastruktur & Wassermanagement","Zufahrtsstraßen / Vorfahrten","Asphaltbeläge"],
+["Infrastruktur","Landseitige Infrastruktur & Wassermanagement","ÖPNV-Anbindung / Bahnhof","Bahnsteigüberdachung"],
+["Infrastruktur","Landseitige Infrastruktur & Wassermanagement","ÖPNV-Anbindung / Bahnhof","Signaltechnik"],
+["Infrastruktur","Landseitige Infrastruktur & Wassermanagement","Regenwasserentwässerung"],
+["Infrastruktur","Landseitige Infrastruktur & Wassermanagement","Löschwasserreservoirs"],
+["Infrastruktur","Landseitige Infrastruktur & Wassermanagement","Kühlwasserkreisläufe technische Anlagen"],
+["Infrastruktur","Landseitige Infrastruktur & Wassermanagement","Trinkwasserreserven / -tanks"],
+
+["Flughafenbetrieb","Vorfeldprozesse","Gepäck- und Frachtabfertigung","Kühlkette Fracht / Pharma"],
+["Flughafenbetrieb","Vorfeldprozesse","Gepäck- und Frachtabfertigung","Ladezeiten Gepäck bei Hitze"],
+["Flughafenbetrieb","Vorfeldprozesse","Gepäck- und Frachtabfertigung","Tierbeförderung (Live Animals)"],
+["Flughafenbetrieb","Vorfeldprozesse","Betankung","Kraftstoffverdunstung"],
+["Flughafenbetrieb","Vorfeldprozesse","Betankung","Sicherheitsabstände bei Hitze"],
+["Flughafenbetrieb","Vorfeldprozesse","Pushback & Schleppvorgänge"],
+["Flughafenbetrieb","Vorfeldprozesse","Ramp-Agent-Koordination bei Hitzepausen"],
+["Flughafenbetrieb","Vorfeldprozesse","Wasserversorgung Flugzeuge (Potable Water Service)"],
+["Flughafenbetrieb","Vorfeldprozesse","Toilettenentsorgung Flugzeuge (Lavatory Service)"],
+["Flughafenbetrieb","Vorfeldprozesse","Kabinenreinigung zwischen Flügen"],
+
+["Flughafenbetrieb","Bodengeräte & Fahrzeugtechnik","Gepäckschlepper"],
+["Flughafenbetrieb","Bodengeräte & Fahrzeugtechnik","Pushback-Fahrzeuge"],
+["Flughafenbetrieb","Bodengeräte & Fahrzeugtechnik","Tankfahrzeuge"],
+["Flughafenbetrieb","Bodengeräte & Fahrzeugtechnik","Reifen & Rollmaterial allgemein"],
+["Flughafenbetrieb","Bodengeräte & Fahrzeugtechnik","Elektrofahrzeuge","Batteriekühlung"],
+["Flughafenbetrieb","Bodengeräte & Fahrzeugtechnik","Elektrofahrzeuge","Ladestationen"],
+["Flughafenbetrieb","Bodengeräte & Fahrzeugtechnik","Fluggasttreppen / Bustreppen"],
+["Flughafenbetrieb","Bodengeräte & Fahrzeugtechnik","Kühlsysteme der Fahrzeuge"],
+
+["Flughafenbetrieb","Flugbetrieb & Luftraumkoordination","Startbahnperformance bei Hitze","Gewichtsbeschränkungen (Density Altitude)"],
+["Flughafenbetrieb","Flugbetrieb & Luftraumkoordination","Startbahnperformance bei Hitze","Startzeitfenster-Anpassung"],
+["Flughafenbetrieb","Flugbetrieb & Luftraumkoordination","Reifen- / Bremsenbelastung bei Rollvorgängen"],
+["Flughafenbetrieb","Flugbetrieb & Luftraumkoordination","Triebwerksleistung bei Hitze"],
+["Flughafenbetrieb","Flugbetrieb & Luftraumkoordination","Slotmanagement bei Kapazitätseinschränkung"],
+["Flughafenbetrieb","Flugbetrieb & Luftraumkoordination","Tower-Betrieb bei Hitze"],
+["Flughafenbetrieb","Flugbetrieb & Luftraumkoordination","Anflug- / Abflugsteuerung bei Kapazitätsengpässen"],
+["Flughafenbetrieb","Flugbetrieb & Luftraumkoordination","Koordination mit DFS (Deutsche Flugsicherung)"],
+["Flughafenbetrieb","Flugbetrieb & Luftraumkoordination","Bodenradar / Überwachung Vorfeldverkehr"],
+
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Klimatisierung Wartebereiche"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Trinkwasserstationen Passagiere"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Sicherheitskontrolle","Warteschlangenmanagement"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Sicherheitskontrolle","Gerätekühlung (Scanner)"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Check-in-Bereiche (Klimakomfort)"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Gepäckausgabe","Kühlung Ausgabebereich"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Gepäckausgabe","Fördersystem-Kühlung"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Gate-Bereiche (Klimakomfort)"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Info- und Erste-Hilfe-Stationen im Terminal"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Barrierefreie Bereiche bei Hitze"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Zoll- und Grenzkontrolle (Klimakomfort)"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Duty-Free- / Retailbereiche (Kühlung)"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Gastronomie- / Verpflegungsbereiche (Kühlketten)"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Passagierinformation","Fluginformationsanzeigen (FIDS)"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Passagierinformation","Durchsagen / Lautsprecheranlagen"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Passagierinformation","App- / Website-Kommunikation bei Störungen"],
+["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Passagierinformation","Anschlussflug-Management bei Verspätungen"],
+
+["Flughafenbetrieb","Notfall- und Krisenmanagement","Flughafenfeuerwehr","Einsatzfahrzeuge-Kühlung"],
+["Flughafenbetrieb","Notfall- und Krisenmanagement","Flughafenfeuerwehr","Personalschutz Feuerwehr"],
+["Flughafenbetrieb","Notfall- und Krisenmanagement","Sanitätsdienst / Rettungswache"],
+["Flughafenbetrieb","Notfall- und Krisenmanagement","Krisenstab & Lagekommunikation"],
+["Flughafenbetrieb","Notfall- und Krisenmanagement","Evakuierungspläne bei Hitzenotfällen"],
+["Flughafenbetrieb","Notfall- und Krisenmanagement","Notfallpläne für Stromausfall bei Hitzespitzen"],
+["Flughafenbetrieb","Notfall- und Krisenmanagement","Defibrillatoren / Notfallausrüstung Standorte"],
+["Flughafenbetrieb","Notfall- und Krisenmanagement","Notfallübungen / Simulationen Hitzeszenario"],
+
+["Flughafenbetrieb","Externe Dienstleister & landseitiger Verkehr","Caterer (Kühlketten Bordverpflegung)"],
+["Flughafenbetrieb","Externe Dienstleister & landseitiger Verkehr","Bodenverkehrsdienstleister (Ground Handler) allgemein"],
+["Flughafenbetrieb","Externe Dienstleister & landseitiger Verkehr","Reinigungsdienste"],
+["Flughafenbetrieb","Externe Dienstleister & landseitiger Verkehr","Sicherheitsdienstleister"],
+["Flughafenbetrieb","Externe Dienstleister & landseitiger Verkehr","Anlieferung Betriebsstoffe"],
+["Flughafenbetrieb","Externe Dienstleister & landseitiger Verkehr","Parkraummanagement"],
+["Flughafenbetrieb","Externe Dienstleister & landseitiger Verkehr","Shuttle- / Busverkehr"],
+["Flughafenbetrieb","Externe Dienstleister & landseitiger Verkehr","Taxistände"],
+["Flughafenbetrieb","Externe Dienstleister & landseitiger Verkehr","Mietwagenbereich"],
+["Flughafenbetrieb","Externe Dienstleister & landseitiger Verkehr","Fahrradabstellanlagen / Mobilitätsangebote"],
+["Flughafenbetrieb","Externe Dienstleister & landseitiger Verkehr","Ladeinfrastruktur Elektro-Pkw Besucherparkplätze"],
+
+["Personal & Governance","Arbeitsschutz & Gesundheit","Hitzeschutz Vorfeldpersonal","Trinkwasserversorgung"],
+["Personal & Governance","Arbeitsschutz & Gesundheit","Hitzeschutz Vorfeldpersonal","Pausenregelungen"],
+["Personal & Governance","Arbeitsschutz & Gesundheit","Hitzeschutz Vorfeldpersonal","PSA / Kleidung"],
+["Personal & Governance","Arbeitsschutz & Gesundheit","Hitzeschutz Terminalpersonal"],
+["Personal & Governance","Arbeitsschutz & Gesundheit","Hitzeschutz Tower- / Kontrollpersonal"],
+["Personal & Governance","Arbeitsschutz & Gesundheit","Hitzeschutz Reinigungs- / Wartungspersonal"],
+["Personal & Governance","Arbeitsschutz & Gesundheit","Hitzeschutz Feuerwehr / Rettungsdienst"],
+["Personal & Governance","Arbeitsschutz & Gesundheit","Hitzeschutz Cargo- / Lagerpersonal"],
+["Personal & Governance","Arbeitsschutz & Gesundheit","Hitzeschutz Bauhof- / Instandhaltungspersonal"],
+["Personal & Governance","Arbeitsschutz & Gesundheit","Hitzeschutz Reinigungspersonal Flugzeugkabinen"],
+["Personal & Governance","Arbeitsschutz & Gesundheit","Klimatisierte Pausenräume"],
+["Personal & Governance","Arbeitsschutz & Gesundheit","Erste-Hilfe-Ausstattung Hitzenotfälle"],
+["Personal & Governance","Arbeitsschutz & Gesundheit","Arbeitsmedizinische Vorsorge bei Hitzearbeit"],
+
+["Personal & Governance","Personalplanung & Verfügbarkeit","Schichtplanung bei Extremhitze"],
+["Personal & Governance","Personalplanung & Verfügbarkeit","Krankenstands- / Ausfallprognose"],
+["Personal & Governance","Personalplanung & Verfügbarkeit","Ersatzpersonal-Pools"],
+["Personal & Governance","Personalplanung & Verfügbarkeit","Personalplanung Sicherheitsdienst"],
+["Personal & Governance","Personalplanung & Verfügbarkeit","Personalplanung Gepäck- / Frachtabfertigung"],
+["Personal & Governance","Personalplanung & Verfügbarkeit","Personalplanung Feuerwehr / Rettungsdienst bei Hitze"],
+["Personal & Governance","Personalplanung & Verfügbarkeit","Personalplanung Fluggastabfertigung (Check-in/Gate)"],
+["Personal & Governance","Personalplanung & Verfügbarkeit","Überstundenregelungen bei Hitzeeinsätzen"],
+
+["Personal & Governance","Schulung & Sensibilisierung","Hitzeschutz-Schulungen"],
+["Personal & Governance","Schulung & Sensibilisierung","Erste-Hilfe-Schulungen Hitzenotfälle"],
+["Personal & Governance","Schulung & Sensibilisierung","Schulungen für neue Mitarbeitende"],
+["Personal & Governance","Schulung & Sensibilisierung","Regelmäßige Auffrischungsschulungen"],
+["Personal & Governance","Schulung & Sensibilisierung","Schulung Führungskräfte zu Eskalationsprozessen"],
+["Personal & Governance","Schulung & Sensibilisierung","Sensibilisierungskampagnen für Passagiere"],
+
+["Personal & Governance","Kommunikation, Governance & Recht","Interne Warnketten / Alarmierung","Meldewege"],
+["Personal & Governance","Kommunikation, Governance & Recht","Interne Warnketten / Alarmierung","Eskalationsstufen"],
+["Personal & Governance","Kommunikation, Governance & Recht","Interne Warnketten / Alarmierung","Rückfallebene bei IT-Ausfall"],
+["Personal & Governance","Kommunikation, Governance & Recht","Externe Kommunikation (Passagiere, Presse)"],
+["Personal & Governance","Kommunikation, Governance & Recht","Zusammenarbeit mit Behörden (DWD, Katastrophenschutz)"],
+["Personal & Governance","Kommunikation, Governance & Recht","Koordination mit Airlines"],
+["Personal & Governance","Kommunikation, Governance & Recht","Koordination mit Bodenverkehrsdienstleistern"],
+["Personal & Governance","Kommunikation, Governance & Recht","Meldeportal für Hitzeschäden (Nutzer-Feedback)"],
+["Personal & Governance","Kommunikation, Governance & Recht","Zusammenarbeit mit Nachbarkommunen / Rettungsleitstellen"],
+["Personal & Governance","Kommunikation, Governance & Recht","Krisenkommunikation Social Media"],
+["Personal & Governance","Kommunikation, Governance & Recht","Rollenverteilung im Hitzefall"],
+["Personal & Governance","Kommunikation, Governance & Recht","Eskalationswege Management"],
+["Personal & Governance","Kommunikation, Governance & Recht","Nachbereitung / Lessons Learned"],
+["Personal & Governance","Kommunikation, Governance & Recht","Budgetplanung für Hitzeschutzmaßnahmen"],
+["Personal & Governance","Kommunikation, Governance & Recht","Regelmäßige Überprüfung / Audit des Ebenenmodells"],
+["Personal & Governance","Kommunikation, Governance & Recht","Einbindung Betriebsrat / Personalvertretung"],
+["Personal & Governance","Kommunikation, Governance & Recht","Verantwortlicher Krisenmanager (Rolle)"],
+["Personal & Governance","Kommunikation, Governance & Recht","Arbeitsschutzgesetz-Vorgaben"],
+["Personal & Governance","Kommunikation, Governance & Recht","Betriebsvereinbarungen zu Hitzeperioden"],
+["Personal & Governance","Kommunikation, Governance & Recht","Dokumentationspflichten"],
+["Personal & Governance","Kommunikation, Governance & Recht","Versicherungs- / Haftungsfragen bei Hitzeschäden"],
+["Personal & Governance","Kommunikation, Governance & Recht","Vorgaben der Luftfahrtbehörden (LBA/EASA) zu Hitzegrenzwerten"]
+    ];
+
+    // Vom Nutzer über "Neue Items" ergänzte Punkte (Playbook-Beispiele), inkl. Anlagedatum
+    var NEW_ITEMS = [
+      { row: ["Infrastruktur","Start- und Landebahnen & Vorfeld","Runway 2 (Beton)","Betondeckschicht","Kantenabplatzungen an Fugen"], createdAt: "2026-07-05" },
+      { row: ["Infrastruktur","Terminalgebäude","Fluggastbrücken","Dichtungen Hydraulikzylinder"], createdAt: "2026-08-05" },
+      { row: ["Flughafenbetrieb","Vorfeldprozesse","Gepäck- und Frachtabfertigung","Trockeneisverfügbarkeit für Ersatzkühlung"], createdAt: "2026-05-10" },
+      { row: ["Flughafenbetrieb","Terminalbetrieb & Passagierprozesse","Barrierefreie Erreichbarkeit der Stationen"], createdAt: "2026-06-15" },
+      { row: ["Personal & Governance","Arbeitsschutz & Gesundheit","Hitzeschutz Vorfeldpersonal","Dokumentationspflicht der Pausenzeiten"], createdAt: "2026-06-25" },
+      { row: ["Personal & Governance","Personalplanung & Verfügbarkeit","Frühwarnung durch DWD-Schnittstelle"], createdAt: "2026-08-20" }
+    ];
+    var newItemKeys = {};
+    NEW_ITEMS.forEach(function (n) { newItemKeys[n.row.join("|")] = n.createdAt; });
+
+    // Playbook-Durchläufe: Risikobewertung, Maßnahme, Tracking, Risiko nach Maßnahme
+    var ENTRIES = {};
+    ENTRIES["Infrastruktur|Start- und Landebahnen & Vorfeld|Runway 2 (Beton)|Betondeckschicht|Plattenaufwölbung / Blow-ups"] = function () {
+      var e = makeEntry("rot", "Fugen vor der Hitzeperiode reinigen und neu verfüllen; Plattentemperatur-Monitoring einführen; betroffene Segmente bei Grenzwertüberschreitung vorsorglich sperren.");
+      e.riskNote = "Bei anhaltender Plattentemperatur über ca. 55°C (bei 40°C Lufttemperatur realistisch) und inkompressiblem Material in den Dehnungsfugen steigt das Risiko eines Blow-ups.";
+      e.tracking = { done: true, date: "2026-07-10" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Fugen erneuert; laufendes Plattentemperatur-Monitoring weiterhin erforderlich.";
+      return e;
+    };
+    ENTRIES["Infrastruktur|Terminalgebäude|Fluggastbrücken|Hydraulik- / Antriebssysteme"] = function () {
+      var e = makeEntry("gelb", "Ölkühler nachrüsten und Wartungsintervalle in Hitzeperioden verkürzen.");
+      e.riskNote = "Hydrauliköl der Hubantriebe verliert ab ca. 60°C Öltemperatur an Viskosität, dadurch ungenaue Ankopplung an die Flugzeugtür.";
+      return e;
+    };
+    ENTRIES["Flughafenbetrieb|Vorfeldprozesse|Gepäck- und Frachtabfertigung|Kühlkette Fracht / Pharma"] = function () {
+      var e = makeEntry("rot", "Mobile Kühlcontainer für Standzeiten über 15 Minuten bereitstellen; priorisierte Abfertigung bei Hitzewarnung.");
+      e.riskNote = "Pharmafracht mit 2–8°C-Kühlkette verliert bei über 40°C Vorfeldtemperatur und Standzeiten über 30 Minuten außerhalb der Kühlkette ihre Zulassung.";
+      e.tracking = { done: true, date: "2026-05-15" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Kühlcontainer im Einsatz; Kapazität reicht bei Spitzenlast noch nicht für alle Standplätze.";
+      return e;
+    };
+    ENTRIES["Flughafenbetrieb|Terminalbetrieb & Passagierprozesse|Trinkwasserstationen Passagiere"] = function () {
+      var e = makeEntry("gelb", "Zusätzliche mobile Trinkwasserstationen in Sicherheitskontrolle und Gate-Zonen für Hitzeperioden.");
+      e.riskNote = "Bei über 3.000 Passagieren/Stunde in Wartebereichen und Innentemperaturen über 28°C reicht die vorhandene Anzahl Trinkwasserspender nicht aus.";
+      e.tracking = { done: true, date: "2026-06-20" };
+      e.residualRisk = "gruen";
+      e.residualNote = "Kapazität nach Aufstellung der mobilen Stationen ausreichend.";
+      return e;
+    };
+    ENTRIES["Personal & Governance|Arbeitsschutz & Gesundheit|Hitzeschutz Vorfeldpersonal|Pausenregelungen"] = function () {
+      var e = makeEntry("rot", "Stufenregelung einführen: ab 35°C 10 Min./Std. Schatten-Pause, ab 38°C 15 Min./Std.");
+      e.riskNote = "Bei gefühlten Temperaturen über 38°C auf dem Vorfeld (Asphalt-Reflexion) fehlt eine verbindliche Pausenregelung; aktuell im Ermessen der Schichtleitung.";
+      e.tracking = { done: true, date: "2026-07-01" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Stufenregelung in Betriebsvereinbarung wirksam; Einhaltung bei Personalmangel weiterhin von Schichtleitung abhängig.";
+      return e;
+    };
+    ENTRIES["Personal & Governance|Personalplanung & Verfügbarkeit|Schichtplanung bei Extremhitze"] = function () {
+      var e = makeEntry("gelb", "Hitze-Bereitschaftspool definieren, der bei DWD-Hitzewarnstufe 2 automatisch aktiviert wird.");
+      e.riskNote = "Bei mehrtägigen Hitzewarnungen (mehr als 3 Tage über 35°C) steigt der kurzfristige Krankenstand im Vorfelddienst um bis zu 20% ohne Reaktion der Schichtplanung.";
+      return e;
+    };
+
+    var catNodes = {
+      "Infrastruktur": makeNode("Infrastruktur", 1, { id: "cat_infra", category: "Infrastruktur" }),
+      "Flughafenbetrieb": makeNode("Flughafenbetrieb", 1, { id: "cat_betrieb", category: "Flughafenbetrieb" }),
+      "Personal & Governance": makeNode("Personal & Governance", 1, { id: "cat_personal", category: "Personal & Governance" })
+    };
+
+    function addRow(row) {
+      var cat = row[0];
+      var cursor = catNodes[cat];
+      var keyParts = [cat];
+      for (var i = 1; i < row.length; i++) {
+        var name = row[i];
+        var level = i + 1; // Ebene 2 = row[1]
+        keyParts.push(name);
+        var found = null;
+        for (var j = 0; j < cursor.children.length; j++) {
+          if (cursor.children[j].name === name) { found = cursor.children[j]; break; }
+        }
+        if (!found) {
+          var key = keyParts.join("|");
+          var createdAt = newItemKeys[key];
+          found = makeNode(name, level, {
+            category: cat,
+            isNew: !!createdAt,
+            createdBy: createdAt ? "nutzer" : "entwickler",
+            createdAt: createdAt || null
+          });
+          cursor.children.push(found);
+        }
+        cursor = found;
+      }
+      var fullKey = keyParts.join("|");
+      if (ENTRIES[fullKey]) {
+        cursor.entry = ENTRIES[fullKey]();
+      } else if (newItemKeys[fullKey]) {
+        cursor.entry = makeEntry("grau", "");
+      }
+    }
+
+    RAW.forEach(addRow);
+    NEW_ITEMS.forEach(function (n) { addRow(n.row); });
+
+    return [catNodes["Infrastruktur"], catNodes["Flughafenbetrieb"], catNodes["Personal & Governance"]];
   }
 
   var state = {
