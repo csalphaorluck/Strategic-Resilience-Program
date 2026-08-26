@@ -195,6 +195,46 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 
 .srp-toolbar select.form-control { min-width: 190px; }
 
+/* ---- Globale Suche über alle Ebenen ---- */
+.srp-search { position: relative; max-width: 420px; }
+.srp-search-icon {
+  position: absolute;
+  left: 9px; top: 50%;
+  transform: translateY(-50%);
+  width: 14px; height: 14px;
+  color: #6c757d;
+  pointer-events: none;
+}
+.srp-search input { padding-left: 28px; }
+.srp-search-results {
+  display: none;
+  position: absolute;
+  z-index: 1030;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  max-height: 340px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+.srp-search-result {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f3f5;
+}
+.srp-search-result:last-child { border-bottom: none; }
+.srp-search-result:hover, .srp-search-result:focus-visible { background: #f0f6ff; outline: none; }
+.srp-search-result-name { display: block; font-size: 13.5px; font-weight: 600; color: #212529; }
+.srp-search-result-path { display: block; font-size: 11.5px; color: #6c757d; margin-top: 1px; }
+.srp-search-empty { padding: 10px 12px; font-size: 13px; color: #6c757d; }
+
 /* Admin overview table: on narrow screens, prefer a horizontally scrolling
    table (.table-responsive already wraps it) over squeezing short header
    words like "Fachbereich" into unreadable single-letter columns. */
@@ -367,6 +407,13 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
           <div class="col-12 col-lg-auto mb-2 mb-lg-0" id="adminFachbereichWrap" style="display:none">
             <label for="adminFachbereich" class="mr-1 mb-0 font-weight-bold small">Fachbereich</label>
             <select id="adminFachbereich" class="form-control form-control-sm d-inline-block w-auto"></select>
+          </div>
+          <div class="col-12 col-lg mb-2 mb-lg-0">
+            <div class="srp-search">
+              <svg class="srp-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" id="srpSearchInput" class="form-control form-control-sm" placeholder="Punkt suchen&hellip; (Name oder Pfad)" autocomplete="off" aria-label="Struktur durchsuchen">
+              <div id="srpSearchResults" class="srp-search-results"></div>
+            </div>
           </div>
           <div class="col-12 col-lg-auto ml-lg-auto">
             <button id="resetBtn" class="btn btn-outline-secondary btn-sm" title="Demo-Daten zur&uuml;cksetzen">
@@ -858,6 +905,36 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
       if (n.children && n.children.length) collectNewItems(n.children, out);
     });
     return out;
+  }
+
+  function flattenAll(nodes, out) {
+    nodes = nodes || state.data;
+    out = out || [];
+    nodes.forEach(function (n) {
+      out.push(n);
+      if (n.children && n.children.length) flattenAll(n.children, out);
+    });
+    return out;
+  }
+
+  // Sucht über Name UND vollen Pfad (z. B. "Beton" findet auch "Runway 2 (Beton)").
+  function searchNodes(query) {
+    var q = query.trim().toLowerCase();
+    if (!q) return [];
+    return flattenAll()
+      .map(function (n) {
+        var pathNames = findPath(n.id).map(function (p) { return p.name; });
+        return { node: n, path: pathNames.join(" › "), pathLower: pathNames.join(" ").toLowerCase() };
+      })
+      .filter(function (r) { return r.pathLower.indexOf(q) !== -1; })
+      .sort(function (a, b) {
+        var an = a.node.name.toLowerCase(), bn = b.node.name.toLowerCase();
+        var aStarts = an.indexOf(q) === 0 ? 0 : 1;
+        var bStarts = bn.indexOf(q) === 0 ? 0 : 1;
+        if (aStarts !== bStarts) return aStarts - bStarts;
+        return an.length - bn.length;
+      })
+      .slice(0, 20);
   }
 
   function escapeHtml(str) {
@@ -1513,6 +1590,48 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   document.getElementById("resetBtn").addEventListener("click", function () {
     if (confirm("Alle lokalen &Auml;nderungen verwerfen und Demo-Daten neu laden?")) resetDemo();
   });
+
+  (function setupSearch() {
+    var input = document.getElementById("srpSearchInput");
+    var results = document.getElementById("srpSearchResults");
+
+    function close() { results.style.display = "none"; results.innerHTML = ""; }
+
+    function renderResults(query) {
+      var matches = searchNodes(query);
+      if (!query.trim()) { close(); return; }
+      if (!matches.length) {
+        results.innerHTML = '<div class="srp-search-empty">Keine Treffer f&uuml;r &bdquo;' + escapeHtml(query) + '&ldquo;</div>';
+        results.style.display = "block";
+        return;
+      }
+      results.innerHTML = matches.map(function (m) {
+        return '<button type="button" class="srp-search-result" data-goto-search="' + m.node.id + '">' +
+          '<span class="srp-search-result-name">' + escapeHtml(m.node.name) + '</span>' +
+          '<span class="srp-search-result-path">' + escapeHtml(m.path) + '</span>' +
+          '</button>';
+      }).join("");
+      results.style.display = "block";
+      results.querySelectorAll("[data-goto-search]").forEach(function (el) {
+        el.addEventListener("click", function () {
+          state.selectedId = el.getAttribute("data-goto-search");
+          input.value = "";
+          close();
+          closeSidebarOnNarrowViewport();
+          render();
+        });
+      });
+    }
+
+    input.addEventListener("input", function () { renderResults(input.value); });
+    input.addEventListener("focus", function () { if (input.value.trim()) renderResults(input.value); });
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") { input.value = ""; close(); input.blur(); }
+    });
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".srp-search")) close();
+    });
+  })();
 
   load();
   render();
