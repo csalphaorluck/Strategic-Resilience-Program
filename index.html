@@ -167,6 +167,19 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   font-size: 20px;
   line-height: 1;
 }
+.srp-browse-card-tracking { margin-top: -1px; }
+.srp-track-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  line-height: 1.5;
+}
+.srp-track-chip.srp-track-done { background: #e6f4ea; color: #1e6b32; }
+.srp-track-chip.srp-track-open { background: #fdf1e0; color: #8a5a00; }
 
 /* ---- Klickbarer Breadcrumb ---- */
 .breadcrumb-item a { color: #0d6efd; text-decoration: none; }
@@ -1190,6 +1203,18 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   }
 
   // ---------- Browse-Ansicht: Knoten mit Kindern (Ebene 1-4) ----------
+  // Tracking-Chip: nur für bewertete Blattpunkte (Ampel != grau) - zeigt, ob die
+  // hinterlegte Maßnahme laut Tracking bereits durchgeführt wurde oder noch offen ist.
+  function renderTrackingChip(child, isBranch) {
+    if (isBranch) return "";
+    var e = child.entry;
+    if (!e || !e.risk || e.risk === "grau") return "";
+    if (e.tracking && e.tracking.done) {
+      return '<span class="srp-track-chip srp-track-done">&#10003; Durchgef&uuml;hrt</span>';
+    }
+    return '<span class="srp-track-chip srp-track-open">Ma&szlig;nahme offen</span>';
+  }
+
   function renderBrowseCard(child) {
     var color = aggregateStatus(child);
     var stats = leafStats(child);
@@ -1198,12 +1223,14 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     var meta = isBranch
       ? (stats.assessed + ' von ' + stats.total + ' bewertet')
       : RISK_LABEL[color];
+    var trackChip = renderTrackingChip(child, isBranch);
     return '<button type="button" class="srp-browse-card" data-node-id="' + child.id + '">' +
       '<span class="srp-browse-card-top">' +
         '<span class="dot ' + color + '" title="' + RISK_LABEL[color] + '"></span>' +
         '<span class="srp-browse-card-name">' + escapeHtml(child.name) + badge + '</span>' +
       '</span>' +
       '<span class="srp-browse-card-meta"><span>Ebene ' + child.level + '</span><span>' + meta + '</span></span>' +
+      (trackChip ? '<span class="srp-browse-card-tracking">' + trackChip + '</span>' : '') +
       '<span class="srp-browse-card-arrow" aria-hidden="true">&rsaquo;</span>' +
     '</button>';
   }
