@@ -1222,7 +1222,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     var isBranch = child.children && child.children.length;
     var meta = isBranch
       ? (stats.assessed + ' von ' + stats.total + ' bewertet')
-      : RISK_LABEL[color];
+      : (color === "grau" ? "" : RISK_LABEL[color]);
     var trackChip = renderTrackingChip(child, isBranch);
     return '<button type="button" class="srp-browse-card" data-node-id="' + child.id + '">' +
       '<span class="srp-browse-card-top">' +
