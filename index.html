@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Strategic Resilience Program &ndash; Prototyp</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%230857c3'/%3E%3Cpath d='M8 25 L20 11 L32 25' fill='none' stroke='%23ffffff' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M13.5 30.5 L20 23.5 L26.5 30.5' fill='none' stroke='%23ea8f0a' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -1565,6 +1566,13 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     } else {
       renderLeafView(container, node, role);
     }
+  }
+
+  // Verdrahtet die Navigationspfad-Links (data-goto). Wird direkt von
+  // renderBrowseView/renderLeafView aufgerufen statt nur einmal von
+  // buildDetailMarkup - so bleibt der Pfad auch nach einem internen
+  // Neu-Rendern (z.B. nach "Zur&uuml;cksetzen" oder "Speichern") klickbar.
+  function wireBreadcrumb(container) {
     container.querySelectorAll("[data-goto]").forEach(function (el) {
       el.addEventListener("click", function (ev) {
         ev.preventDefault();
@@ -1764,6 +1772,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 
     container.innerHTML = html;
     wireNodeToolbar(container, node, role);
+    wireBreadcrumb(container);
 
     container.querySelectorAll(".srp-browse-card").forEach(function (el) {
       el.addEventListener("click", function () {
@@ -1845,6 +1854,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 
     container.innerHTML = html;
     wireNodeToolbar(container, node, role);
+    wireBreadcrumb(container);
 
     if (node.level < 2) return;
 
@@ -1882,9 +1892,12 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 
     saveBtn.addEventListener("click", function () {
       node.entry = cloneEntry(e);
-      save();
-      renderTree();
-      renderLeafView(container, node, role);
+      // Nach dem Speichern eine Ebene nach oben springen, statt auf der
+      // gerade gespeicherten Massnahme stehen zu bleiben. render() ruft
+      // renderTree() und save() bereits selbst auf.
+      var parent = findParent(node.id);
+      state.selectedId = parent ? parent.id : node.id;
+      render();
     });
     resetBtn.addEventListener("click", function () {
       renderLeafView(container, node, role);
