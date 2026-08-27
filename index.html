@@ -57,6 +57,13 @@
   --srp-sidebar-hover: rgba(255, 255, 255, 0.08);
   --srp-sidebar-line: rgba(255, 255, 255, 0.1);
 
+  /* Eigener, dunklerer Blauton fuer die Karte einer einzelnen Massnahme -
+     hebt sie klar von den helleren Drilldown-Karten ab (heller Text darauf). */
+  --srp-leaf-bg: #0f2a55;
+  --srp-leaf-text: #eef4ff;
+  --srp-leaf-muted: rgba(238, 244, 255, 0.7);
+  --srp-leaf-line: rgba(255, 255, 255, 0.14);
+
   --srp-radius: 16px;
   --srp-radius-sm: 11px;
   --srp-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.08);
@@ -109,6 +116,12 @@ input[type="date"], .srp-search-result-path {
 }
 .main-header .nav-link { color: var(--srp-ink); }
 .main-header .navbar-text { color: var(--srp-ink); font-weight: 600; }
+.srp-header-title {
+  font-family: var(--srp-font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
 
 /* Karten: eine konsistente, flache Optik statt farbiger card-outline-Ränder */
 .card {
@@ -338,6 +351,10 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 }
 .srp-tree .cat-row.selected .cat-chevron { color: rgba(255, 255, 255, 0.85); }
 .srp-tree .cat-row .label { flex: 1; min-width: 0; }
+/* Lange, zusammengesetzte deutsche Begriffe (z.B. "Kommunikationsinfrastruktur")
+   sollen bei Bedarf sauber mit Trennstrich umbrechen statt mitten im Wort
+   willkuerlich abzureissen. */
+.srp-tree .label { word-break: normal; overflow-wrap: break-word; hyphens: auto; }
 .srp-tree .cat-row .cat-count {
   font-size: 11px;
   font-weight: 500;
@@ -392,7 +409,6 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   text-align: left;
   background: var(--srp-surface);
   border: 1px solid var(--srp-line);
-  border-left: 4px solid var(--srp-line);
   border-radius: var(--srp-radius-sm);
   padding: 18px 36px 18px 18px;
   cursor: pointer;
@@ -475,6 +491,79 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   letter-spacing: 0.05em;
   color: var(--srp-muted);
   margin-bottom: 14px;
+}
+
+/* ---- Speichern/Zur&uuml;cksetzen-Zeile am Ende einer Massnahme ---- */
+.srp-entry-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+.srp-entry-dirty {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--srp-brand-amber);
+}
+.btn:disabled { opacity: 0.45; cursor: default; }
+
+/* ---- Einzelne Massnahme (Blattansicht): eigener, dunklerer Blauton mit
+   heller Schrift - hebt sich bewusst von den helleren Drilldown-Karten ab. ---- */
+.srp-leaf-card {
+  background: var(--srp-leaf-bg);
+  border-color: var(--srp-leaf-line);
+  color: var(--srp-leaf-text);
+}
+.srp-leaf-card .card-header {
+  background: var(--srp-leaf-bg);
+  border-bottom-color: var(--srp-leaf-line);
+}
+.srp-leaf-card .card-title,
+.srp-leaf-card h1, .srp-leaf-card h2, .srp-leaf-card h3,
+.srp-leaf-card h4, .srp-leaf-card h5, .srp-leaf-card h6 {
+  color: var(--srp-leaf-text);
+}
+.srp-leaf-card .text-muted,
+.srp-leaf-card label,
+.srp-leaf-card .srp-section-title,
+.srp-leaf-card .srp-path-caption {
+  color: var(--srp-leaf-muted) !important;
+}
+.srp-leaf-card .srp-divider { border-top-color: var(--srp-leaf-line); }
+.srp-leaf-card .srp-path-item { background: rgba(255, 255, 255, 0.14); color: #dce8ff; }
+.srp-leaf-card .srp-path-item:hover, .srp-leaf-card .srp-path-item:focus-visible { background: rgba(255, 255, 255, 0.24); color: #fff; }
+.srp-leaf-card .srp-path-sep { color: rgba(255, 255, 255, 0.4); }
+.srp-leaf-card .badge-light { background: rgba(255, 255, 255, 0.16); color: var(--srp-leaf-text); }
+.srp-leaf-card .risk-pill { background: rgba(255, 255, 255, 0.12); color: var(--srp-leaf-text); }
+.srp-leaf-card .risk-arrow { color: var(--srp-leaf-muted); }
+.srp-leaf-card .srp-entry-dirty { color: #ffd27a; }
+.srp-leaf-card .btn-outline-secondary {
+  color: var(--srp-leaf-text);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+.srp-leaf-card .btn-outline-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.55);
+  color: #fff;
+}
+.srp-leaf-card .btn-outline-primary {
+  color: #bcd4ff;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+.srp-leaf-card .btn-outline-primary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #bcd4ff;
+  color: #fff;
+}
+.srp-leaf-card .btn-outline-danger {
+  color: #ff9f95;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+.srp-leaf-card .btn-outline-danger:hover {
+  background: rgba(255, 90, 70, 0.18);
+  border-color: #ff9f95;
+  color: #fff;
 }
 
 .srp-toolbar select.form-control { min-width: 190px; }
@@ -640,7 +729,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
         </a>
       </li>
     </ul>
-    <span class="navbar-text font-weight-bold ml-2">Strategic Resilience Program</span>
+    <span class="navbar-text srp-header-title ml-2">Strategic Resilience Program</span>
     <span class="badge badge-secondary ml-2 d-none d-sm-inline-block">Vorbereitung &middot; kein Produktivsystem</span>
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
@@ -762,12 +851,6 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   var RISK_LEVELS = ["grau", "gruen", "gelb", "rot"];
   var RISK_LABEL = { grau: "Grau – nicht bewertet", gruen: "Grün – kein Risiko", gelb: "Gelb – tolerierbar", rot: "Rot – inakzeptabel" };
 
-  // Dezente Farbakzente für die Ebene-2-Gruppen direkt unter einer Kategorie
-  // (schnellere Unterscheidung beim Durchklicken) - bewusst blau/violett/teal-Töne,
-  // die sich klar von der roten/gelben/grünen Ampel-Skala abheben, damit die
-  // Gruppenfarbe nie mit einem Risikostatus verwechselt wird.
-  var GROUP_COLORS = ["#4c6fd6", "#0f9488", "#8b5cf6", "#c2578f", "#546a91", "#0e7c86", "#7c6a4d", "#3f7ea6"];
-
   var uidCounter = 1;
   function uid(prefix) { return prefix + "_" + (uidCounter++) + "_" + Math.random().toString(36).slice(2, 7); }
 
@@ -795,6 +878,12 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       residualRisk: "",
       residualNote: ""
     };
+  }
+
+  // Tiefe Kopie eines Eintrags fuer den Bearbeitungs-Entwurf (Speichern/Zuruecksetzen) -
+  // Aenderungen im Formular landen erst im Entwurf, nicht direkt im gespeicherten node.entry.
+  function cloneEntry(entry) {
+    return JSON.parse(JSON.stringify(entry));
   }
 
   function seedData() {
@@ -1604,15 +1693,14 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     return '<span class="srp-track-chip srp-track-open">Ma&szlig;nahme offen</span>';
   }
 
-  function renderBrowseCard(child, groupColor) {
+  function renderBrowseCard(child) {
     var color = aggregateStatus(child);
     var stats = leafStats(child);
     var badge = child.isNew ? '<span class="badge badge-info badge-new ml-1">neu</span>' : "";
     var isBranch = child.children && child.children.length;
     var meta = isBranch ? (stats.assessed + ' von ' + stats.total + ' bewertet') : "";
     var trackChip = renderTrackingChip(child, isBranch);
-    var groupStyle = groupColor ? ' style="border-left-color:' + groupColor + '"' : '';
-    return '<button type="button" class="srp-browse-card"' + groupStyle + ' data-node-id="' + child.id + '">' +
+    return '<button type="button" class="srp-browse-card" data-node-id="' + child.id + '">' +
       '<span class="srp-browse-card-top">' +
         '<span class="dot ' + color + '" title="' + RISK_LABEL[color] + '"></span>' +
         '<span class="srp-browse-card-name">' + escapeHtml(child.name) + badge + '</span>' +
@@ -1633,14 +1721,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     html += '</div>';
     html += '<div class="card-body">';
     html += renderNodeToolbar(node, role);
-    // Farbakzente nur direkt unter einer Kategorie (Ebene 1 -> Ebene-2-Gruppen) -
-    // auf tieferen Ebenen zählt für die Unterscheidung vor allem die Ampel-Farbe,
-    // eine zusätzliche Gruppenfarbe würde dort nur unnötig "bunt" wirken.
-    var useGroupColors = node.level === 1;
-    var cardsHtml = node.children.map(function (child, i) {
-      return renderBrowseCard(child, useGroupColors ? GROUP_COLORS[i % GROUP_COLORS.length] : null);
-    }).join("");
-    html += '<div class="srp-browse-grid">' + cardsHtml + '</div>';
+    html += '<div class="srp-browse-grid">' + node.children.map(renderBrowseCard).join("") + '</div>';
     html += '</div></div>';
 
     container.innerHTML = html;
@@ -1658,8 +1739,12 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   // Ein Blattpunkt lebt als EINE Karte mit klar abgesetzten Abschnitten
   // (statt drei separaten, farblich unterschiedlich umrandeten Karten) -
   // weniger "Boxen in Boxen", ein durchgehender Blick von Bewertung bis Restrisiko.
-  function renderLeafView(container, node, role) {
-    var html = '<div class="card">';
+  // draft: der gerade in Bearbeitung befindliche Entwurf des Eintrags. Fehlt er
+  // (z.B. beim ersten Aufruf oder nach "Zur&uuml;cksetzen"), wird er frisch aus dem
+  // zuletzt gespeicherten node.entry geklont - Eingaben landen also erst nach
+  // Klick auf "Speichern" im echten, gespeicherten Zustand.
+  function renderLeafView(container, node, role, draft) {
+    var html = '<div class="card' + (node.level >= 2 ? ' srp-leaf-card' : '') + '">';
     html += '<div class="card-header">';
     html += renderBreadcrumb(node);
     html += '<h3 class="card-title mb-0">' + escapeHtml(node.name) + ' <span class="badge badge-light font-weight-normal">Ebene ' + node.level + '</span></h3>';
@@ -1669,7 +1754,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 
     if (node.level >= 2) {
       if (!node.entry) node.entry = makeEntry();
-      var e = node.entry;
+      var e = draft || cloneEntry(node.entry);
       html += '<div class="form-group"><label class="font-weight-bold small text-uppercase text-muted">Risikobewertung (individuell)</label>';
       html += '<select class="form-control" data-field="risk">' + RISK_LEVELS.map(function (r) {
         return '<option value="' + r + '"' + (e.risk === r ? " selected" : "") + '>' + RISK_LABEL[r] + '</option>';
@@ -1679,7 +1764,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       html += '<div class="form-group mb-0"><label class="font-weight-bold small text-uppercase text-muted">Ma&szlig;nahme</label>';
       html += '<textarea class="form-control" rows="3" data-field="measure" placeholder="Beschreibung der geplanten Ma&szlig;nahme...">' + escapeHtml(e.measure) + '</textarea></div>';
 
-      var e2 = node.entry;
+      var e2 = e;
       html += '<hr class="srp-divider">';
       html += '<h4 class="srp-section-title">Tracking</h4>';
       html += '<div class="form-row align-items-center">';
@@ -1708,6 +1793,13 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
         html += '<div class="form-group mb-0"><label class="font-weight-bold small text-uppercase text-muted">Anmerkung zum Restrisiko</label>';
         html += '<textarea class="form-control" rows="3" data-field="residualNote">' + escapeHtml(e2.residualNote) + '</textarea></div>';
       }
+
+      html += '<hr class="srp-divider">';
+      html += '<div class="srp-entry-actions">';
+      html += '<button type="button" class="btn btn-primary" data-action="save-entry">Speichern</button>';
+      html += '<button type="button" class="btn btn-outline-secondary" data-action="reset-entry">Zur&uuml;cksetzen</button>';
+      html += '<span class="srp-entry-dirty" id="srpEntryDirty" style="display:none">&#9679; Ungespeicherte &Auml;nderungen</span>';
+      html += '</div>';
     } else {
       html += '<p class="text-muted mb-0">Bitte &uuml;ber &bdquo;Neue Unterkategorie&ldquo; Inhalte anlegen.</p>';
     }
@@ -1716,12 +1808,23 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     container.innerHTML = html;
     wireNodeToolbar(container, node, role);
 
+    if (node.level < 2) return;
+
+    var dirtyEl = document.getElementById("srpEntryDirty");
+    var saveBtn = container.querySelector('[data-action="save-entry"]');
+    var resetBtn = container.querySelector('[data-action="reset-entry"]');
+
+    function updateDirtyState() {
+      var dirty = JSON.stringify(e) !== JSON.stringify(node.entry);
+      dirtyEl.style.display = dirty ? "" : "none";
+      saveBtn.disabled = !dirty;
+    }
+    updateDirtyState();
+
     container.querySelectorAll("[data-field]").forEach(function (el) {
       var field = el.getAttribute("data-field");
       var evt = (el.tagName === "SELECT" || el.type === "checkbox" || el.type === "date") ? "change" : "input";
       el.addEventListener(evt, function () {
-        if (!node.entry) node.entry = makeEntry();
-        var e = node.entry;
         switch (field) {
           case "risk": e.risk = el.value; break;
           case "riskNote": e.riskNote = el.value; break;
@@ -1731,10 +1834,22 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
           case "residualRisk": e.residualRisk = el.value; break;
           case "residualNote": e.residualNote = el.value; break;
         }
-        save();
-        renderTree();
-        if (field === "trackingDone") renderLeafView(container, node, role);
+        if (field === "trackingDone") {
+          renderLeafView(container, node, role, e);
+        } else {
+          updateDirtyState();
+        }
       });
+    });
+
+    saveBtn.addEventListener("click", function () {
+      node.entry = cloneEntry(e);
+      save();
+      renderTree();
+      renderLeafView(container, node, role);
+    });
+    resetBtn.addEventListener("click", function () {
+      renderLeafView(container, node, role);
     });
   }
 
