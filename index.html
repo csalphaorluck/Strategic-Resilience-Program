@@ -25,14 +25,14 @@
   --gelb: #d69e2e;
   --rot: #d3402c;
 
-  --srp-ink: #171923;
-  --srp-muted: #667085;
-  --srp-muted-2: #98a2b3;
-  --srp-line: #e4e7ec;
-  --srp-line-strong: #d0d5dd;
+  --srp-ink: #15213a;
+  --srp-muted: #55688c;
+  --srp-muted-2: #8698bb;
+  --srp-line: #dbe6f5;
+  --srp-line-strong: #bcd1ec;
   --srp-surface: #ffffff;
-  --srp-bg: #f6f7f9;
-  --srp-bg-tint: #f0f2f5;
+  --srp-bg: #eef4fc;
+  --srp-bg-tint: #e2ecfa;
 
   --srp-accent: #0857c3;
   --srp-accent-hover: #063e8f;
@@ -56,7 +56,7 @@
   --srp-radius-sm: 9px;
   --srp-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
   --srp-shadow-md: 0 8px 24px -8px rgba(16, 24, 40, 0.16);
-  --srp-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --srp-font: system-ui, -apple-system, "Segoe UI Variable", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 /* ---- Moderne Design-Basis: Typografie, Farben, Flächen ---- */
@@ -65,15 +65,18 @@ html, body {
   color: var(--srp-ink);
   background: var(--srp-bg);
   font-size: 15px;
-  line-height: 1.55;
+  line-height: 1.6;
+  letter-spacing: -0.003em;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 h1, h2, h3, h4, h5, h6, .card-title, .modal-title {
   font-family: var(--srp-font);
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--srp-ink);
 }
+.card-title { font-size: 19px; }
 a { color: var(--srp-accent); }
 a:hover { color: var(--srp-accent-hover); }
 small, .small { color: var(--srp-muted); }
