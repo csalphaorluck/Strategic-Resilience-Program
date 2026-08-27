@@ -57,12 +57,17 @@
   --srp-sidebar-hover: rgba(255, 255, 255, 0.08);
   --srp-sidebar-line: rgba(255, 255, 255, 0.1);
 
-  /* Eigener, dunklerer Blauton fuer die Karte einer einzelnen Massnahme -
-     hebt sie klar von den helleren Drilldown-Karten ab (heller Text darauf). */
+  /* Eigener, dunklerer Blauton fuer Drilldown- und Massnahmen-Ansichten -
+     hebt sie klar von der hellen Seiten-Canvas ab (heller Text darauf).
+     -raised ist der etwas hellere Ton fuer Karten innerhalb dieser Ansichten,
+     -accent ein kraeftiger Akzent fuer Navigationspfad und Speichern-Button. */
   --srp-leaf-bg: #0f2a55;
+  --srp-leaf-bg-raised: #17396c;
   --srp-leaf-text: #eef4ff;
   --srp-leaf-muted: rgba(238, 244, 255, 0.7);
   --srp-leaf-line: rgba(255, 255, 255, 0.14);
+  --srp-leaf-accent: #3b82f6;
+  --srp-leaf-accent-hover: #2563eb;
 
   --srp-radius: 16px;
   --srp-radius-sm: 11px;
@@ -508,13 +513,16 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 }
 .btn:disabled { opacity: 0.45; cursor: default; }
 
-/* ---- Einzelne Massnahme (Blattansicht): eigener, dunklerer Blauton mit
-   heller Schrift - hebt sich bewusst von den helleren Drilldown-Karten ab. ---- */
+/* ---- Dunkler Blauton fuer Drilldown- und Massnahmen-Ansichten: einheitlicher
+   Look von der Kategorie-Auswahl bis zur einzelnen Massnahme, mit hellerer
+   Schrift. Ebene-2/3/4-Kartenraster (.srp-browse-card) bekommt einen etwas
+   helleren, "angehobenen" Navy-Ton fuer eine klare Karte-in-Karte-Hierarchie. ---- */
 .srp-leaf-card {
   background: var(--srp-leaf-bg);
   border-color: var(--srp-leaf-line);
   color: var(--srp-leaf-text);
 }
+.card.srp-leaf-card { border-top-color: var(--srp-leaf-line); }
 .srp-leaf-card .card-header {
   background: var(--srp-leaf-bg);
   border-bottom-color: var(--srp-leaf-line);
@@ -527,17 +535,33 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 .srp-leaf-card .text-muted,
 .srp-leaf-card label,
 .srp-leaf-card .srp-section-title,
-.srp-leaf-card .srp-path-caption {
+.srp-leaf-card .srp-path-caption,
+.srp-leaf-card .srp-browse-meta {
   color: var(--srp-leaf-muted) !important;
 }
 .srp-leaf-card .srp-divider { border-top-color: var(--srp-leaf-line); }
-.srp-leaf-card .srp-path-item { background: rgba(255, 255, 255, 0.14); color: #dce8ff; }
-.srp-leaf-card .srp-path-item:hover, .srp-leaf-card .srp-path-item:focus-visible { background: rgba(255, 255, 255, 0.24); color: #fff; }
+/* Navigationspfad: eigener, klar hervortretender Akzentton statt einer nur
+   leicht helleren Navy-Flaeche - soll auf dem dunklen Kartenhintergrund
+   deutlich als eigenes Element auffallen. */
+.srp-leaf-card .srp-path-item { background: var(--srp-leaf-accent); color: #fff; }
+.srp-leaf-card .srp-path-item:hover, .srp-leaf-card .srp-path-item:focus-visible { background: var(--srp-leaf-accent-hover); color: #fff; }
 .srp-leaf-card .srp-path-sep { color: rgba(255, 255, 255, 0.4); }
 .srp-leaf-card .badge-light { background: rgba(255, 255, 255, 0.16); color: var(--srp-leaf-text); }
 .srp-leaf-card .risk-pill { background: rgba(255, 255, 255, 0.12); color: var(--srp-leaf-text); }
 .srp-leaf-card .risk-arrow { color: var(--srp-leaf-muted); }
 .srp-leaf-card .srp-entry-dirty { color: #ffd27a; }
+/* Speichern-Button: eigener, kraeftiger Akzentton statt des Standard-Blaus,
+   das auf dem dunklen Grund zu wenig Kontrast hatte. */
+.srp-leaf-card .btn-primary {
+  background: var(--srp-leaf-accent);
+  border-color: var(--srp-leaf-accent);
+  color: #fff;
+}
+.srp-leaf-card .btn-primary:hover, .srp-leaf-card .btn-primary:focus {
+  background: var(--srp-leaf-accent-hover);
+  border-color: var(--srp-leaf-accent-hover);
+}
+.srp-leaf-card .btn-primary:disabled { background: var(--srp-leaf-accent); border-color: var(--srp-leaf-accent); }
 .srp-leaf-card .btn-outline-secondary {
   color: var(--srp-leaf-text);
   border-color: rgba(255, 255, 255, 0.35);
@@ -565,6 +589,20 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   border-color: #ff9f95;
   color: #fff;
 }
+
+/* Kartenraster (Ebene 2-4-Auswahl) innerhalb einer dunklen Ansicht: hellerer,
+   "angehobener" Navy-Ton statt der bisherigen hellblauen Cards. */
+.srp-leaf-card .srp-browse-card {
+  background: var(--srp-leaf-bg-raised);
+  border-color: var(--srp-leaf-line);
+}
+.srp-leaf-card .srp-browse-card:hover, .srp-leaf-card .srp-browse-card:focus-visible {
+  border-color: var(--srp-leaf-accent);
+  outline: none;
+}
+.srp-leaf-card .srp-browse-card-name { color: var(--srp-leaf-text); }
+.srp-leaf-card .srp-browse-card-meta { color: var(--srp-leaf-muted); }
+.srp-leaf-card .srp-browse-card-arrow { color: rgba(255, 255, 255, 0.55); }
 
 .srp-toolbar select.form-control { min-width: 190px; }
 
@@ -1713,7 +1751,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 
   function renderBrowseView(container, node, role) {
     var stats = leafStats(node);
-    var html = '<div class="card card-outline card-primary">';
+    var html = '<div class="card card-outline card-primary srp-leaf-card">';
     html += '<div class="card-header">';
     html += renderBreadcrumb(node);
     html += '<h3 class="card-title mb-0">' + escapeHtml(node.name) + '</h3>';
