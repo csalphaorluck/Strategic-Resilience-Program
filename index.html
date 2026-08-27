@@ -34,24 +34,26 @@
   --srp-bg: #f6f7f9;
   --srp-bg-tint: #f0f2f5;
 
-  --srp-accent: #2955a3;
-  --srp-accent-hover: #1f447f;
-  --srp-accent-soft: #eaf1fb;
-  --srp-accent-soft-strong: #d7e6f9;
+  --srp-accent: #0857c3;
+  --srp-accent-hover: #063e8f;
+  --srp-accent-soft: #e9f1fe;
+  --srp-accent-soft-strong: #d2e3fc;
+  --srp-brand-amber: #f5a623;
+  --srp-brand-amber-soft: #fef3e0;
 
   --srp-danger: #c9372c;
   --srp-danger-hover: #a52c22;
   --srp-danger-soft: #fdecea;
 
-  --srp-sidebar-bg: #12141c;
-  --srp-sidebar-bg-2: #191c27;
-  --srp-sidebar-text: rgba(255, 255, 255, 0.82);
+  --srp-sidebar-bg: #0b1220;
+  --srp-sidebar-bg-2: #101b30;
+  --srp-sidebar-text: rgba(255, 255, 255, 0.85);
   --srp-sidebar-text-muted: rgba(255, 255, 255, 0.5);
-  --srp-sidebar-hover: rgba(255, 255, 255, 0.07);
-  --srp-sidebar-line: rgba(255, 255, 255, 0.08);
+  --srp-sidebar-hover: rgba(255, 255, 255, 0.08);
+  --srp-sidebar-line: rgba(255, 255, 255, 0.1);
 
-  --srp-radius: 12px;
-  --srp-radius-sm: 8px;
+  --srp-radius: 14px;
+  --srp-radius-sm: 9px;
   --srp-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
   --srp-shadow-md: 0 8px 24px -8px rgba(16, 24, 40, 0.16);
   --srp-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -103,7 +105,7 @@ small, .small { color: var(--srp-muted); }
   border-bottom: 1px solid var(--srp-line);
   border-radius: var(--srp-radius) var(--srp-radius) 0 0 !important;
 }
-.card-body { padding: 20px; }
+.card-body { padding: 24px; }
 .card-footer { background: var(--srp-surface); border-top: 1px solid var(--srp-line); }
 
 /* Buttons: ruhiger, rund, mit dezentem Akzent statt Bootstrap-Standardblau */
@@ -164,7 +166,7 @@ label, .form-group label { color: var(--srp-muted); letter-spacing: 0.02em; }
 
 .badge { border-radius: 999px; font-weight: 600; }
 .badge-light { background: var(--srp-bg-tint); color: var(--srp-muted); }
-.badge-info { background: var(--srp-accent-soft-strong); color: var(--srp-accent-hover); }
+.badge-info { background: var(--srp-brand-amber-soft); color: #8a5a00; }
 
 .breadcrumb { background: transparent; }
 .breadcrumb-item + .breadcrumb-item::before { color: var(--srp-muted-2); }
@@ -214,8 +216,36 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 .main-sidebar .brand-link {
   border-bottom: 1px solid var(--srp-sidebar-line);
   color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0 14px;
 }
 .main-sidebar .brand-text { font-weight: 700; letter-spacing: -0.01em; }
+
+/* ---- Marke: fiktiver Flughafen Falkenau ---- */
+.srp-brand-mark-bg { fill: var(--srp-accent); }
+.srp-brand-mark-wing-1 { stroke: #ffffff; stroke-width: 3.6; }
+.srp-brand-mark-wing-2 { stroke: var(--srp-brand-amber); stroke-width: 3.2; }
+.srp-brand-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.srp-brand-airport {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.srp-brand-product {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--srp-sidebar-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 /* ---- Sidebar navigation: Akkordeon Ebene 1 -> Ebene 2 ---- */
 .srp-tree { padding: 6px 8px 16px; }
@@ -290,25 +320,25 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 .srp-browse-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 10px;
+  gap: 14px;
 }
 .srp-browse-card {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
   text-align: left;
-  background: #fff;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 12px 30px 12px 14px;
+  background: var(--srp-surface);
+  border: 1px solid var(--srp-line);
+  border-radius: var(--srp-radius-sm);
+  padding: 14px 32px 14px 16px;
   cursor: pointer;
   position: relative;
-  transition: border-color .15s ease, box-shadow .15s ease;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .1s ease;
   font-family: inherit;
 }
 .srp-browse-card:hover, .srp-browse-card:focus-visible {
-  border-color: #0d6efd;
-  box-shadow: 0 2px 10px rgba(13, 110, 253, 0.14);
+  border-color: var(--srp-accent);
+  box-shadow: var(--srp-shadow-md);
   outline: none;
 }
 .srp-browse-card-top { display: flex; align-items: center; gap: 8px; }
@@ -350,7 +380,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 .srp-track-chip.srp-track-open { background: #fdf1e0; color: #8a5a00; }
 
 /* ---- Klickbarer Breadcrumb ---- */
-.breadcrumb-item a { color: #0d6efd; text-decoration: none; }
+.breadcrumb-item a { color: var(--srp-accent); text-decoration: none; }
 .breadcrumb-item a:hover { text-decoration: underline; }
 
 /* ---- Content area helpers ---- */
@@ -476,7 +506,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   white-space: normal;
 }
 .srp-ampel-chip:focus-visible {
-  outline: 2px solid #0d6efd;
+  outline: 2px solid var(--srp-accent);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -564,8 +594,16 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   </nav>
 
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="#" class="brand-link">
-      <span class="brand-text font-weight-bold">SRP &middot; Struktur</span>
+    <a href="#" class="brand-link srp-brand">
+      <svg class="srp-brand-mark" viewBox="0 0 40 40" width="32" height="32" aria-hidden="true" focusable="false">
+        <rect class="srp-brand-mark-bg" width="40" height="40" rx="11"/>
+        <path d="M8 25 L20 11 L32 25" class="srp-brand-mark-wing-1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M13.5 30.5 L20 23.5 L26.5 30.5" class="srp-brand-mark-wing-2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="srp-brand-text">
+        <span class="srp-brand-airport">Flughafen Falkenau</span>
+        <span class="srp-brand-product">Strategic Resilience Program</span>
+      </span>
     </a>
     <div class="sidebar">
       <nav class="mt-2" aria-label="Struktur-Navigation">
@@ -1231,11 +1269,16 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   }
 
   // ---------- Rendering: Main panel ----------
+  // Admin sieht die Governance-Übersichten aus Verantwortung für Nutzer-Inhalte,
+  // Entwickler zusätzlich, weil dieselbe Rolle die strukturelle Hoheit trägt und
+  // ohnehin schon alle Bearbeitungsrechte auf "Struktur bearbeiten" hat.
+  var ADMIN_PANEL_ROLES = ["admin", "entwickler"];
+
   function render() {
     document.getElementById("roleSelect").value = state.role;
-    document.getElementById("adminFachbereichWrap").style.display = state.role === "admin" ? "block" : "none";
+    document.getElementById("adminFachbereichWrap").style.display = ADMIN_PANEL_ROLES.indexOf(state.role) > -1 ? "block" : "none";
     renderTree();
-    if (state.role === "admin") {
+    if (ADMIN_PANEL_ROLES.indexOf(state.role) > -1) {
       renderAdminPanel();
     } else {
       var main = document.getElementById("mainPanel");
@@ -1284,7 +1327,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 
     var content = document.getElementById("adminTabContent");
     if (state.adminTab === "struktur") {
-      buildDetailMarkup(content, findNode(state.selectedId), "admin");
+      buildDetailMarkup(content, findNode(state.selectedId), state.role);
     } else if (state.adminTab === "verwaltung") {
       renderAdminVerwaltung(content);
     } else {
