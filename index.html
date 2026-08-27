@@ -32,12 +32,12 @@
   --srp-ink: #15213a;
   --srp-muted: #55688c;
   --srp-muted-2: #8698bb;
-  --srp-line: #d7e3f7;
-  --srp-line-strong: #b7cdec;
-  --srp-surface: #f5f9fe;
+  --srp-line: #cbdbf5;
+  --srp-line-strong: #aec6ea;
+  --srp-surface: #e6eefb;
   --srp-surface-raised: #ffffff;
-  --srp-bg: #dbe8fa;
-  --srp-bg-tint: #cadef6;
+  --srp-bg: #d5e3f9;
+  --srp-bg-tint: #c3daf5;
 
   --srp-accent: #0857c3;
   --srp-accent-hover: #063e8f;
@@ -57,8 +57,8 @@
   --srp-sidebar-hover: rgba(255, 255, 255, 0.08);
   --srp-sidebar-line: rgba(255, 255, 255, 0.1);
 
-  --srp-radius: 14px;
-  --srp-radius-sm: 9px;
+  --srp-radius: 16px;
+  --srp-radius-sm: 11px;
   --srp-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.08);
   --srp-shadow-md: 0 8px 24px -8px rgba(16, 24, 40, 0.22);
   --srp-font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI Variable", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -72,7 +72,7 @@ html, body {
   font-family: var(--srp-font-body);
   color: var(--srp-ink);
   background: var(--srp-bg);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -83,7 +83,7 @@ h1, h2, h3, h4, h5, h6, .card-title, .modal-title {
   letter-spacing: -0.01em;
   color: var(--srp-ink);
 }
-.card-title { font-size: 19px; }
+.card-title { font-size: 21px; }
 a { color: var(--srp-accent); }
 a:hover { color: var(--srp-accent-hover); }
 small, .small { color: var(--srp-muted); }
@@ -127,15 +127,15 @@ input[type="date"], .srp-search-result-path {
   border-bottom: 1px solid var(--srp-line);
   border-radius: var(--srp-radius) var(--srp-radius) 0 0 !important;
 }
-.card-body { padding: 24px; }
+.card-body { padding: 28px; }
 .card-footer { background: var(--srp-surface); border-top: 1px solid var(--srp-line); }
 
 /* Buttons: ruhiger, rund, mit dezentem Akzent statt Bootstrap-Standardblau */
 .btn {
   border-radius: var(--srp-radius-sm);
   font-weight: 600;
-  font-size: 13.5px;
-  padding: 7px 14px;
+  font-size: 14.5px;
+  padding: 9px 16px;
   transition: background-color .12s ease, border-color .12s ease, color .12s ease;
 }
 .btn-primary {
@@ -177,8 +177,12 @@ input[type="date"], .srp-search-result-path {
   background: var(--srp-surface-raised);
   border-color: var(--srp-line-strong);
   border-radius: var(--srp-radius-sm);
-  font-size: 14px;
+  font-size: 15px;
   color: var(--srp-ink);
+}
+.form-control:not(.form-control-sm) {
+  padding: 9px 12px;
+  height: auto;
 }
 .form-control:focus {
   background: var(--srp-surface-raised);
@@ -193,8 +197,41 @@ label, .form-group label { color: var(--srp-muted); letter-spacing: 0.02em; }
 .badge-light { background: var(--srp-bg-tint); color: var(--srp-muted); }
 .badge-info { background: var(--srp-brand-amber-soft); color: #8a5a00; }
 
-.breadcrumb { background: transparent; }
-.breadcrumb-item + .breadcrumb-item::before { color: var(--srp-muted-2); }
+/* ---- Navigationspfad: farblich hervorgehobene Pfad-Chips statt schlichtem Bootstrap-Breadcrumb ---- */
+.srp-path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.srp-path-caption {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--srp-muted);
+  margin-right: 4px;
+}
+.srp-path-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--srp-accent-soft);
+  color: var(--srp-accent-hover);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: normal;
+}
+.srp-path-item:hover, .srp-path-item:focus-visible {
+  background: var(--srp-accent-soft-strong);
+  color: var(--srp-accent-hover);
+  text-decoration: none;
+  outline: none;
+}
+.srp-path-sep { color: var(--srp-muted-2); font-size: 13px; }
 
 .modal-content { background: var(--srp-surface); border-radius: var(--srp-radius); border: none; box-shadow: var(--srp-shadow-md); }
 .modal-header, .modal-footer { border-color: var(--srp-line); }
@@ -205,7 +242,7 @@ label, .form-group label { color: var(--srp-muted); letter-spacing: 0.02em; }
    "Fachbereich" wrap into unreadable single-letter lines instead of
    scrolling horizontally, which is worse than a scrollbar. */
 * { min-width: 0; }
-body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
+body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   overflow-wrap: break-word;
   word-break: break-word;
 }
@@ -213,7 +250,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 
 .dot {
   display: inline-block;
-  width: 10px; height: 10px; border-radius: 50%;
+  width: 12px; height: 12px; border-radius: 50%;
   flex-shrink: 0;
   border: 1px solid rgba(0,0,0,0.2);
   vertical-align: middle;
@@ -281,11 +318,11 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 .srp-tree .cat-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 11px 10px;
+  gap: 6px;
+  padding: 11px 8px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 700;
   line-height: 1.3;
   color: var(--srp-sidebar-text);
@@ -339,24 +376,25 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 /* ---- Klickmodell: Drill-down-Karten für Ebene 2-4 ---- */
 .srp-browse-meta {
   clear: both;
-  color: #6c757d;
+  color: var(--srp-muted);
   font-size: 12.5px;
   margin-top: 2px;
 }
 .srp-browse-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(264px, 1fr));
+  gap: 18px;
 }
 .srp-browse-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 9px;
   text-align: left;
   background: var(--srp-surface);
   border: 1px solid var(--srp-line);
+  border-left: 4px solid var(--srp-line);
   border-radius: var(--srp-radius-sm);
-  padding: 14px 32px 14px 16px;
+  padding: 18px 36px 18px 18px;
   cursor: pointer;
   position: relative;
   transition: border-color .15s ease, box-shadow .15s ease, transform .1s ease;
@@ -370,8 +408,8 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 .srp-browse-card-top { display: flex; align-items: center; gap: 8px; }
 .srp-browse-card-name {
   font-weight: 600;
-  font-size: 14px;
-  color: #212529;
+  font-size: 15.5px;
+  color: var(--srp-ink);
   flex: 1;
   min-width: 0;
 }
@@ -379,16 +417,16 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-size: 12px;
-  color: #6c757d;
+  font-size: 12.5px;
+  color: var(--srp-muted);
 }
 .srp-browse-card-arrow {
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #adb5bd;
-  font-size: 20px;
+  color: var(--srp-muted-2);
+  font-size: 22px;
   line-height: 1;
 }
 .srp-browse-card-tracking { margin-top: -1px; }
@@ -404,10 +442,6 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 }
 .srp-track-chip.srp-track-done { background: #e6f4ea; color: #1e6b32; }
 .srp-track-chip.srp-track-open { background: #fdf1e0; color: #8a5a00; }
-
-/* ---- Klickbarer Breadcrumb ---- */
-.breadcrumb-item a { color: var(--srp-accent); text-decoration: none; }
-.breadcrumb-item a:hover { text-decoration: underline; }
 
 /* ---- Content area helpers ---- */
 .node-title .badge { vertical-align: middle; }
@@ -452,7 +486,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   left: 9px; top: 50%;
   transform: translateY(-50%);
   width: 14px; height: 14px;
-  color: #6c757d;
+  color: var(--srp-muted);
   pointer-events: none;
 }
 .srp-search input { padding-left: 28px; }
@@ -464,10 +498,10 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   left: 0; right: 0;
   max-height: 340px;
   overflow-y: auto;
-  background: #fff;
-  border: 1px solid #dee2e6;
+  background: var(--srp-surface-raised);
+  border: 1px solid var(--srp-line);
   border-radius: 6px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 20px rgba(16, 24, 40, 0.16);
 }
 .srp-search-result {
   display: block;
@@ -477,13 +511,13 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   background: none;
   padding: 8px 12px;
   cursor: pointer;
-  border-bottom: 1px solid #f1f3f5;
+  border-bottom: 1px solid var(--srp-line);
 }
 .srp-search-result:last-child { border-bottom: none; }
-.srp-search-result:hover, .srp-search-result:focus-visible { background: #f0f6ff; outline: none; }
-.srp-search-result-name { display: block; font-size: 13.5px; font-weight: 600; color: #212529; }
-.srp-search-result-path { display: block; font-size: 11.5px; color: #6c757d; margin-top: 1px; }
-.srp-search-empty { padding: 10px 12px; font-size: 13px; color: #6c757d; }
+.srp-search-result:hover, .srp-search-result:focus-visible { background: var(--srp-accent-soft); outline: none; }
+.srp-search-result-name { display: block; font-size: 13.5px; font-weight: 600; color: var(--srp-ink); }
+.srp-search-result-path { display: block; font-size: 11.5px; color: var(--srp-muted); margin-top: 1px; }
+.srp-search-empty { padding: 10px 12px; font-size: 13px; color: var(--srp-muted); }
 
 /* Admin overview table: on narrow screens, prefer a horizontally scrolling
    table (.table-responsive already wraps it) over squeezing short header
@@ -507,41 +541,39 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 
 .srp-ampel-list li { margin-bottom: 6px; }
 
-/* ---- Ampel-Skala-Legende ---- */
-.srp-ampel-legende .card-body { padding-left: 14px; padding-right: 14px; }
-.srp-ampel-row {
+/* ---- Ampel-Skala: kompakte Chip-Reihe, mit in der Toolbar (Rolle + Suche) ---- */
+.srp-ampel-row-inline {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 20px;
+  gap: 6px 10px;
 }
 .srp-ampel-caption {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: #6c757d;
+  letter-spacing: 0.04em;
+  color: var(--srp-muted);
   flex-shrink: 0;
+  margin-right: 2px;
 }
 .srp-ampel-chip {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  font-size: 13.5px;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  background: var(--srp-bg-tint);
   cursor: default;
   white-space: normal;
 }
 .srp-ampel-chip:focus-visible {
   outline: 2px solid var(--srp-accent);
-  outline-offset: 3px;
-  border-radius: 4px;
+  outline-offset: 2px;
 }
-.srp-ampel-chip-text { color: #343a40; }
-.srp-ampel-chip-sep { margin: 0 4px; color: #adb5bd; }
-
-@media (max-width: 420px) {
-  .srp-ampel-caption { flex-basis: 100%; }
-}
+.srp-ampel-chip-text { color: var(--srp-ink); }
 
 /* ---- Leerzustand (generischer Empty State) ---- */
 .srp-empty-state {
@@ -549,17 +581,17 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   padding: 22px 10px;
 }
 .srp-empty-state-icon {
-  color: #adb5bd;
+  color: var(--srp-muted-2);
   margin-bottom: 8px;
 }
 .srp-empty-state-title {
   font-weight: 700;
   font-size: 14.5px;
-  color: #343a40;
+  color: var(--srp-ink);
   margin-bottom: 4px;
 }
 .srp-empty-state-text {
-  color: #6c757d;
+  color: var(--srp-muted);
   font-size: 13px;
   margin-bottom: 0;
 }
@@ -573,7 +605,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 /* ---- Card-Style-Dialog (ersetzt native prompt()/confirm()) ---- */
 .srp-dialog { max-width: 420px; }
 .srp-dialog .modal-content { border-radius: 10px; border: none; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2); }
-.srp-dialog .modal-header { border-bottom: 1px solid #eef0f2; padding: 16px 18px; }
+.srp-dialog .modal-header { border-bottom: 1px solid var(--srp-line); padding: 16px 18px; }
 .srp-dialog .modal-title { font-size: 16px; font-weight: 700; }
 .srp-dialog .modal-body { padding: 18px; }
 .srp-dialog .modal-body input.form-control {
@@ -582,7 +614,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   min-height: 44px;
 }
 .srp-dialog .modal-footer {
-  border-top: 1px solid #eef0f2;
+  border-top: 1px solid var(--srp-line);
   padding: 12px 18px;
   gap: 8px;
 }
@@ -654,16 +686,15 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
             <label for="adminFachbereich" class="mr-1 mb-0 font-weight-bold small">Fachbereich</label>
             <select id="adminFachbereich" class="form-control form-control-sm d-inline-block w-auto"></select>
           </div>
+          <div class="col-12 col-lg-auto mb-2 mb-lg-0" id="ampelLegendeSlot"></div>
           <div class="col-12 col-lg ml-lg-auto">
             <div class="srp-search">
               <svg class="srp-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-              <input type="text" id="srpSearchInput" class="form-control form-control-sm" placeholder="Punkt suchen&hellip; (Name oder Pfad)" autocomplete="off" aria-label="Struktur durchsuchen">
+              <input type="text" id="srpSearchInput" class="form-control form-control-sm" placeholder="Punkt suchen&hellip;" autocomplete="off" aria-label="Punkt suchen">
               <div id="srpSearchResults" class="srp-search-results"></div>
             </div>
           </div>
         </div>
-
-        <div id="ampelLegendeSlot" class="mt-2"></div>
       </div>
     </div>
 
@@ -730,6 +761,12 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   var CATEGORIES = ["Infrastruktur", "Flughafenbetrieb", "Personal & Governance"];
   var RISK_LEVELS = ["grau", "gruen", "gelb", "rot"];
   var RISK_LABEL = { grau: "Grau – nicht bewertet", gruen: "Grün – kein Risiko", gelb: "Gelb – tolerierbar", rot: "Rot – inakzeptabel" };
+
+  // Dezente Farbakzente für die Ebene-2-Gruppen direkt unter einer Kategorie
+  // (schnellere Unterscheidung beim Durchklicken) - bewusst blau/violett/teal-Töne,
+  // die sich klar von der roten/gelben/grünen Ampel-Skala abheben, damit die
+  // Gruppenfarbe nie mit einem Risikostatus verwechselt wird.
+  var GROUP_COLORS = ["#4c6fd6", "#0f9488", "#8b5cf6", "#c2578f", "#546a91", "#0e7c86", "#7c6a4d", "#3f7ea6"];
 
   var uidCounter = 1;
   function uid(prefix) { return prefix + "_" + (uidCounter++) + "_" + Math.random().toString(36).slice(2, 7); }
@@ -1318,10 +1355,11 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   function renderBreadcrumb(node) {
     var ancestors = findPath(node.id).slice(0, -1);
     if (!ancestors.length) return "";
-    var items = ancestors.map(function (n) {
-      return '<li class="breadcrumb-item"><a href="#" data-goto="' + n.id + '">' + escapeHtml(n.name) + '</a></li>';
+    var items = ancestors.map(function (n, i) {
+      var sep = i > 0 ? '<span class="srp-path-sep" aria-hidden="true">&rsaquo;</span>' : "";
+      return sep + '<a href="#" class="srp-path-item" data-goto="' + n.id + '">' + escapeHtml(n.name) + '</a>';
     }).join("");
-    return '<ol class="breadcrumb bg-transparent px-0 mb-2">' + items + '</ol>';
+    return '<nav class="srp-path" aria-label="Navigationspfad"><span class="srp-path-caption">Navigationspfad</span>' + items + '</nav>';
   }
 
   // ---------- Admin panel ----------
@@ -1566,14 +1604,15 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     return '<span class="srp-track-chip srp-track-open">Ma&szlig;nahme offen</span>';
   }
 
-  function renderBrowseCard(child) {
+  function renderBrowseCard(child, groupColor) {
     var color = aggregateStatus(child);
     var stats = leafStats(child);
     var badge = child.isNew ? '<span class="badge badge-info badge-new ml-1">neu</span>' : "";
     var isBranch = child.children && child.children.length;
     var meta = isBranch ? (stats.assessed + ' von ' + stats.total + ' bewertet') : "";
     var trackChip = renderTrackingChip(child, isBranch);
-    return '<button type="button" class="srp-browse-card" data-node-id="' + child.id + '">' +
+    var groupStyle = groupColor ? ' style="border-left-color:' + groupColor + '"' : '';
+    return '<button type="button" class="srp-browse-card"' + groupStyle + ' data-node-id="' + child.id + '">' +
       '<span class="srp-browse-card-top">' +
         '<span class="dot ' + color + '" title="' + RISK_LABEL[color] + '"></span>' +
         '<span class="srp-browse-card-name">' + escapeHtml(child.name) + badge + '</span>' +
@@ -1594,7 +1633,14 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
     html += '</div>';
     html += '<div class="card-body">';
     html += renderNodeToolbar(node, role);
-    html += '<div class="srp-browse-grid">' + node.children.map(renderBrowseCard).join("") + '</div>';
+    // Farbakzente nur direkt unter einer Kategorie (Ebene 1 -> Ebene-2-Gruppen) -
+    // auf tieferen Ebenen zählt für die Unterscheidung vor allem die Ampel-Farbe,
+    // eine zusätzliche Gruppenfarbe würde dort nur unnötig "bunt" wirken.
+    var useGroupColors = node.level === 1;
+    var cardsHtml = node.children.map(function (child, i) {
+      return renderBrowseCard(child, useGroupColors ? GROUP_COLORS[i % GROUP_COLORS.length] : null);
+    }).join("");
+    html += '<div class="srp-browse-grid">' + cardsHtml + '</div>';
     html += '</div></div>';
 
     container.innerHTML = html;
@@ -1814,25 +1860,23 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
   // Ampel-Skala-Legende (kompakte horizontale Leiste)
   // ---------------------------------------------------------------------
   function renderAmpelLegende(container) {
+    // Kompakte Chip-Reihe statt eigener Karte: sitzt jetzt zusammen mit
+    // Rollenauswahl und Suche in einer Zeile. Die volle Erklärung je Farbe
+    // steht weiterhin im Szenario-Infomodal - hier nur Name + Tooltip.
     var chips = AMPEL.map(function (a) {
+      var titleAttr = escapeHtml(a.title + ': ' + a.text);
       return (
-        '<div class="srp-ampel-chip" tabindex="0" aria-label="' + a.title + ': ' + a.text + '">' +
+        '<span class="srp-ampel-chip" tabindex="0" title="' + titleAttr + '" aria-label="' + titleAttr + '">' +
           '<span class="dot ' + a.key + '"></span>' +
-          '<span class="srp-ampel-chip-text">' +
-            '<strong>' + a.label + '</strong><span class="srp-ampel-chip-sep">–</span>' + a.title +
-          '</span>' +
-        '</div>'
+          '<span class="srp-ampel-chip-text">' + escapeHtml(a.label) + '</span>' +
+        '</span>'
       );
     }).join("");
 
     container.innerHTML =
-      '<div class="card card-outline card-light srp-ampel-legende mb-3">' +
-        '<div class="card-body py-2">' +
-          '<div class="srp-ampel-row">' +
-            '<span class="srp-ampel-caption">Ampel-Skala:</span>' +
-            chips +
-          '</div>' +
-        '</div>' +
+      '<div class="srp-ampel-row-inline">' +
+        '<span class="srp-ampel-caption">Ampel-Skala</span>' +
+        chips +
       '</div>';
   }
 
