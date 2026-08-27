@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Strategic Resilience Program &ndash; Prototyp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 /*!
  *   AdminLTE v3.2.0
@@ -20,26 +23,28 @@
 
 /* ---- SRP custom overrides on top of AdminLTE/Bootstrap ---- */
 :root {
-  --grau: #94a3b8;
-  --gruen: #1f9254;
-  --gelb: #d69e2e;
-  --rot: #d3402c;
+  /* Ampel: kräftig und satt statt gedämpft - soll auf einen Blick "catchy" wirken */
+  --grau: #93a5c9;
+  --gruen: #0fb765;
+  --gelb: #f7c520;
+  --rot: #ea3323;
 
   --srp-ink: #15213a;
   --srp-muted: #55688c;
   --srp-muted-2: #8698bb;
-  --srp-line: #dbe6f5;
-  --srp-line-strong: #bcd1ec;
-  --srp-surface: #ffffff;
-  --srp-bg: #eef4fc;
-  --srp-bg-tint: #e2ecfa;
+  --srp-line: #d7e3f7;
+  --srp-line-strong: #b7cdec;
+  --srp-surface: #f5f9fe;
+  --srp-surface-raised: #ffffff;
+  --srp-bg: #dbe8fa;
+  --srp-bg-tint: #cadef6;
 
   --srp-accent: #0857c3;
   --srp-accent-hover: #063e8f;
   --srp-accent-soft: #e9f1fe;
   --srp-accent-soft-strong: #d2e3fc;
-  --srp-brand-amber: #f5a623;
-  --srp-brand-amber-soft: #fef3e0;
+  --srp-brand-amber: #ea8f0a;
+  --srp-brand-amber-soft: #fdedd3;
 
   --srp-danger: #c9372c;
   --srp-danger-hover: #a52c22;
@@ -54,26 +59,28 @@
 
   --srp-radius: 14px;
   --srp-radius-sm: 9px;
-  --srp-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
-  --srp-shadow-md: 0 8px 24px -8px rgba(16, 24, 40, 0.16);
-  --srp-font: system-ui, -apple-system, "Segoe UI Variable", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --srp-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.08);
+  --srp-shadow-md: 0 8px 24px -8px rgba(16, 24, 40, 0.22);
+  --srp-font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI Variable", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --srp-font-display: "Space Grotesk", var(--srp-font-body);
+  --srp-font-mono: "IBM Plex Mono", SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  --srp-font: var(--srp-font-body);
 }
 
 /* ---- Moderne Design-Basis: Typografie, Farben, Flächen ---- */
 html, body {
-  font-family: var(--srp-font);
+  font-family: var(--srp-font-body);
   color: var(--srp-ink);
   background: var(--srp-bg);
   font-size: 15px;
   line-height: 1.6;
-  letter-spacing: -0.003em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 h1, h2, h3, h4, h5, h6, .card-title, .modal-title {
-  font-family: var(--srp-font);
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-family: var(--srp-font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--srp-ink);
 }
 .card-title { font-size: 19px; }
@@ -81,6 +88,17 @@ a { color: var(--srp-accent); }
 a:hover { color: var(--srp-accent-hover); }
 small, .small { color: var(--srp-muted); }
 .text-muted { color: var(--srp-muted) !important; }
+.srp-tabular, .cat-count, .srp-browse-card-meta, .srp-browse-meta,
+input[type="date"], .srp-search-result-path {
+  font-variant-numeric: tabular-nums;
+}
+/* Mono-Schrift nur dort, wo genug Platz ist - der Sidebar-Zähler bekommt
+   nur die Ziffernausrichtung (tabular-nums), sonst brechen Kategorienamen
+   wie "Flughafenbetrieb" durch den breiteren Zeichensatz vorzeitig um. */
+.srp-tabular, .srp-browse-card-meta, .srp-browse-meta,
+input[type="date"], .srp-search-result-path {
+  font-family: var(--srp-font-mono);
+}
 
 .content-wrapper { background: var(--srp-bg); }
 
@@ -94,6 +112,7 @@ small, .small { color: var(--srp-muted); }
 
 /* Karten: eine konsistente, flache Optik statt farbiger card-outline-Ränder */
 .card {
+  background: var(--srp-surface);
   border: 1px solid var(--srp-line);
   border-radius: var(--srp-radius);
   box-shadow: var(--srp-shadow-sm);
@@ -155,14 +174,17 @@ small, .small { color: var(--srp-muted); }
 
 /* Formulare: ruhige Eingabefelder mit dezentem Fokusring */
 .form-control {
+  background: var(--srp-surface-raised);
   border-color: var(--srp-line-strong);
   border-radius: var(--srp-radius-sm);
   font-size: 14px;
   color: var(--srp-ink);
 }
 .form-control:focus {
+  background: var(--srp-surface-raised);
   border-color: var(--srp-accent);
   box-shadow: 0 0 0 3px var(--srp-accent-soft);
+  color: var(--srp-ink);
 }
 .form-control::placeholder { color: var(--srp-muted-2); }
 label, .form-group label { color: var(--srp-muted); letter-spacing: 0.02em; }
@@ -174,7 +196,7 @@ label, .form-group label { color: var(--srp-muted); letter-spacing: 0.02em; }
 .breadcrumb { background: transparent; }
 .breadcrumb-item + .breadcrumb-item::before { color: var(--srp-muted-2); }
 
-.modal-content { border-radius: var(--srp-radius); border: none; box-shadow: var(--srp-shadow-md); }
+.modal-content { background: var(--srp-surface); border-radius: var(--srp-radius); border: none; box-shadow: var(--srp-shadow-md); }
 .modal-header, .modal-footer { border-color: var(--srp-line); }
 
 /* Global safety: never truncate/clip text or let content escape its box.
@@ -232,6 +254,7 @@ body, .content-wrapper, .card, .card-body, .breadcrumb-item, .node-row, .badge {
 .srp-brand-mark-wing-2 { stroke: var(--srp-brand-amber); stroke-width: 3.2; }
 .srp-brand-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
 .srp-brand-airport {
+  font-family: var(--srp-font-display);
   font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.01em;
