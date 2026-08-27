@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Strategic Resilience Program &ndash; Prototyp</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%230857c3'/%3E%3Cpath d='M8 25 L20 11 L32 25' fill='none' stroke='%23ffffff' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M13.5 30.5 L20 23.5 L26.5 30.5' fill='none' stroke='%23ea8f0a' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" sizes="any" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2040%2040%22%3E%3Crect%20width%3D%2240%22%20height%3D%2240%22%20rx%3D%2211%22%20fill%3D%22%230857c3%22%2F%3E%3Cpath%20d%3D%22M8%2025%20L20%2011%20L32%2025%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M13.5%2030.5%20L20%2023.5%20L26.5%2030.5%22%20fill%3D%22none%22%20stroke%3D%22%23ea8f0a%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E">
+<link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2040%2040%22%3E%3Crect%20width%3D%2240%22%20height%3D%2240%22%20rx%3D%2211%22%20fill%3D%22%230857c3%22%2F%3E%3Cpath%20d%3D%22M8%2025%20L20%2011%20L32%2025%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M13.5%2030.5%20L20%2023.5%20L26.5%2030.5%22%20fill%3D%22none%22%20stroke%3D%22%23ea8f0a%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -360,7 +361,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 /* Lange, zusammengesetzte deutsche Begriffe (z.B. "Kommunikationsinfrastruktur")
    sollen bei Bedarf sauber mit Trennstrich umbrechen statt mitten im Wort
    willkuerlich abzureissen. */
-.srp-tree .label { word-break: normal; overflow-wrap: break-word; hyphens: auto; }
+.srp-tree .label { word-break: normal; overflow-wrap: break-word; -webkit-hyphens: auto; hyphens: auto; }
 .srp-tree .cat-row .cat-count {
   font-size: 11px;
   font-weight: 500;
@@ -818,7 +819,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
           <div class="col-12 col-lg ml-lg-auto">
             <div class="srp-search">
               <svg class="srp-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-              <input type="text" id="srpSearchInput" class="form-control form-control-sm" placeholder="Punkt suchen&hellip;" autocomplete="off" aria-label="Punkt suchen">
+              <input type="text" id="srpSearchInput" class="form-control form-control-sm" placeholder="Ma&szlig;nahme suchen&hellip;" autocomplete="off" aria-label="Ma&szlig;nahme suchen">
               <div id="srpSearchResults" class="srp-search-results"></div>
             </div>
           </div>
@@ -1361,6 +1362,17 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     });
   }
 
+  // Nur fuer die Sidebar-Anzeige: fuegt ein weiches Trennzeichen (­) vor
+  // bekannten langen Wortbestandteilen ein, damit lange Komposita wie
+  // "Kommunikationsinfrastruktur" im schmalen Sidebar-Text an einer sinnvollen
+  // Stelle mit Trennstrich umbrechen statt roh mitten im Wort. CSS-"hyphens:
+  // auto" allein reicht nicht, weil nicht jeder Browser/jedes System ein
+  // deutsches Trennmuster mitbringt. Wirkt sich nicht auf den gespeicherten
+  // Namen aus (Suche, Anzeige an anderer Stelle bleiben unveraendert).
+  function sidebarHyphenate(name) {
+    return name.replace(/(.)(infrastruktur)/gi, "$1­$2");
+  }
+
   // On phones/tablets the sidebar opens as an off-canvas overlay (AdminLTE
   // "sidebar-open"); after picking a node it must close again, otherwise it
   // keeps covering the content area and blocking clicks underneath it.
@@ -1400,7 +1412,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       var chevron = isActiveCat ? "▾" : "▸";
       var catHtml = '<div class="node-row cat-row' + (isActiveCat ? " selected" : "") + '" data-node-id="' + cat.id + '">' +
         '<span class="cat-chevron">' + chevron + '</span>' +
-        '<span class="label">' + escapeHtml(cat.name) + '</span>' +
+        '<span class="label">' + escapeHtml(sidebarHyphenate(cat.name)) + '</span>' +
         '<span class="cat-count">' + stats.assessed + '/' + stats.total + '</span>' +
         '</div>';
 
@@ -1409,7 +1421,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
         subHtml = '<div class="sub-list">' + cat.children.map(function (sub) {
           var subSel = activeSecondId === sub.id ? " selected" : "";
           return '<div class="node-row sub-row' + subSel + '" data-node-id="' + sub.id + '">' +
-            '<span class="label">' + escapeHtml(sub.name) + '</span>' +
+            '<span class="label">' + escapeHtml(sidebarHyphenate(sub.name)) + '</span>' +
             '</div>';
         }).join("") + '</div>';
       }
