@@ -459,7 +459,6 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 .srp-landing-section {
   border: 1px solid var(--srp-line);
   border-radius: var(--srp-radius-sm);
-  background: var(--srp-surface-raised);
   padding: 20px;
 }
 .srp-landing-section + .srp-landing-section { margin-top: 18px; }
@@ -469,7 +468,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   font-weight: 700;
   letter-spacing: .02em;
   text-transform: uppercase;
-  color: var(--srp-muted);
+  color: var(--srp-leaf-muted);
 }
 .srp-landing-grid {
   display: grid;
@@ -482,7 +481,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--srp-accent);
+  color: var(--srp-leaf-accent);
   font-weight: 700;
   font-style: normal;
   font-size: 15px;
@@ -1573,7 +1572,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       'Themenbereich, Komponente und Sub-Komponente.</p>';
     html += '</div>';
 
-    html += '<div class="srp-landing-section">';
+    html += '<div class="srp-landing-section srp-leaf-card">';
     html += '<h3 class="srp-landing-section-title">Kategorien</h3>';
     html += '<div class="srp-landing-grid">';
 
@@ -1592,7 +1591,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 
     html += '</div></div>';
 
-    html += '<div class="srp-landing-section">';
+    html += '<div class="srp-landing-section srp-leaf-card">';
     html += '<h3 class="srp-landing-section-title">Weitere Bereiche</h3>';
     html += '<div class="srp-landing-grid">';
 
