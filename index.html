@@ -503,6 +503,52 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 .srp-track-chip.srp-track-done { background: #e6f4ea; color: #1e6b32; }
 .srp-track-chip.srp-track-open { background: #fdf1e0; color: #8a5a00; }
 
+/* ---- Ma&szlig;nahmen-Tracking: KPI-Kacheln, Fortschrittsbalken ---- */
+.dot.neutral { background: var(--srp-accent); }
+.srp-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.srp-stat-card {
+  border: 1px solid var(--srp-line);
+  border-left: 4px solid var(--srp-muted-2);
+  border-radius: var(--srp-radius-sm);
+  background: var(--srp-surface);
+  padding: 14px 16px;
+}
+.srp-stat-neutral { border-left-color: var(--srp-accent); }
+.srp-stat-gruen { border-left-color: var(--gruen); }
+.srp-stat-gelb { border-left-color: var(--gelb); }
+.srp-stat-rot { border-left-color: var(--rot); }
+.srp-stat-top { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.srp-stat-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  color: var(--srp-muted);
+}
+.srp-stat-value { font-size: 30px; font-weight: 700; color: var(--srp-ink); line-height: 1.1; }
+.srp-stat-sub { font-size: 12.5px; color: var(--srp-muted); margin-top: 4px; }
+
+.srp-progress-row { margin-bottom: 20px; }
+.srp-progress-track {
+  display: flex;
+  height: 10px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--srp-line);
+  gap: 2px;
+}
+.srp-progress-track-sm { height: 7px; width: 140px; }
+.srp-progress-seg { height: 100%; }
+.srp-progress-gruen { background: var(--gruen); }
+.srp-progress-gelb { background: var(--gelb); }
+.srp-progress-legend { display: flex; gap: 18px; margin-top: 8px; font-size: 12.5px; color: var(--srp-muted); }
+.srp-progress-legend span { display: inline-flex; align-items: center; gap: 6px; }
+
 .srp-tracking-row {
   display: flex;
   flex-wrap: wrap;
@@ -1545,7 +1591,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       } else if (state.view === "erklaerung") {
         renderErklaerungView(main);
       } else if (state.view === "tracking") {
-        renderTrackingPlatzhalterView(main);
+        renderMassnahmenTrackingView(main);
       } else {
         renderLandingView(main);
       }
@@ -1663,19 +1709,154 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     wireLandingBack(container);
   }
 
-  // ---------- Ma&szlig;nahmen-Tracking (Platzhalter) ----------
-  function renderTrackingPlatzhalterView(container) {
-    var html = '<div class="card srp-leaf-card"><div class="card-header">';
-    html += '<button type="button" class="btn btn-sm btn-outline-secondary" data-landing-back>&larr; Zur Startseite</button>';
-    html += '<h3 class="card-title mb-0 mt-2">Ma&szlig;nahmen-Tracking</h3></div>';
-    html += '<div class="card-body" id="emptyStateTrackingPlaceholder"></div></div>';
-    container.innerHTML = html;
-    mountEmptyState(document.getElementById("emptyStateTrackingPlaceholder"), {
-      icon: "frage",
-      title: "Inhalte folgen",
-      text: "Diese &Uuml;bersicht wird in einem sp&auml;teren Schritt erg&auml;nzt."
+  // ---------- Ma&szlig;nahmen-Tracking ----------
+  // Sammelt alle Blattpunkte mit hinterlegter Ma&szlig;nahme (unabh&auml;ngig vom
+  // Tracking-Status) samt Navigationspfad - Grundlage f&uuml;r Kennzahlen und Liste.
+  function collectMeasures() {
+    var results = [];
+    function walk(nodes, trail) {
+      nodes.forEach(function (n) {
+        var path = trail.concat([n.name]);
+        if (n.children && n.children.length) {
+          walk(n.children, path);
+        } else if (n.entry && n.entry.measure) {
+          results.push({ node: n, path: path, entry: n.entry });
+        }
+      });
+    }
+    walk(state.data, []);
+    return results;
+  }
+
+  function pct(part, total) {
+    if (!total) return 0;
+    return Math.round((part / total) * 100);
+  }
+
+  // Kennzahlen fuer die Executive-Summary: Gesamt/Durchgef&uuml;hrt/Offen, kritisch
+  // offene (rote) Ma&szlig;nahmen als wichtigste Handlungskennzahl, sowie Aufschl&uuml;sselung
+  // je Fachbereich.
+  function computeMeasureStats(measures) {
+    var stats = { total: measures.length, done: 0, open: 0, openRot: 0, openGelb: 0, byCategory: {} };
+    CATEGORIES.forEach(function (c) { stats.byCategory[c] = { total: 0, done: 0, open: 0 }; });
+    measures.forEach(function (m) {
+      var cat = m.path[0];
+      var isDone = !!(m.entry.tracking && m.entry.tracking.done);
+      if (isDone) { stats.done++; } else { stats.open++; }
+      if (!isDone && m.entry.risk === "rot") stats.openRot++;
+      if (!isDone && m.entry.risk === "gelb") stats.openGelb++;
+      if (stats.byCategory[cat]) {
+        stats.byCategory[cat].total++;
+        if (isDone) { stats.byCategory[cat].done++; } else { stats.byCategory[cat].open++; }
+      }
     });
+    return stats;
+  }
+
+  // Dringendste Ma&szlig;nahmen zuerst: offen vor durchgef&uuml;hrt, innerhalb dessen
+  // nach Ampel-Schwere (Rot > Gelb > Grau > Gruen), dann alphabetisch nach Pfad.
+  function sortMeasures(measures) {
+    return measures.slice().sort(function (a, b) {
+      var aDone = a.entry.tracking && a.entry.tracking.done;
+      var bDone = b.entry.tracking && b.entry.tracking.done;
+      if (aDone !== bDone) return aDone ? 1 : -1;
+      var sev = STATUS_SEVERITY[b.entry.risk] - STATUS_SEVERITY[a.entry.risk];
+      if (sev !== 0) return sev;
+      return a.path.join(" ").localeCompare(b.path.join(" "));
+    });
+  }
+
+  function statTile(label, value, sub, tone) {
+    return '<div class="srp-stat-card srp-stat-' + tone + '">' +
+      '<div class="srp-stat-top"><span class="dot ' + tone + '"></span><span class="srp-stat-label">' + label + '</span></div>' +
+      '<div class="srp-stat-value">' + value + '</div>' +
+      '<div class="srp-stat-sub">' + sub + '</div>' +
+    '</div>';
+  }
+
+  function renderMassnahmenTrackingView(container) {
+    var measures = collectMeasures();
+    var stats = computeMeasureStats(measures);
+
+    var html = '<div class="card"><div class="card-header">';
+    html += '<button type="button" class="btn btn-sm btn-outline-secondary" data-landing-back>&larr; Zur Startseite</button>';
+    html += '<h3 class="card-title mb-0 mt-2">Ma&szlig;nahmen-Tracking</h3>';
+    html += '<div class="srp-browse-meta">Alle im System hinterlegten Ma&szlig;nahmen im &Uuml;berblick</div>';
+    html += '</div>';
+    html += '<div class="card-body">';
+
+    html += '<div class="srp-stat-grid">';
+    html += statTile("Gesamt", stats.total, "Ma&szlig;nahmen insgesamt hinterlegt", "neutral");
+    html += statTile("Durchgef&uuml;hrt", stats.done, pct(stats.done, stats.total) + "&nbsp;% abgeschlossen", "gruen");
+    html += statTile("Offen", stats.open, pct(stats.open, stats.total) + "&nbsp;% noch umzusetzen", "gelb");
+    html += statTile("Kritisch offen", stats.openRot, "rote Ma&szlig;nahmen ohne Umsetzung", "rot");
+    html += '</div>';
+
+    html += '<div class="srp-progress-row">';
+    html += '<div class="srp-progress-track">';
+    if (stats.total) {
+      html += '<div class="srp-progress-seg srp-progress-gruen" style="width:' + pct(stats.done, stats.total) + '%"></div>';
+      html += '<div class="srp-progress-seg srp-progress-gelb" style="width:' + pct(stats.open, stats.total) + '%"></div>';
+    }
+    html += '</div>';
+    html += '<div class="srp-progress-legend">';
+    html += '<span><span class="dot gruen"></span> Durchgef&uuml;hrt (' + stats.done + ')</span>';
+    html += '<span><span class="dot gelb"></span> Offen (' + stats.open + ')</span>';
+    html += '</div></div>';
+
+    html += '<h4 class="srp-section-title mt-4">Nach Fachbereich</h4>';
+    html += '<div class="table-responsive"><table class="table table-sm table-hover srp-tabular">';
+    html += '<thead><tr><th>Fachbereich</th><th>Gesamt</th><th>Durchgef&uuml;hrt</th><th>Offen</th><th>Fortschritt</th></tr></thead><tbody>';
+    CATEGORIES.forEach(function (c) {
+      var s = stats.byCategory[c];
+      html += '<tr><td>' + escapeHtml(c) + '</td><td>' + s.total + '</td><td>' + s.done + '</td><td>' + s.open + '</td>';
+      html += '<td><div class="srp-progress-track srp-progress-track-sm">' +
+        (s.total ? '<div class="srp-progress-seg srp-progress-gruen" style="width:' + pct(s.done, s.total) + '%"></div>' : '') +
+        '</div></td></tr>';
+    });
+    html += '</tbody></table></div>';
+
+    html += '<h4 class="srp-section-title mt-4">Alle Ma&szlig;nahmen (' + measures.length + ')</h4>';
+    if (!measures.length) {
+      html += '<div id="emptyStateTrackingList"></div>';
+    } else {
+      html += '<div class="table-responsive"><table class="table table-sm table-hover srp-tabular">';
+      html += '<thead><tr><th>Pfad</th><th>Ampel</th><th>Ma&szlig;nahme</th><th>Status</th><th>Datum</th></tr></thead><tbody>';
+      sortMeasures(measures).forEach(function (m) {
+        var done = !!(m.entry.tracking && m.entry.tracking.done);
+        html += '<tr>';
+        html += '<td><a href="#" data-goto-measure="' + m.node.id + '">' + escapeHtml(m.path.join(" › ")) + '</a></td>';
+        html += '<td><span class="dot ' + m.entry.risk + '"></span> ' + RISK_LABEL[m.entry.risk] + '</td>';
+        html += '<td>' + escapeHtml(m.entry.measure) + '</td>';
+        html += '<td>' + (done ?
+          '<span class="srp-track-chip srp-track-done">&#10003; Durchgef&uuml;hrt</span>' :
+          '<span class="srp-track-chip srp-track-open">Ma&szlig;nahme offen</span>') + '</td>';
+        html += '<td>' + escapeHtml((m.entry.tracking && m.entry.tracking.date) || "–") + '</td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+    }
+
+    html += '</div></div>';
+    container.innerHTML = html;
+
+    if (!measures.length) {
+      mountEmptyState(document.getElementById("emptyStateTrackingList"), {
+        icon: "posteingang",
+        title: "Noch keine Ma&szlig;nahmen hinterlegt",
+        text: "Sobald Fachbereiche Risikobewertungen mit Ma&szlig;nahme eintragen, erscheinen sie hier."
+      });
+    }
+
     wireLandingBack(container);
+    container.querySelectorAll("[data-goto-measure]").forEach(function (el) {
+      el.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        state.selectedId = el.getAttribute("data-goto-measure");
+        state.view = "browse";
+        render();
+      });
+    });
   }
 
   // Zeigt nur die Vorfahren, nicht den aktuellen Punkt selbst - der steht
