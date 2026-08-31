@@ -465,6 +465,16 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 .srp-track-chip.srp-track-done { background: #e6f4ea; color: #1e6b32; }
 .srp-track-chip.srp-track-open { background: #fdf1e0; color: #8a5a00; }
 
+.srp-tracking-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 24px;
+}
+.srp-tracking-check { display: flex; align-items: center; }
+.srp-tracking-date { display: flex; align-items: center; white-space: nowrap; }
+.srp-tracking-date input[type="date"] { width: auto; }
+
 /* ---- Content area helpers ---- */
 .node-title .badge { vertical-align: middle; }
 .risk-compare {
@@ -1825,12 +1835,12 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       var e2 = e;
       html += '<hr class="srp-divider">';
       html += '<h4 class="srp-section-title">Tracking</h4>';
-      html += '<div class="form-row align-items-center">';
-      html += '<div class="col-12 col-sm-auto mb-2 mb-sm-0"><div class="custom-control custom-checkbox">';
+      html += '<div class="srp-tracking-row">';
+      html += '<div class="custom-control custom-checkbox srp-tracking-check">';
       html += '<input type="checkbox" class="custom-control-input" id="trackingDoneChk" data-field="trackingDone"' + (e2.tracking.done ? " checked" : "") + '>';
-      html += '<label class="custom-control-label" for="trackingDoneChk">Ma&szlig;nahme durchgef&uuml;hrt</label></div></div>';
-      html += '<div class="col-12 col-sm-auto"><label class="mr-2 mb-0 small font-weight-bold text-uppercase text-muted" for="trackingDateInput">Datum</label>';
-      html += '<input type="date" id="trackingDateInput" class="form-control form-control-sm d-inline-block w-auto" data-field="trackingDate" value="' + escapeHtml(e2.tracking.date) + '"></div>';
+      html += '<label class="custom-control-label" for="trackingDoneChk">Ma&szlig;nahme durchgef&uuml;hrt</label></div>';
+      html += '<div class="srp-tracking-date"><label class="mr-2 mb-0 small font-weight-bold text-uppercase text-muted" for="trackingDateInput">Datum</label>';
+      html += '<input type="date" id="trackingDateInput" class="form-control form-control-sm" data-field="trackingDate" value="' + escapeHtml(e2.tracking.date) + '"></div>';
       html += '</div>';
 
       html += '<hr class="srp-divider">';
