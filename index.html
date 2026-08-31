@@ -452,6 +452,32 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   line-height: 1;
 }
 .srp-browse-card-tracking { margin-top: -1px; }
+
+.srp-landing-intro { margin-bottom: 20px; }
+.srp-landing-title { margin-bottom: 6px; }
+.srp-landing-lead { color: var(--srp-muted); max-width: 62ch; margin-bottom: 0; }
+.srp-landing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(264px, 1fr));
+  gap: 18px;
+}
+.srp-landing-card { padding: 22px 36px 22px 20px; }
+.srp-landing-card .srp-browse-card-name { font-size: 16.5px; }
+.srp-landing-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--srp-accent-soft, var(--srp-line));
+  color: var(--srp-accent);
+  font-weight: 700;
+  font-size: 12px;
+  flex: 0 0 auto;
+}
+.srp-legend-list { list-style: none; padding-left: 0; }
+.srp-legend-list li { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 .srp-track-chip {
   display: inline-flex;
   align-items: center;
@@ -790,7 +816,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   </nav>
 
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="#" class="brand-link srp-brand">
+    <a href="#" id="brandHomeLink" class="brand-link srp-brand" title="Zur Startseite">
       <svg class="srp-brand-mark" viewBox="0 0 40 40" width="32" height="32" aria-hidden="true" focusable="false">
         <rect class="srp-brand-mark-bg" width="40" height="40" rx="11"/>
         <path d="M8 25 L20 11 L32 25" class="srp-brand-mark-wing-1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1267,8 +1293,15 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     role: "nutzer",
     adminFachbereich: "alle",
     selectedId: null,
-    adminTab: "struktur"
+    adminTab: "struktur",
+    view: "landing"
   };
+
+  function goLanding() {
+    state.view = "landing";
+    state.selectedId = null;
+    render();
+  }
 
   function load() {
     try {
@@ -1283,6 +1316,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   function resetDemo() {
     state.data = seedData();
     state.selectedId = null;
+    state.view = "landing";
     save();
     render();
   }
@@ -1494,9 +1528,131 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       renderAdminPanel();
     } else {
       var main = document.getElementById("mainPanel");
-      buildDetailMarkup(main, findNode(state.selectedId), state.role);
+      if (state.selectedId) {
+        buildDetailMarkup(main, findNode(state.selectedId), state.role);
+      } else if (state.view === "erklaerung") {
+        renderErklaerungView(main);
+      } else if (state.view === "tracking") {
+        renderTrackingPlatzhalterView(main);
+      } else {
+        renderLandingView(main);
+      }
     }
     save();
+  }
+
+  function wireLandingBack(container) {
+    container.querySelectorAll("[data-landing-back]").forEach(function (el) {
+      el.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        goLanding();
+      });
+    });
+  }
+
+  // ---------- Startseite ----------
+  function renderLandingView(container) {
+    var html = '<div class="srp-landing">';
+    html += '<div class="srp-landing-intro">';
+    html += '<h2 class="srp-landing-title">Willkommen beim Strategic Resilience Program</h2>';
+    html += '<p class="srp-landing-lead">Bereiten Sie den Flughafen systematisch auf Extremhitze-Szenarien vor: ' +
+      'Risikobewertung und Ma&szlig;nahmen je Fachbereich, strukturiert nach Kategorie, Unterkategorie, ' +
+      'Themenbereich, Komponente und Sub-Komponente.</p>';
+    html += '</div>';
+    html += '<div class="srp-landing-grid">';
+
+    state.data.forEach(function (cat) {
+      var color = aggregateStatus(cat);
+      var stats = leafStats(cat);
+      html += '<button type="button" class="srp-browse-card srp-landing-card" data-node-id="' + cat.id + '">' +
+        '<span class="srp-browse-card-top">' +
+          '<span class="dot ' + color + '" title="' + RISK_LABEL[color] + '"></span>' +
+          '<span class="srp-browse-card-name">' + escapeHtml(cat.name) + '</span>' +
+        '</span>' +
+        '<span class="srp-browse-card-meta"><span>' + stats.assessed + ' von ' + stats.total + ' bewertet</span></span>' +
+        '<span class="srp-browse-card-arrow" aria-hidden="true">&rsaquo;</span>' +
+      '</button>';
+    });
+
+    html += '<button type="button" class="srp-browse-card srp-landing-card srp-landing-card-info" data-landing-goto="erklaerung">' +
+      '<span class="srp-browse-card-top">' +
+        '<span class="srp-landing-icon" aria-hidden="true">?</span>' +
+        '<span class="srp-browse-card-name">Erkl&auml;rung</span>' +
+      '</span>' +
+      '<span class="srp-browse-card-meta"><span>Wie das Tool funktioniert</span></span>' +
+      '<span class="srp-browse-card-arrow" aria-hidden="true">&rsaquo;</span>' +
+    '</button>';
+
+    html += '<button type="button" class="srp-browse-card srp-landing-card srp-landing-card-info" data-landing-goto="tracking">' +
+      '<span class="srp-browse-card-top">' +
+        '<span class="srp-landing-icon" aria-hidden="true">&#10003;</span>' +
+        '<span class="srp-browse-card-name">Ma&szlig;nahmen-Tracking</span>' +
+      '</span>' +
+      '<span class="srp-browse-card-meta"><span>&Uuml;bersicht folgt</span></span>' +
+      '<span class="srp-browse-card-arrow" aria-hidden="true">&rsaquo;</span>' +
+    '</button>';
+
+    html += '</div></div>';
+    container.innerHTML = html;
+
+    container.querySelectorAll("[data-node-id]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        state.selectedId = el.getAttribute("data-node-id");
+        state.view = "browse";
+        render();
+      });
+    });
+    container.querySelectorAll("[data-landing-goto]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        state.view = el.getAttribute("data-landing-goto");
+        render();
+      });
+    });
+  }
+
+  // ---------- Erkl&auml;rungsseite ----------
+  function renderErklaerungView(container) {
+    var html = '<div class="card srp-leaf-card"><div class="card-header">';
+    html += '<button type="button" class="btn btn-sm btn-outline-secondary" data-landing-back>&larr; Zur Startseite</button>';
+    html += '<h3 class="card-title mb-0 mt-2">Erkl&auml;rung</h3></div>';
+    html += '<div class="card-body">';
+    html += '<p>Das Strategic Resilience Program (SRP) bereitet den Flughafen systematisch auf ' +
+      'Extremhitze-Szenarien (z. B. ab 40 &deg;C Au&szlig;entemperatur) vor. Fachbereiche tragen ihre ' +
+      'Risikobewertung und passende Ma&szlig;nahmen selbst in dieses Tool ein, damit im Ernstfall vorbereitet ' +
+      'statt &uuml;berrascht reagiert wird.</p>';
+    html += '<h4 class="srp-section-title">Struktur</h4>';
+    html += '<p>Die Inhalte sind in bis zu f&uuml;nf Ebenen gegliedert: Kategorie &rarr; Unterkategorie &rarr; ' +
+      'Themenbereich &rarr; Komponente &rarr; Sub-Komponente. Eine Risikobewertung und Ma&szlig;nahme h&auml;ngt ' +
+      'jeweils am tiefsten bef&uuml;llten Punkt &ndash; eine Bef&uuml;llung ist ab Ebene 2 m&ouml;glich, nicht ' +
+      'zwingend bis Ebene 5.</p>';
+    html += '<h4 class="srp-section-title">Ampel-Skala</h4>';
+    html += '<ul class="srp-legend-list">';
+    html += '<li><span class="dot grau"></span> Grau &ndash; noch nicht bewertetes Risiko</li>';
+    html += '<li><span class="dot gruen"></span> Gr&uuml;n &ndash; kein Risiko</li>';
+    html += '<li><span class="dot gelb"></span> Gelb &ndash; tolerierbares Risiko, Ma&szlig;nahme notwendig</li>';
+    html += '<li><span class="dot rot"></span> Rot &ndash; inakzeptables Risiko, Ma&szlig;nahme-Definition erforderlich</li>';
+    html += '</ul>';
+    html += '<h4 class="srp-section-title">Ablauf je Eintrag</h4>';
+    html += '<p>Risikobewertung &amp; Ma&szlig;nahme eintragen oder neue Punkte erg&auml;nzen &rarr; im Tracking ' +
+      'festhalten, ob die Ma&szlig;nahme durchgef&uuml;hrt wurde &rarr; danach das Restrisiko neu bewerten.</p>';
+    html += '</div></div>';
+    container.innerHTML = html;
+    wireLandingBack(container);
+  }
+
+  // ---------- Ma&szlig;nahmen-Tracking (Platzhalter) ----------
+  function renderTrackingPlatzhalterView(container) {
+    var html = '<div class="card srp-leaf-card"><div class="card-header">';
+    html += '<button type="button" class="btn btn-sm btn-outline-secondary" data-landing-back>&larr; Zur Startseite</button>';
+    html += '<h3 class="card-title mb-0 mt-2">Ma&szlig;nahmen-Tracking</h3></div>';
+    html += '<div class="card-body" id="emptyStateTrackingPlaceholder"></div></div>';
+    container.innerHTML = html;
+    mountEmptyState(document.getElementById("emptyStateTrackingPlaceholder"), {
+      icon: "frage",
+      title: "Inhalte folgen",
+      text: "Diese &Uuml;bersicht wird in einem sp&auml;teren Schritt erg&auml;nzt."
+    });
+    wireLandingBack(container);
   }
 
   // Zeigt nur die Vorfahren, nicht den aktuellen Punkt selbst - der steht
@@ -2098,6 +2254,10 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   }
 
   // ---------- Init ----------
+  document.getElementById("brandHomeLink").addEventListener("click", function (ev) {
+    ev.preventDefault();
+    goLanding();
+  });
   document.getElementById("roleSelect").addEventListener("change", function (e) {
     state.role = e.target.value;
     render();
