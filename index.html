@@ -593,6 +593,20 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 .srp-tracking-table tbody tr:nth-child(even) { background: var(--srp-surface); }
 .srp-tracking-table.table-hover tbody tr:hover { background: var(--srp-accent-soft); }
 
+/* Ma&szlig;nahmen-Liste: feste Spaltenbreiten mit Zeilenumbruch statt horizontalem
+   Scrollen, damit die Liste ohne Scrollen auf einen Blick lesbar ist - &uuml;berschreibt
+   gezielt (per Selektor-Spezifit&auml;t) das globale "white-space: nowrap; min-width: 640px"
+   fuer Tabellen unter #mainPanel weiter oben. */
+#mainPanel .srp-measures-table { min-width: 0; table-layout: fixed; width: 100%; }
+#mainPanel .srp-measures-table td, #mainPanel .srp-measures-table th { white-space: normal; word-break: break-word; }
+.srp-measures-table th:nth-child(1), .srp-measures-table td:nth-child(1) { width: 20%; }
+.srp-measures-table th:nth-child(2), .srp-measures-table td:nth-child(2) { width: 9%; }
+.srp-measures-table th:nth-child(3), .srp-measures-table td:nth-child(3) { width: 38%; }
+.srp-measures-table th:nth-child(4), .srp-measures-table td:nth-child(4) { width: 17%; }
+.srp-measures-table th:nth-child(5), .srp-measures-table td:nth-child(5) { width: 16%; }
+.srp-measure-path a { font-weight: 600; }
+.srp-measure-path-cat { font-size: 11.5px; color: var(--srp-muted); margin-top: 2px; }
+
 .srp-tracking-row {
   display: flex;
   flex-wrap: wrap;
@@ -1699,7 +1713,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
         '<span class="srp-landing-icon" aria-hidden="true">&#10003;</span>' +
         '<span class="srp-browse-card-name">Ma&szlig;nahmen-Tracking</span>' +
       '</span>' +
-      '<span class="srp-browse-card-meta"><span>&Uuml;bersicht folgt</span></span>' +
+      '<span class="srp-browse-card-meta"><span>&Uuml;bersicht der Ma&szlig;nahmen</span></span>' +
       '<span class="srp-browse-card-arrow" aria-hidden="true">&rsaquo;</span>' +
     '</button>';
 
@@ -1777,6 +1791,17 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     return Math.round((part / total) * 100);
   }
 
+  var RISK_SHORT = { grau: "Grau", gruen: "Grün", gelb: "Gelb", rot: "Rot" };
+
+  // Gespeichert wird das Tracking-Datum im ISO-Format des <input type="date">
+  // (YYYY-MM-DD) - für Anzeige/Export in der Liste hier ins deutsche tt.mm.jjjj.
+  function formatDateDe(iso) {
+    if (!iso) return "";
+    var parts = iso.split("-");
+    if (parts.length !== 3) return iso;
+    return parts[2] + "." + parts[1] + "." + parts[0];
+  }
+
   // Kennzahlen fuer die Executive-Summary: Gesamt/Durchgef&uuml;hrt/Offen, kritisch
   // offene (rote) Ma&szlig;nahmen als wichtigste Handlungskennzahl, sowie Aufschl&uuml;sselung
   // je Fachbereich.
@@ -1822,7 +1847,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
         RISK_LABEL[m.entry.risk] || m.entry.risk,
         m.entry.measure,
         done ? "Durchgeführt" : "Offen",
-        (m.entry.tracking && m.entry.tracking.date) || ""
+        formatDateDe(m.entry.tracking && m.entry.tracking.date)
       ]);
     });
     var csv = rows.map(function (row) {
@@ -1900,21 +1925,26 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     if (!measures.length) {
       html += '<div id="emptyStateTrackingList"></div>';
     } else {
-      html += '<div class="srp-tracking-table-wrap"><div class="table-responsive"><table class="table table-sm table-hover srp-tracking-table">';
+      html += '<div class="srp-tracking-table-wrap"><table class="table table-sm table-hover srp-tracking-table srp-measures-table">';
       html += '<thead><tr><th>Pfad</th><th>Ampel</th><th>Ma&szlig;nahme</th><th>Status</th><th class="srp-tabular">Datum</th></tr></thead><tbody>';
       sortMeasures(measures).forEach(function (m) {
         var done = !!(m.entry.tracking && m.entry.tracking.done);
+        var leafName = m.path[m.path.length - 1];
+        var fullPath = m.path.join(" › ");
         html += '<tr>';
-        html += '<td><a href="#" data-goto-measure="' + m.node.id + '">' + escapeHtml(m.path.join(" › ")) + '</a></td>';
-        html += '<td><span class="dot ' + m.entry.risk + '"></span> ' + RISK_LABEL[m.entry.risk] + '</td>';
+        html += '<td class="srp-measure-path">' +
+          '<a href="#" data-goto-measure="' + m.node.id + '" title="' + escapeHtml(fullPath) + '">' + escapeHtml(leafName) + '</a>' +
+          '<div class="srp-measure-path-cat">' + escapeHtml(m.path[0]) + '</div>' +
+        '</td>';
+        html += '<td><span class="dot ' + m.entry.risk + '" title="' + escapeHtml(RISK_LABEL[m.entry.risk]) + '"></span> ' + RISK_SHORT[m.entry.risk] + '</td>';
         html += '<td>' + escapeHtml(m.entry.measure) + '</td>';
         html += '<td>' + (done ?
           '<span class="srp-track-chip srp-track-done">&#10003; Durchgef&uuml;hrt</span>' :
-          '<span class="srp-track-chip srp-track-open">Ma&szlig;nahme offen</span>') + '</td>';
-        html += '<td class="srp-tabular">' + escapeHtml((m.entry.tracking && m.entry.tracking.date) || "–") + '</td>';
+          '<span class="srp-track-chip srp-track-open">Offen</span>') + '</td>';
+        html += '<td class="srp-tabular">' + escapeHtml(formatDateDe(m.entry.tracking && m.entry.tracking.date) || "–") + '</td>';
         html += '</tr>';
       });
-      html += '</tbody></table></div></div>';
+      html += '</tbody></table></div>';
     }
 
     html += '</div></div>';
