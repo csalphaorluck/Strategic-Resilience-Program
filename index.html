@@ -530,7 +530,13 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   letter-spacing: .02em;
   color: var(--srp-muted);
 }
-.srp-stat-value { font-size: 30px; font-weight: 700; color: var(--srp-ink); line-height: 1.1; }
+.srp-stat-value {
+  font-family: var(--srp-font-display);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--srp-ink);
+  line-height: 1.1;
+}
 .srp-stat-sub { font-size: 12.5px; color: var(--srp-muted); margin-top: 4px; }
 
 .srp-progress-row { margin-bottom: 20px; }
@@ -548,6 +554,44 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 .srp-progress-gelb { background: var(--gelb); }
 .srp-progress-legend { display: flex; gap: 18px; margin-top: 8px; font-size: 12.5px; color: var(--srp-muted); }
 .srp-progress-legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+.srp-tracking-list-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 32px;
+  margin-bottom: 0;
+}
+.srp-tracking-list-header .srp-section-title { margin: 0; }
+.srp-tracking-table-wrap {
+  border: 1px solid var(--srp-line);
+  border-radius: var(--srp-radius-sm);
+  overflow: hidden;
+  margin-top: 10px;
+}
+.srp-tracking-table-wrap .table-responsive { margin-bottom: 0; }
+.srp-tracking-table { margin-bottom: 0; }
+.srp-tracking-table thead th {
+  background: var(--srp-surface);
+  color: var(--srp-muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  border-top: none;
+  border-bottom: 1px solid var(--srp-line-strong);
+  padding: 10px 14px;
+  white-space: nowrap;
+}
+.srp-tracking-table td {
+  padding: 10px 14px;
+  border-top: 1px solid var(--srp-line);
+  vertical-align: middle;
+}
+.srp-tracking-table tbody tr:nth-child(even) { background: var(--srp-surface); }
+.srp-tracking-table.table-hover tbody tr:hover { background: var(--srp-accent-soft); }
 
 .srp-tracking-row {
   display: flex;
@@ -1766,6 +1810,37 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     });
   }
 
+  // Export als CSV mit Semikolon-Trennzeichen und UTF-8-BOM, damit Excel
+  // (auch in deutscher Lokalisierung) Spalten und Umlaute korrekt erkennt.
+  function exportMeasuresCsv() {
+    var measures = sortMeasures(collectMeasures());
+    var rows = [["Pfad", "Ampel", "Maßnahme", "Status", "Datum"]];
+    measures.forEach(function (m) {
+      var done = !!(m.entry.tracking && m.entry.tracking.done);
+      rows.push([
+        m.path.join(" > "),
+        RISK_LABEL[m.entry.risk] || m.entry.risk,
+        m.entry.measure,
+        done ? "Durchgeführt" : "Offen",
+        (m.entry.tracking && m.entry.tracking.date) || ""
+      ]);
+    });
+    var csv = rows.map(function (row) {
+      return row.map(function (cell) {
+        return '"' + String(cell == null ? "" : cell).replace(/"/g, '""') + '"';
+      }).join(";");
+    }).join("\r\n");
+    var blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "massnahmen-tracking.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
   function statTile(label, value, sub, tone) {
     return '<div class="srp-stat-card srp-stat-' + tone + '">' +
       '<div class="srp-stat-top"><span class="dot ' + tone + '"></span><span class="srp-stat-label">' + label + '</span></div>' +
@@ -1805,23 +1880,28 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     html += '</div></div>';
 
     html += '<h4 class="srp-section-title mt-4">Nach Fachbereich</h4>';
-    html += '<div class="table-responsive"><table class="table table-sm table-hover srp-tabular">';
-    html += '<thead><tr><th>Fachbereich</th><th>Gesamt</th><th>Durchgef&uuml;hrt</th><th>Offen</th><th>Fortschritt</th></tr></thead><tbody>';
+    html += '<div class="srp-tracking-table-wrap"><div class="table-responsive"><table class="table table-sm table-hover srp-tracking-table">';
+    html += '<thead><tr><th>Fachbereich</th><th class="srp-tabular">Gesamt</th><th class="srp-tabular">Durchgef&uuml;hrt</th><th class="srp-tabular">Offen</th><th>Fortschritt</th></tr></thead><tbody>';
     CATEGORIES.forEach(function (c) {
       var s = stats.byCategory[c];
-      html += '<tr><td>' + escapeHtml(c) + '</td><td>' + s.total + '</td><td>' + s.done + '</td><td>' + s.open + '</td>';
+      html += '<tr><td>' + escapeHtml(c) + '</td><td class="srp-tabular">' + s.total + '</td><td class="srp-tabular">' + s.done + '</td><td class="srp-tabular">' + s.open + '</td>';
       html += '<td><div class="srp-progress-track srp-progress-track-sm">' +
         (s.total ? '<div class="srp-progress-seg srp-progress-gruen" style="width:' + pct(s.done, s.total) + '%"></div>' : '') +
         '</div></td></tr>';
     });
-    html += '</tbody></table></div>';
+    html += '</tbody></table></div></div>';
 
-    html += '<h4 class="srp-section-title mt-4">Alle Ma&szlig;nahmen (' + measures.length + ')</h4>';
+    html += '<div class="srp-tracking-list-header">';
+    html += '<h4 class="srp-section-title mb-0">Alle Ma&szlig;nahmen (' + measures.length + ')</h4>';
+    if (measures.length) {
+      html += '<button type="button" class="btn btn-outline-secondary btn-sm" id="exportMeasuresBtn">Als Excel exportieren (CSV)</button>';
+    }
+    html += '</div>';
     if (!measures.length) {
       html += '<div id="emptyStateTrackingList"></div>';
     } else {
-      html += '<div class="table-responsive"><table class="table table-sm table-hover srp-tabular">';
-      html += '<thead><tr><th>Pfad</th><th>Ampel</th><th>Ma&szlig;nahme</th><th>Status</th><th>Datum</th></tr></thead><tbody>';
+      html += '<div class="srp-tracking-table-wrap"><div class="table-responsive"><table class="table table-sm table-hover srp-tracking-table">';
+      html += '<thead><tr><th>Pfad</th><th>Ampel</th><th>Ma&szlig;nahme</th><th>Status</th><th class="srp-tabular">Datum</th></tr></thead><tbody>';
       sortMeasures(measures).forEach(function (m) {
         var done = !!(m.entry.tracking && m.entry.tracking.done);
         html += '<tr>';
@@ -1831,14 +1911,17 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
         html += '<td>' + (done ?
           '<span class="srp-track-chip srp-track-done">&#10003; Durchgef&uuml;hrt</span>' :
           '<span class="srp-track-chip srp-track-open">Ma&szlig;nahme offen</span>') + '</td>';
-        html += '<td>' + escapeHtml((m.entry.tracking && m.entry.tracking.date) || "–") + '</td>';
+        html += '<td class="srp-tabular">' + escapeHtml((m.entry.tracking && m.entry.tracking.date) || "–") + '</td>';
         html += '</tr>';
       });
-      html += '</tbody></table></div>';
+      html += '</tbody></table></div></div>';
     }
 
     html += '</div></div>';
     container.innerHTML = html;
+
+    var exportBtn = document.getElementById("exportMeasuresBtn");
+    if (exportBtn) exportBtn.addEventListener("click", exportMeasuresCsv);
 
     if (!measures.length) {
       mountEmptyState(document.getElementById("emptyStateTrackingList"), {
