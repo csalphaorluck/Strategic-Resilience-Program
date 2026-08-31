@@ -461,6 +461,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   grid-template-columns: repeat(auto-fill, minmax(264px, 1fr));
   gap: 18px;
 }
+.srp-landing-grid-secondary { margin-top: 18px; }
 .srp-landing-card { padding: 22px 36px 22px 20px; }
 .srp-landing-card .srp-browse-card-name { font-size: 16.5px; }
 .srp-landing-icon {
@@ -470,10 +471,12 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--srp-accent-soft, var(--srp-line));
+  border: 1.5px solid var(--srp-accent);
   color: var(--srp-accent);
   font-weight: 700;
+  font-style: normal;
   font-size: 12px;
+  line-height: 1;
   flex: 0 0 auto;
 }
 .srp-legend-list { list-style: none; padding-left: 0; }
@@ -1574,9 +1577,12 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       '</button>';
     });
 
+    html += '</div>';
+    html += '<div class="srp-landing-grid srp-landing-grid-secondary">';
+
     html += '<button type="button" class="srp-browse-card srp-landing-card srp-landing-card-info" data-landing-goto="erklaerung">' +
       '<span class="srp-browse-card-top">' +
-        '<span class="srp-landing-icon" aria-hidden="true">?</span>' +
+        '<span class="srp-landing-icon" aria-hidden="true">i</span>' +
         '<span class="srp-browse-card-name">Erkl&auml;rung</span>' +
       '</span>' +
       '<span class="srp-browse-card-meta"><span>Wie das Tool funktioniert</span></span>' +
