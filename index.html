@@ -456,12 +456,26 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 .srp-landing-intro { margin-bottom: 20px; }
 .srp-landing-title { margin-bottom: 6px; }
 .srp-landing-lead { color: var(--srp-muted); max-width: 62ch; margin-bottom: 0; }
+.srp-landing-section {
+  border: 1px solid var(--srp-line);
+  border-radius: var(--srp-radius-sm);
+  background: var(--srp-surface-raised);
+  padding: 20px;
+}
+.srp-landing-section + .srp-landing-section { margin-top: 18px; }
+.srp-landing-section-title {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: var(--srp-muted);
+}
 .srp-landing-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(264px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(264px, 1fr));
   gap: 18px;
 }
-.srp-landing-grid-secondary { margin-top: 18px; }
 .srp-landing-card { padding: 22px 36px 22px 20px; }
 .srp-landing-card .srp-browse-card-name { font-size: 16.5px; }
 .srp-landing-icon {
@@ -1558,6 +1572,9 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       'Risikobewertung und Ma&szlig;nahmen je Fachbereich, strukturiert nach Kategorie, Unterkategorie, ' +
       'Themenbereich, Komponente und Sub-Komponente.</p>';
     html += '</div>';
+
+    html += '<div class="srp-landing-section">';
+    html += '<h3 class="srp-landing-section-title">Kategorien</h3>';
     html += '<div class="srp-landing-grid">';
 
     state.data.forEach(function (cat) {
@@ -1573,8 +1590,11 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       '</button>';
     });
 
-    html += '</div>';
-    html += '<div class="srp-landing-grid srp-landing-grid-secondary">';
+    html += '</div></div>';
+
+    html += '<div class="srp-landing-section">';
+    html += '<h3 class="srp-landing-section-title">Weitere Bereiche</h3>';
+    html += '<div class="srp-landing-grid">';
 
     html += '<button type="button" class="srp-browse-card srp-landing-card srp-landing-card-info" data-landing-goto="erklaerung">' +
       '<span class="srp-browse-card-top">' +
@@ -1595,6 +1615,8 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     '</button>';
 
     html += '</div></div>';
+
+    html += '</div>';
     container.innerHTML = html;
 
     container.querySelectorAll("[data-node-id]").forEach(function (el) {
