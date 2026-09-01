@@ -2453,6 +2453,11 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     if (e.tracking && e.tracking.done) {
       return '<span class="srp-track-chip srp-track-done">&#10003; Durchgef&uuml;hrt</span>';
     }
+    // Grün = kein Risiko - hier braucht es von vornherein keine Maßnahme, daher
+    // nicht als "offen" anzeigen, sondern als bereits erledigt.
+    if (e.risk === "gruen") {
+      return '<span class="srp-track-chip srp-track-done">&#10003; Kein Risiko &ndash; keine Ma&szlig;nahme n&ouml;tig</span>';
+    }
     return '<span class="srp-track-chip srp-track-open">Ma&szlig;nahme offen</span>';
   }
 
