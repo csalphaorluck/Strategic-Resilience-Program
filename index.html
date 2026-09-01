@@ -453,9 +453,38 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 }
 .srp-browse-card-tracking { margin-top: -1px; }
 
-.srp-landing-intro { margin-bottom: 20px; }
 .srp-landing-title { margin-bottom: 6px; }
 .srp-landing-lead { color: var(--srp-muted); max-width: 62ch; margin-bottom: 0; }
+
+.srp-landing-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, var(--srp-accent) 0%, var(--srp-leaf-bg) 100%);
+  border-radius: var(--srp-radius);
+  padding: 32px 36px;
+  margin-bottom: 20px;
+  box-shadow: var(--srp-shadow-md);
+}
+.srp-landing-hero-main { flex: 1 1 380px; min-width: 0; }
+.srp-landing-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: rgba(255, 255, 255, .78);
+  margin-bottom: 8px;
+}
+.srp-landing-hero .srp-landing-title { color: #fff; }
+.srp-landing-hero .srp-landing-lead { color: rgba(255, 255, 255, .84); max-width: 60ch; }
+.srp-landing-hero-stat { flex: 0 0 auto; min-width: 190px; text-align: right; }
+.srp-landing-hero-stat-value { font-family: var(--srp-font-display); font-size: 34px; font-weight: 700; color: #fff; line-height: 1; }
+.srp-landing-hero-stat-label { font-size: 12.5px; color: rgba(255, 255, 255, .78); margin: 6px 0 10px; }
+.srp-progress-track-hero { background: rgba(255, 255, 255, .25); width: 190px; margin-left: auto; }
+
 .srp-landing-section {
   border: 1px solid var(--srp-line);
   border-radius: var(--srp-radius-sm);
@@ -475,19 +504,21 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   grid-template-columns: repeat(auto-fit, minmax(264px, 1fr));
   gap: 18px;
 }
-.srp-landing-card { padding: 22px 36px 22px 20px; }
+.srp-landing-card {
+  padding: 22px 36px 22px 20px;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.srp-landing-card:hover, .srp-landing-card:focus-visible { transform: translateY(-3px); }
 .srp-landing-card .srp-browse-card-name { font-size: 16.5px; }
-.srp-landing-icon {
+.srp-landing-card-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--srp-leaf-accent);
-  font-weight: 700;
-  font-style: normal;
-  font-size: 15px;
-  line-height: 1;
   flex: 0 0 auto;
 }
+.srp-landing-card-icon svg { display: block; width: 24px; height: 24px; }
+.srp-landing-card .srp-browse-card-meta .dot { margin-right: 2px; }
 .srp-legend-list { list-style: none; padding-left: 0; }
 .srp-legend-list li { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 .srp-verwaltung-actions { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -1868,13 +1899,45 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   }
 
   // ---------- Startseite ----------
+  // Schlichte, einheitliche Strichicons (kein Branding/keine externen Assets) für
+  // die Startseiten-Kacheln - Farbe kommt vom umgebenden Text (currentColor).
+  var LANDING_ICONS = {
+    infrastruktur: '<path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/><path d="M9 12h.01M15 12h.01M9 8h.01M15 8h.01"/>',
+    betrieb: '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>',
+    personal: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    erklaerung: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+    tracking: '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 12h6M9 16h4"/>'
+  };
+  function landingIcon(key) {
+    return '<span class="srp-landing-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+      'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + LANDING_ICONS[key] + '</svg></span>';
+  }
+
+  var CATEGORY_ICON_KEY = { "Infrastruktur": "infrastruktur", "Flughafenbetrieb": "betrieb", "Personal & Governance": "personal" };
+
   function renderLandingView(container) {
+    var overall = { total: 0, assessed: 0 };
+    state.data.forEach(function (cat) {
+      var s = leafStats(cat);
+      overall.total += s.total;
+      overall.assessed += s.assessed;
+    });
+
     var html = '<div class="srp-landing">';
-    html += '<div class="srp-landing-intro">';
+    html += '<div class="srp-landing-hero">';
+    html += '<div class="srp-landing-hero-main">';
+    html += '<span class="srp-landing-eyebrow">Vorbereitung auf Extremhitze</span>';
     html += '<h2 class="srp-landing-title">Willkommen beim Strategic Resilience Program</h2>';
     html += '<p class="srp-landing-lead">Bereiten Sie den Flughafen systematisch auf Extremhitze-Szenarien vor: ' +
       'Risikobewertung und Ma&szlig;nahmen je Fachbereich, strukturiert nach Kategorie, Unterkategorie, ' +
       'Themenbereich, Komponente und Sub-Komponente.</p>';
+    html += '</div>';
+    html += '<div class="srp-landing-hero-stat">';
+    html += '<div class="srp-landing-hero-stat-value">' + overall.assessed + ' / ' + overall.total + '</div>';
+    html += '<div class="srp-landing-hero-stat-label">Punkte bewertet</div>';
+    html += '<div class="srp-progress-track srp-progress-track-hero"><div class="srp-progress-seg srp-progress-gruen" style="width:' +
+      pct(overall.assessed, overall.total) + '%"></div></div>';
+    html += '</div>';
     html += '</div>';
 
     html += '<div class="srp-landing-section srp-leaf-card">';
@@ -1886,10 +1949,11 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       var stats = leafStats(cat);
       html += '<button type="button" class="srp-browse-card srp-landing-card" data-node-id="' + cat.id + '">' +
         '<span class="srp-browse-card-top">' +
-          '<span class="dot ' + color + '" title="' + RISK_LABEL[color] + '"></span>' +
+          landingIcon(CATEGORY_ICON_KEY[cat.name]) +
           '<span class="srp-browse-card-name">' + escapeHtml(cat.name) + '</span>' +
         '</span>' +
-        '<span class="srp-browse-card-meta"><span>' + stats.assessed + ' von ' + stats.total + ' bewertet</span></span>' +
+        '<span class="srp-browse-card-meta"><span><span class="dot ' + color + '" title="' + RISK_LABEL[color] + '"></span> ' +
+          stats.assessed + ' von ' + stats.total + ' bewertet</span></span>' +
         '<span class="srp-browse-card-arrow" aria-hidden="true">&rsaquo;</span>' +
       '</button>';
     });
@@ -1902,7 +1966,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 
     html += '<button type="button" class="srp-browse-card srp-landing-card srp-landing-card-info" data-landing-goto="erklaerung">' +
       '<span class="srp-browse-card-top">' +
-        '<span class="srp-landing-icon" aria-hidden="true">i</span>' +
+        landingIcon("erklaerung") +
         '<span class="srp-browse-card-name">Erkl&auml;rung</span>' +
       '</span>' +
       '<span class="srp-browse-card-meta"><span>Wie das Tool funktioniert</span></span>' +
@@ -1911,7 +1975,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 
     html += '<button type="button" class="srp-browse-card srp-landing-card srp-landing-card-info" data-landing-goto="tracking">' +
       '<span class="srp-browse-card-top">' +
-        '<span class="srp-landing-icon" aria-hidden="true">&#10003;</span>' +
+        landingIcon("tracking") +
         '<span class="srp-browse-card-name">Ma&szlig;nahmen-Tracking</span>' +
       '</span>' +
       '<span class="srp-browse-card-meta"><span>&Uuml;bersicht der Ma&szlig;nahmen</span></span>' +
