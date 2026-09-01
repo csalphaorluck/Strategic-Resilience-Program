@@ -490,6 +490,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 }
 .srp-legend-list { list-style: none; padding-left: 0; }
 .srp-legend-list li { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.srp-verwaltung-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .srp-track-chip {
   display: inline-flex;
   align-items: center;
@@ -1314,50 +1315,9 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     var newItemKeys = {};
     NEW_ITEMS.forEach(function (n) { newItemKeys[n.row.join("|")] = n.createdAt; });
 
-    // Playbook-Durchläufe: Risikobewertung, Maßnahme, Tracking, Risiko nach Maßnahme
-    var ENTRIES = {};
-    ENTRIES["Infrastruktur|Start- und Landebahnen & Vorfeld|Runway 2 (Beton)|Betondeckschicht|Plattenaufwölbung / Blow-ups"] = function () {
-      var e = makeEntry("rot", "Fugen vor der Hitzeperiode reinigen und neu verfüllen; Plattentemperatur-Monitoring einführen; betroffene Segmente bei Grenzwertüberschreitung vorsorglich sperren.");
-      e.riskNote = "Bei anhaltender Plattentemperatur über ca. 55°C (bei 40°C Lufttemperatur realistisch) und inkompressiblem Material in den Dehnungsfugen steigt das Risiko eines Blow-ups.";
-      e.tracking = { done: true, date: "2026-07-10" };
-      e.residualRisk = "gelb";
-      e.residualNote = "Fugen erneuert; laufendes Plattentemperatur-Monitoring weiterhin erforderlich.";
-      return e;
-    };
-    ENTRIES["Infrastruktur|Terminalgebäude|Fluggastbrücken|Hydraulik- / Antriebssysteme"] = function () {
-      var e = makeEntry("gelb", "Ölkühler nachrüsten und Wartungsintervalle in Hitzeperioden verkürzen.");
-      e.riskNote = "Hydrauliköl der Hubantriebe verliert ab ca. 60°C Öltemperatur an Viskosität, dadurch ungenaue Ankopplung an die Flugzeugtür.";
-      return e;
-    };
-    ENTRIES["Flughafenbetrieb|Vorfeldprozesse|Gepäck- und Frachtabfertigung|Kühlkette Fracht / Pharma"] = function () {
-      var e = makeEntry("rot", "Mobile Kühlcontainer für Standzeiten über 15 Minuten bereitstellen; priorisierte Abfertigung bei Hitzewarnung.");
-      e.riskNote = "Pharmafracht mit 2–8°C-Kühlkette verliert bei über 40°C Vorfeldtemperatur und Standzeiten über 30 Minuten außerhalb der Kühlkette ihre Zulassung.";
-      e.tracking = { done: true, date: "2026-05-15" };
-      e.residualRisk = "gelb";
-      e.residualNote = "Kühlcontainer im Einsatz; Kapazität reicht bei Spitzenlast noch nicht für alle Standplätze.";
-      return e;
-    };
-    ENTRIES["Flughafenbetrieb|Terminalbetrieb & Passagierprozesse|Trinkwasserstationen Passagiere"] = function () {
-      var e = makeEntry("gelb", "Zusätzliche mobile Trinkwasserstationen in Sicherheitskontrolle und Gate-Zonen für Hitzeperioden.");
-      e.riskNote = "Bei über 3.000 Passagieren/Stunde in Wartebereichen und Innentemperaturen über 28°C reicht die vorhandene Anzahl Trinkwasserspender nicht aus.";
-      e.tracking = { done: true, date: "2026-06-20" };
-      e.residualRisk = "gruen";
-      e.residualNote = "Kapazität nach Aufstellung der mobilen Stationen ausreichend.";
-      return e;
-    };
-    ENTRIES["Personal & Governance|Arbeitsschutz & Gesundheit|Hitzeschutz Vorfeldpersonal|Pausenregelungen"] = function () {
-      var e = makeEntry("rot", "Stufenregelung einführen: ab 35°C 10 Min./Std. Schatten-Pause, ab 38°C 15 Min./Std.");
-      e.riskNote = "Bei gefühlten Temperaturen über 38°C auf dem Vorfeld (Asphalt-Reflexion) fehlt eine verbindliche Pausenregelung; aktuell im Ermessen der Schichtleitung.";
-      e.tracking = { done: true, date: "2026-07-01" };
-      e.residualRisk = "gelb";
-      e.residualNote = "Stufenregelung in Betriebsvereinbarung wirksam; Einhaltung bei Personalmangel weiterhin von Schichtleitung abhängig.";
-      return e;
-    };
-    ENTRIES["Personal & Governance|Personalplanung & Verfügbarkeit|Schichtplanung bei Extremhitze"] = function () {
-      var e = makeEntry("gelb", "Hitze-Bereitschaftspool definieren, der bei DWD-Hitzewarnstufe 2 automatisch aktiviert wird.");
-      e.riskNote = "Bei mehrtägigen Hitzewarnungen (mehr als 3 Tage über 35°C) steigt der kurzfristige Krankenstand im Vorfelddienst um bis zu 20% ohne Reaktion der Schichtplanung.";
-      return e;
-    };
+    // Grundzustand ist bewusst leer (kein Ampel-Status, keine Maßnahmen) - Fachbereiche
+    // befüllen die Bewertung selbst. Beispielhafte Bewertungen lassen sich über den
+    // Entwickler-Button "Demo-Daten einfügen" (siehe demoEntries()) nachträglich einspielen.
 
     var catNodes = {
       "Infrastruktur": makeNode("Infrastruktur", 1, { id: "cat_infra", category: "Infrastruktur" }),
@@ -1391,9 +1351,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
         cursor = found;
       }
       var fullKey = keyParts.join("|");
-      if (ENTRIES[fullKey]) {
-        cursor.entry = ENTRIES[fullKey]();
-      } else if (newItemKeys[fullKey]) {
+      if (newItemKeys[fullKey]) {
         cursor.entry = makeEntry("grau", "");
       }
     }
@@ -1433,6 +1391,236 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     state.data = seedData();
     state.selectedId = null;
     state.view = "landing";
+    save();
+    render();
+  }
+
+  // 30 beispielhafte Risikobewertungen/Maßnahmen quer über alle drei Kategorien,
+  // inkl. Playbook-Referenzfall (Landebahnbeschilderung/Kabel, siehe CLAUDE.md).
+  // Wird nur auf Knopfdruck ("Demo-Daten einfügen") eingespielt, nicht automatisch
+  // beim Start - der Grundzustand des Prototyps bleibt leer.
+  function demoEntries() {
+    var E = {};
+
+    // ---- Infrastruktur (12) ----
+    E["Infrastruktur|Start- und Landebahnen & Vorfeld|Runway 1 (Asphalt)|Asphaltdeckschicht|Spurrinnenbildung"] = function () {
+      var e = makeEntry("gelb", "Regelmäßige Spurrinnenmessung in Hitzeperioden einführen; Sanierung der kritischsten Abschnitte vorziehen.");
+      e.riskNote = "Bei Belagstemperaturen über 55°C und hoher Verkehrslast im Sommer steigt das Risiko plastischer Verformungen (Spurrinnen) auf den meistbefahrenen Rollspuren.";
+      return e;
+    };
+    E["Infrastruktur|Start- und Landebahnen & Vorfeld|Runway 2 (Beton)|Betondeckschicht|Plattenaufwölbung / Blow-ups"] = function () {
+      var e = makeEntry("rot", "Fugen vor der Hitzeperiode reinigen und neu verfüllen; Plattentemperatur-Monitoring einführen; betroffene Segmente bei Grenzwertüberschreitung vorsorglich sperren.");
+      e.riskNote = "Bei anhaltender Plattentemperatur über ca. 55°C (bei 40°C Lufttemperatur realistisch) und inkompressiblem Material in den Dehnungsfugen steigt das Risiko eines Blow-ups.";
+      e.tracking = { done: true, date: "2026-07-10" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Fugen erneuert; laufendes Plattentemperatur-Monitoring weiterhin erforderlich.";
+      return e;
+    };
+    E["Infrastruktur|Start- und Landebahnen & Vorfeld|Runway-/Rollbahnbefeuerung|Kabeltrassen"] = function () {
+      var e = makeEntry("gelb", "Thermografische Kontrolle der Kabeltrassen vor der Hitzesaison; Austauschplan für älteste Abschnitte erstellen.");
+      e.riskNote = "Erdverlegte Kabeltrassen der Bahnbefeuerung altern bei anhaltend hohen Bodentemperaturen schneller; Isolationsschäden erhöhen das Ausfallrisiko.";
+      return e;
+    };
+    // Playbook-Referenzfall aus CLAUDE.md: Kabel hält nur bis 42°C, bei 40°C Außentemperatur Rot.
+    E["Infrastruktur|Start- und Landebahnen & Vorfeld|Beschilderung Runway/Rollbahn|Kabel"] = function () {
+      var e = makeEntry("rot", "Neue Kabel verbauen, die bis 50°C ausgelegt sind.");
+      e.riskNote = "Bei 40°C Außentemperatur hält das verbaute Kabel nur bis rund 42°C aus - zu geringer Sicherheitsabstand für Hitzeperioden.";
+      e.tracking = { done: true, date: "2026-07-20" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Neue Kabel installiert; Lesbarkeit/Verformung der Beschilderung bei Extremhitze wird gesondert beobachtet.";
+      return e;
+    };
+    E["Infrastruktur|Terminalgebäude|Terminal 1 – Klimaanlage|Kältemaschinen / Chiller"] = function () {
+      var e = makeEntry("rot", "Zusätzlichen mobilen Kälteerzeuger als Redundanz vorhalten; Lastmanagement für Spitzentage einführen.");
+      e.riskNote = "Bei Außentemperaturen über 38°C sinkt die Kälteleistung der bestehenden Chiller unter den Bedarfsspitzenwert; Kühlausfall in Terminal 1 möglich.";
+      return e;
+    };
+    E["Infrastruktur|Terminalgebäude|Terminal 2 – Klimaanlage|Kühltürme"] = function () {
+      var e = makeEntry("gelb", "Zusätzliche Besprühung der Kühltürme bei Hitzewarnung; Wartungsintervall in Sommermonaten verkürzen.");
+      e.riskNote = "Kühltürme erreichen bei über 35°C Außentemperatur und hoher Luftfeuchte ihre Wirkungsgrenze, wodurch die Vorlauftemperatur ansteigt.";
+      e.tracking = { done: true, date: "2026-06-18" };
+      e.residualRisk = "gruen";
+      e.residualNote = "Zusatzbesprühung hält die Vorlauftemperatur auch bei Spitzenlast im Zielbereich.";
+      return e;
+    };
+    E["Infrastruktur|Terminalgebäude|Fluggastbrücken|Hydraulik- / Antriebssysteme"] = function () {
+      var e = makeEntry("gelb", "Ölkühler nachrüsten und Wartungsintervalle in Hitzeperioden verkürzen.");
+      e.riskNote = "Hydrauliköl der Hubantriebe verliert ab ca. 60°C Öltemperatur an Viskosität, dadurch ungenaue Ankopplung an die Flugzeugtür.";
+      return e;
+    };
+    E["Infrastruktur|Terminalgebäude|Gepäckförderanlage (BHS)|Fördermotoren / Antriebe"] = function () {
+      var e = makeEntry("gelb", "Zusätzliche Motorkühlung nachrüsten; Temperaturüberwachung mit automatischer Warnung einführen.");
+      e.riskNote = "Antriebsmotoren der Förderbänder überhitzen bei Dauerbetrieb und Umgebungstemperaturen über 35°C schneller, Ausfallrisiko in der Gepäckabfertigung steigt.";
+      return e;
+    };
+    E["Infrastruktur|Energieversorgung|Trafostationen|Kühlung Trafostation"] = function () {
+      var e = makeEntry("rot", "Zusätzliche Lüftungskapazität in den Trafostationen nachrüsten; Temperaturüberwachung mit Fernalarm.");
+      e.riskNote = "Bei unzureichender Kühlung steigt die Trafo-Innentemperatur bei Hitzeperioden über den zulässigen Grenzwert, Abschaltrisiko für angeschlossene Bereiche.";
+      e.tracking = { done: true, date: "2026-06-05" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Zusatzlüftung installiert; bei extremen Mehrtageshitzewellen weiterhin engmaschige Kontrolle nötig.";
+      return e;
+    };
+    E["Infrastruktur|Energieversorgung|Notstromversorgung|Diesel-Notstromaggregate"] = function () {
+      var e = makeEntry("gelb", "Kühlsystem der Notstromaggregate vor der Hitzesaison prüfen und Lasttest unter Hitzebedingungen durchführen.");
+      e.riskNote = "Diesel-Notstromaggregate verlieren bei hohen Umgebungstemperaturen an Kühlreserve und können bei Dauerlast im Ernstfall vorzeitig abschalten.";
+      return e;
+    };
+    E["Infrastruktur|IT- & Kommunikationsinfrastruktur|Rechenzentrum / Serverräume|Kühlsysteme Serverraum"] = function () {
+      var e = makeEntry("rot", "Redundante Kühlung (N+1) nachrüsten; automatische Lastabschaltung unkritischer Systeme bei Übertemperatur definieren.");
+      e.riskNote = "Bei Ausfall oder Überlastung der Serverraum-Kühlung während einer Hitzeperiode drohen Systemausfälle mit Auswirkung auf Flugsicherungs- und Betriebssysteme.";
+      return e;
+    };
+    E["Infrastruktur|Fracht- & Kraftstoffinfrastruktur|Kerosin-Tanklager|Tankwandtemperatur"] = function () {
+      var e = makeEntry("gelb", "Reflektierende Beschichtung der Tankaußenwände aufbringen; Druckentlastungsventile vor der Hitzesaison prüfen.");
+      e.riskNote = "Hohe Sonneneinstrahlung erhöht die Tankwandtemperatur und damit die Verdunstungsrate sowie den Innendruck in den Kerosintanks.";
+      e.tracking = { done: true, date: "2026-05-28" };
+      e.residualRisk = "gruen";
+      e.residualNote = "Beschichtung reduziert Wandtemperatur spürbar; Ventile bei letzter Prüfung unauffällig.";
+      return e;
+    };
+
+    // ---- Flughafenbetrieb (10) ----
+    E["Flughafenbetrieb|Vorfeldprozesse|Gepäck- und Frachtabfertigung|Kühlkette Fracht / Pharma"] = function () {
+      var e = makeEntry("rot", "Mobile Kühlcontainer für Standzeiten über 15 Minuten bereitstellen; priorisierte Abfertigung bei Hitzewarnung.");
+      e.riskNote = "Pharmafracht mit 2–8°C-Kühlkette verliert bei über 40°C Vorfeldtemperatur und Standzeiten über 30 Minuten außerhalb der Kühlkette ihre Zulassung.";
+      e.tracking = { done: true, date: "2026-05-15" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Kühlcontainer im Einsatz; Kapazität reicht bei Spitzenlast noch nicht für alle Standplätze.";
+      return e;
+    };
+    E["Flughafenbetrieb|Vorfeldprozesse|Betankung|Kraftstoffverdunstung"] = function () {
+      var e = makeEntry("gelb", "Betankungsfenster bei Hitzewarnung in kühlere Tagesrandzeiten verlegen, wo betrieblich möglich.");
+      e.riskNote = "Bei Vorfeldtemperaturen über 38°C steigt die Verdunstungsrate beim Betankungsvorgang, was Nachlaufmengen und Emissionen erhöht.";
+      return e;
+    };
+    E["Flughafenbetrieb|Bodengeräte & Fahrzeugtechnik|Elektrofahrzeuge|Batteriekühlung"] = function () {
+      var e = makeEntry("gelb", "Beschattete Lade- und Abstellplätze für E-Fahrzeuge einrichten; Ladezyklen an kühlere Tageszeiten anpassen.");
+      e.riskNote = "E-Fahrzeuge der Vorfeldflotte verlieren bei Batterietemperaturen über 40°C an Reichweite und Ladegeschwindigkeit, Ausfallrisiko in Spitzenzeiten steigt.";
+      return e;
+    };
+    E["Flughafenbetrieb|Bodengeräte & Fahrzeugtechnik|Reifen & Rollmaterial allgemein"] = function () {
+      var e = makeEntry("rot", "Reifendruck- und Temperaturkontrolle vor jeder Schicht in Hitzeperioden verpflichtend einführen.");
+      e.riskNote = "Bei Asphalttemperaturen über 55°C steigt das Risiko von Reifenschäden an Vorfeldfahrzeugen durch Überhitzung, insbesondere bei Dauerbetrieb.";
+      return e;
+    };
+    E["Flughafenbetrieb|Flugbetrieb & Luftraumkoordination|Startbahnperformance bei Hitze|Gewichtsbeschränkungen (Density Altitude)"] = function () {
+      var e = makeEntry("rot", "Verbindliches Verfahren zur tagesaktuellen Density-Altitude-Berechnung mit den Airlines abstimmen und kommunizieren.");
+      e.riskNote = "Bei hohen Außentemperaturen sinkt die Luftdichte (Density Altitude), wodurch die maximale Startmasse mancher Flugzeugtypen reduziert werden muss.";
+      e.tracking = { done: true, date: "2026-06-30" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Verfahren etabliert; Kommunikationsweg zu einzelnen Airlines wird noch verfeinert.";
+      return e;
+    };
+    E["Flughafenbetrieb|Terminalbetrieb & Passagierprozesse|Trinkwasserstationen Passagiere"] = function () {
+      var e = makeEntry("gelb", "Zusätzliche mobile Trinkwasserstationen in Sicherheitskontrolle und Gate-Zonen für Hitzeperioden.");
+      e.riskNote = "Bei über 3.000 Passagieren/Stunde in Wartebereichen und Innentemperaturen über 28°C reicht die vorhandene Anzahl Trinkwasserspender nicht aus.";
+      e.tracking = { done: true, date: "2026-06-20" };
+      e.residualRisk = "gruen";
+      e.residualNote = "Kapazität nach Aufstellung der mobilen Stationen ausreichend.";
+      return e;
+    };
+    E["Flughafenbetrieb|Terminalbetrieb & Passagierprozesse|Sicherheitskontrolle|Gerätekühlung (Scanner)"] = function () {
+      var e = makeEntry("gelb", "Zusätzliche mobile Klimageräte für Kontrollbereiche in Hitzeperioden bereitstellen.");
+      e.riskNote = "Sicherheitsscanner in wenig klimatisierten Kontrollbereichen fallen bei Innentemperaturen über 30°C gehäuft durch Überhitzung aus.";
+      return e;
+    };
+    E["Flughafenbetrieb|Notfall- und Krisenmanagement|Flughafenfeuerwehr|Einsatzfahrzeuge-Kühlung"] = function () {
+      var e = makeEntry("rot", "Kühlsystem-Check der Einsatzfahrzeuge vor der Hitzesaison; Standzeiten in beschatteten Bereitstellungsflächen ermöglichen.");
+      e.riskNote = "Einsatzfahrzeuge der Flughafenfeuerwehr verlieren bei Hitze und Standzeiten im Einsatz an Kühlleistung, was die Einsatzbereitschaft bei Ernstfällen einschränken kann.";
+      return e;
+    };
+    E["Flughafenbetrieb|Notfall- und Krisenmanagement|Notfallübungen / Simulationen Hitzeszenario"] = function () {
+      var e = makeEntry("gelb", "Jährliche Notfallübung mit Hitzeszenario für alle relevanten Bereiche einführen.");
+      e.riskNote = "Ohne regelmäßige Übung zu Hitzenotfallszenarien besteht Unsicherheit über Zuständigkeiten und Abläufe im Ernstfall.";
+      e.tracking = { done: true, date: "2026-05-20" };
+      e.residualRisk = "gruen";
+      e.residualNote = "Erste Übung erfolgreich durchgeführt; Wiederholung jährlich fest eingeplant.";
+      return e;
+    };
+    E["Flughafenbetrieb|Externe Dienstleister & landseitiger Verkehr|Caterer (Kühlketten Bordverpflegung)"] = function () {
+      var e = makeEntry("gelb", "Maximale Standzeit für Catering-Fahrzeuge bei Hitzewarnung festlegen und mit Caterern vertraglich verankern.");
+      e.riskNote = "Bei Standzeiten der Catering-Fahrzeuge auf dem heißen Vorfeld kann die Kühlkette der Bordverpflegung unterbrochen werden.";
+      return e;
+    };
+
+    // ---- Personal & Governance (8) ----
+    E["Personal & Governance|Arbeitsschutz & Gesundheit|Hitzeschutz Vorfeldpersonal|Pausenregelungen"] = function () {
+      var e = makeEntry("rot", "Stufenregelung einführen: ab 35°C 10 Min./Std. Schatten-Pause, ab 38°C 15 Min./Std.");
+      e.riskNote = "Bei gefühlten Temperaturen über 38°C auf dem Vorfeld (Asphalt-Reflexion) fehlt eine verbindliche Pausenregelung; aktuell im Ermessen der Schichtleitung.";
+      e.tracking = { done: true, date: "2026-07-01" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Stufenregelung in Betriebsvereinbarung wirksam; Einhaltung bei Personalmangel weiterhin von Schichtleitung abhängig.";
+      return e;
+    };
+    E["Personal & Governance|Arbeitsschutz & Gesundheit|Hitzeschutz Vorfeldpersonal|Trinkwasserversorgung"] = function () {
+      var e = makeEntry("gelb", "Zusätzliche mobile Trinkwasserstationen für Vorfeldpersonal bei Hitzewarnung bereitstellen.");
+      e.riskNote = "Bei Dauereinsatz auf dem Vorfeld über 35°C reicht die aktuelle Anzahl mobiler Trinkwasserspender an Spitzentagen nicht aus.";
+      return e;
+    };
+    E["Personal & Governance|Arbeitsschutz & Gesundheit|Klimatisierte Pausenräume"] = function () {
+      var e = makeEntry("gelb", "Bestehende Pausenräume mit mobilen Klimageräten nachrüsten, priorisiert für vorfeldnahe Standorte.");
+      e.riskNote = "Nicht alle Pausenbereiche für Vorfeld- und Reinigungspersonal verfügen über ausreichende Klimatisierung für Hitzeperioden.";
+      e.tracking = { done: true, date: "2026-06-12" };
+      e.residualRisk = "gruen";
+      e.residualNote = "Alle priorisierten Pausenräume nachgerüstet; Temperaturmessungen im Zielbereich.";
+      return e;
+    };
+    E["Personal & Governance|Personalplanung & Verfügbarkeit|Schichtplanung bei Extremhitze"] = function () {
+      var e = makeEntry("gelb", "Hitze-Bereitschaftspool definieren, der bei DWD-Hitzewarnstufe 2 automatisch aktiviert wird.");
+      e.riskNote = "Bei mehrtägigen Hitzewarnungen (mehr als 3 Tage über 35°C) steigt der kurzfristige Krankenstand im Vorfelddienst um bis zu 20% ohne Reaktion der Schichtplanung.";
+      return e;
+    };
+    E["Personal & Governance|Personalplanung & Verfügbarkeit|Krankenstands- / Ausfallprognose"] = function () {
+      var e = makeEntry("gelb", "Historische Krankenstandsdaten mit Hitzewarnstufen verknüpfen, um Personalbedarf frühzeitiger zu planen.");
+      e.riskNote = "Bei mehrtägigen Hitzeperioden fehlt eine systematische Prognose des erhöhten Krankenstands für die Personaleinsatzplanung.";
+      return e;
+    };
+    E["Personal & Governance|Schulung & Sensibilisierung|Hitzeschutz-Schulungen"] = function () {
+      var e = makeEntry("rot", "Verpflichtende jährliche Hitzeschutz-Schulung für alle vorfeld- und außennahen Tätigkeiten einführen.");
+      e.riskNote = "Ohne verpflichtende Hitzeschutz-Schulung ist nicht sichergestellt, dass alle Mitarbeitenden Symptome von Hitzeerkrankungen rechtzeitig erkennen.";
+      e.tracking = { done: true, date: "2026-06-01" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Schulung für Vorfeldpersonal abgeschlossen; Rollout auf weitere Bereiche läuft.";
+      return e;
+    };
+    E["Personal & Governance|Kommunikation, Governance & Recht|Interne Warnketten / Alarmierung|Meldewege"] = function () {
+      var e = makeEntry("rot", "Einheitliche Meldekette für Hitzewarnstufen dokumentieren und an alle Schichtleitungen kommunizieren.");
+      e.riskNote = "Die Meldewege bei Erreichen kritischer Hitzeschwellen sind nicht einheitlich dokumentiert, wodurch Verzögerungen bei der Alarmierung entstehen können.";
+      return e;
+    };
+    E["Personal & Governance|Kommunikation, Governance & Recht|Externe Kommunikation (Passagiere, Presse)"] = function () {
+      var e = makeEntry("gelb", "Vorlagen und Freigabeprozess für hitzebedingte Passagier- und Presseinformationen vorbereiten.");
+      e.riskNote = "Bei hitzebedingten Betriebseinschränkungen fehlt ein abgestimmtes Kommunikationsverfahren für Passagiere und Presse.";
+      return e;
+    };
+
+    return E;
+  }
+
+  // Findet einen Knoten über seinen Namenspfad (wie in den ENTRIES-Keys), nicht
+  // über die zufällig generierte id - für das nachträgliche Einspielen der Demo-Daten.
+  function findNodeByPathKey(key) {
+    var parts = key.split("|");
+    var levelNodes = state.data;
+    var node = null;
+    for (var i = 0; i < parts.length; i++) {
+      node = null;
+      for (var j = 0; j < levelNodes.length; j++) {
+        if (levelNodes[j].name === parts[i]) { node = levelNodes[j]; break; }
+      }
+      if (!node) return null;
+      levelNodes = node.children || [];
+    }
+    return node;
+  }
+
+  function insertDemoData() {
+    var entries = demoEntries();
+    Object.keys(entries).forEach(function (key) {
+      var node = findNodeByPathKey(key);
+      if (node) node.entry = entries[key]();
+    });
     save();
     render();
   }
@@ -2022,20 +2210,40 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   }
 
   function renderAdminVerwaltung(container) {
-    container.innerHTML =
-      '<div class="card"><div class="card-header"><h3 class="card-title">Demo-Daten</h3></div>' +
+    var canInsertDemo = state.role === "entwickler";
+    var html = '<div class="card"><div class="card-header"><h3 class="card-title">Demo-Daten</h3></div>' +
       '<div class="card-body">' +
-        '<p>Setzt alle lokal im Browser gespeicherten Änderungen zurück (Risikobewertungen, Maßnahmen, ' +
-        'Tracking, Restrisiko sowie alle über &bdquo;Neue Unterkategorie&ldquo;/&bdquo;Neues Item&ldquo; ' +
-        'angelegten Punkte) und lädt wieder den ursprünglichen Ausgangszustand. Dies betrifft nur diesen ' +
-        'Browser und kann nicht rückgängig gemacht werden.</p>' +
+        '<p>Der Grundzustand des Prototyps ist bewusst leer - noch keine Risikobewertungen oder Ma&szlig;nahmen. ' +
+        (canInsertDemo ?
+          'Zum Vorf&uuml;hren lassen sich beispielhaft 30 Ma&szlig;nahmen quer &uuml;ber alle drei Kategorien einspielen. ' :
+          '') +
+        'Demo-Daten zur&uuml;cksetzen entfernt alle lokal im Browser gespeicherten &Auml;nderungen (Risikobewertungen, ' +
+        'Ma&szlig;nahmen, Tracking, Restrisiko sowie alle über &bdquo;Neue Unterkategorie&ldquo;/&bdquo;Neues Item&ldquo; ' +
+        'angelegten Punkte) und l&auml;dt wieder den leeren Ausgangszustand. Dies betrifft nur diesen Browser und kann ' +
+        'nicht r&uuml;ckg&auml;ngig gemacht werden.</p>' +
+        '<div class="srp-verwaltung-actions">' +
+        (canInsertDemo ? '<button type="button" id="insertDemoBtn" class="btn btn-outline-primary btn-sm">Demo-Daten einf&uuml;gen</button>' : '') +
         '<button type="button" id="resetBtn" class="btn btn-outline-danger btn-sm">Demo-Daten zur&uuml;cksetzen</button>' +
+        '</div>' +
       '</div></div>';
+    container.innerHTML = html;
+
+    if (canInsertDemo) {
+      container.querySelector("#insertDemoBtn").addEventListener("click", function () {
+        openConfirmDialog({
+          title: "Demo-Daten einfügen?",
+          message: "Fügt 30 beispielhafte Risikobewertungen und Maßnahmen quer über alle drei Kategorien ein. Bereits vorhandene Bewertungen an diesen Punkten werden dabei überschrieben.",
+          confirmText: "Einfügen",
+          danger: false,
+          onConfirm: insertDemoData
+        });
+      });
+    }
 
     container.querySelector("#resetBtn").addEventListener("click", function () {
       openConfirmDialog({
         title: "Demo-Daten zurücksetzen?",
-        message: "Alle lokalen Änderungen werden verworfen und der ursprüngliche Ausgangszustand neu geladen. Dies kann nicht rückgängig gemacht werden.",
+        message: "Alle lokalen Änderungen werden verworfen und der leere Ausgangszustand neu geladen. Dies kann nicht rückgängig gemacht werden.",
         confirmText: "Zurücksetzen",
         danger: true,
         onConfirm: resetDemo
