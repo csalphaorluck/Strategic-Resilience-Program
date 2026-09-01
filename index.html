@@ -1759,34 +1759,106 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     });
   }
 
-  // Fuegt weiche Trennzeichen (­) in lange zusammengesetzte Woerter ein (ab 12
-  // Zeichen am Stueck, ohne Leerzeichen/Bindestrich/Schraegstrich dazwischen),
-  // jeweils bevorzugt vor einem Konsonant-Vokal-Uebergang - das wirkt in etwa
-  // wie eine Silbentrennung, ohne ein Woerterbuch zu brauchen. Noetig, weil
-  // CSS "hyphens: auto" allein nicht reicht: nicht jeder Browser/jedes System
-  // bringt ein deutsches Trennmuster mit, und ohne Trennpunkt bricht der Text
-  // sonst roh an der Container-Kante um - dabei kann nur ein einzelnes Zeichen
-  // in der letzten Zeile stehen bleiben (z.B. "Kommunikationsinfrastruktur"
-  // oder "Rollbahnbefeuerung" in schmalen Karten/der Sidebar). Wirkt sich
-  // nicht auf den gespeicherten Namen aus (Suche, Anzeige an anderer Stelle
-  // bleiben unveraendert) - nur auf die hier zurueckgegebene Anzeige-Variante.
+  // Woerterbuch mit fachlich korrekter deutscher Silben-/Wortfugentrennung
+  // (weiches Trennzeichen \u00AD) fuer die langen zusammengesetzten Begriffe
+  // aus der Struktur (z.B. "Kommunikations\u00ADinfra\u00ADstruktur"). Nur
+  // Woerter, die in der Praxis ueberhaupt umbrechen koennen (ab 18 Zeichen am
+  // Stueck), sind gelistet - CSS "hyphens: auto" wurde verworfen, weil nicht
+  // jedes Browser/System ein deutsches Trennmuster mitbringt und der Text sonst
+  // roh an der Kante bricht (z.B. nur ein einzelnes "r" in der letzten Zeile).
+  var GERMAN_HYPHEN_MAP = {
+    "Bodenverkehrsdienstleistern": "Boden\u00ADverkehrs\u00ADdienst\u00ADleistern",
+    "Kommunikationsinfrastruktur": "Kommunikations\u00ADinfra\u00ADstruktur",
+    "Sensibilisierungskampagnen": "Sensibilisierungs\u00ADkampagnen",
+    "Bodenverkehrsdienstleister": "Boden\u00ADverkehrs\u00ADdienst\u00ADleister",
+    "Fluginformationsanzeigen": "Flug\u00ADinformations\u00ADanzeigen",
+    "Warteschlangenmanagement": "Warte\u00ADschlangen\u00ADmanagement",
+    "Sicherheitsdienstleister": "Sicherheits\u00ADdienst\u00ADleister",
+    "Kapazitätseinschränkung": "Kapazitäts\u00ADeinschränkung",
+    "Kraftstoffinfrastruktur": "Kraft\u00ADstoff\u00ADinfra\u00ADstruktur",
+    "Instandhaltungspersonal": "Instand\u00ADhaltungs\u00ADpersonal",
+    "Auffrischungsschulungen": "Auf\u00ADfrischungs\u00ADschulungen",
+    "Dokumentationspflichten": "Dokumentations\u00ADpflichten",
+    "Trockeneisverfügbarkeit": "Trocken\u00ADeis\u00ADverfügbarkeit",
+    "Regenwasserentwässerung": "Regen\u00ADwasser\u00ADentwässerung",
+    "Gewichtsbeschränkungen": "Gewichts\u00ADbeschränkungen",
+    "Standplatzmarkierungen": "Stand\u00ADplatz\u00ADmarkierungen",
+    "Betriebsvereinbarungen": "Betriebs\u00ADvereinbarungen",
+    "Trinkwasserversorgung": "Trink\u00ADwasser\u00ADversorgung",
+    "Bindemittelerweichung": "Binde\u00ADmittel\u00ADerweichung",
+    "Dokumentationspflicht": "Dokumentations\u00ADpflicht",
+    "Fahrradabstellanlagen": "Fahrrad\u00ADabstell\u00ADanlagen",
+    "Sichtweitenmessgeräte": "Sicht\u00ADweiten\u00ADmess\u00ADgeräte",
+    "Kraftstoffverdunstung": "Kraft\u00ADstoff\u00ADverdunstung",
+    "Lastaufnahmefähigkeit": "Last\u00ADaufnahme\u00ADfähigkeit",
+    "Netzwerkinfrastruktur": "Netzwerk\u00ADinfra\u00ADstruktur",
+    "Löschwasserreservoirs": "Lösch\u00ADwasser\u00ADreservoirs",
+    "Überstundenregelungen": "Über\u00ADstunden\u00ADregelungen",
+    "Glasfaserverbindungen": "Glas\u00ADfaser\u00ADverbindungen",
+    "Kühlwasserkreisläufe": "Kühl\u00ADwasser\u00ADkreis\u00ADläufe",
+    "Bahnsteigüberdachung": "Bahn\u00ADsteig\u00ADüber\u00ADdachung",
+    "Trinkwasserleitungen": "Trink\u00ADwasser\u00ADleitungen",
+    "Verpflegungsbereiche": "Verpflegungs\u00ADbereiche",
+    "Hitzeschutzmaßnahmen": "Hitze\u00ADschutz\u00ADmaßnahmen",
+    "Passagierinformation": "Passagier\u00ADinformation",
+    "Luftraumkoordination": "Luft\u00ADraum\u00ADkoordination",
+    "Trinkwasserstationen": "Trink\u00ADwasser\u00ADstationen",
+    "Startbahnperformance": "Start\u00ADbahn\u00ADperformance",
+    "Sicherheitskontrolle": "Sicherheits\u00ADkontrolle",
+    "Eskalationsprozessen": "Eskalations\u00ADprozessen",
+    "Verschattungssysteme": "Verschattungs\u00ADsysteme",
+    "Steuerungselektronik": "Steuerungs\u00ADelektronik",
+    "Lautsprecheranlagen": "Laut\u00ADsprecher\u00ADanlagen",
+    "Toilettenentsorgung": "Toiletten\u00ADentsorgung",
+    "Photovoltaikanlagen": "Photovoltaik\u00ADanlagen",
+    "Elektroinstallation": "Elektro\u00ADinstallation",
+    "Sicherheitsabstände": "Sicherheits\u00ADabstände",
+    "Kapazitätsengpässen": "Kapazitäts\u00ADengpässen",
+    "Rettungsleitstellen": "Rettungs\u00ADleitstellen",
+    "Krisenkommunikation": "Krisen\u00ADkommunikation",
+    "Fluggastabfertigung": "Fluggast\u00ADabfertigung",
+    "Mittelspannungsnetz": "Mittel\u00ADspannungs\u00ADnetz",
+    "Betankungsleitungen": "Betankungs\u00ADleitungen",
+    "Arbeitsmedizinische": "Arbeits\u00ADmedizinische",
+    "Personenbeförderung": "Personen\u00ADbeförderung",
+    "Entwässerungssystem": "Entwässerungs\u00ADsystem",
+    "Trinkwasserreserven": "Trink\u00ADwasser\u00ADreserven",
+    "Gebäudeleittechnik": "Gebäude\u00ADleit\u00ADtechnik",
+    "Katastrophenschutz": "Katastrophen\u00ADschutz",
+    "Tankwandtemperatur": "Tank\u00ADwand\u00ADtemperatur",
+    "Parkraummanagement": "Park\u00ADraum\u00ADmanagement",
+    "Temperatursensorik": "Temperatur\u00ADsensorik",
+    "Triebwerksleistung": "Triebwerks\u00ADleistung",
+    "Flughafenfeuerwehr": "Flughafen\u00ADfeuerwehr",
+    "Steuerungssoftware": "Steuerungs\u00ADsoftware",
+    "Notstromversorgung": "Notstrom\u00ADversorgung",
+    "Asphaltdeckschicht": "Asphalt\u00ADdeckschicht",
+    "Personalvertretung": "Personal\u00ADvertretung",
+    "Mobilitätsangebote": "Mobilitäts\u00ADangebote",
+    "Kantenabplatzungen": "Kanten\u00ADabplatzungen",
+    "Reinigungspersonal": "Reinigungs\u00ADpersonal",
+    "Brandschutzanlagen": "Brand\u00ADschutz\u00ADanlagen",
+    "Hitzebeständigkeit": "Hitze\u00ADbeständigkeit",
+    "Vorfeldbeleuchtung": "Vorfeld\u00ADbeleuchtung",
+    "Wärmeabzugsanlagen": "Wärme\u00ADabzugs\u00ADanlagen",
+    "Besucherparkplätze": "Besucher\u00ADparkplätze",
+    "Gepäckförderanlage": "Gepäck\u00ADförder\u00ADanlage",
+    "Navigationstechnik": "Navigations\u00ADtechnik",
+    "Brandfrüherkennung": "Brand\u00ADfrüherkennung",
+    "Löschwasseranlagen": "Lösch\u00ADwasser\u00ADanlagen",
+    "Arbeitsschutzgesetz": "Arbeits\u00ADschutz\u00ADgesetz",
+    "Rollbahnbefeuerung": "Roll\u00ADbahn\u00ADbefeuerung",
+  };
+  var GERMAN_HYPHEN_RE = new RegExp(Object.keys(GERMAN_HYPHEN_MAP).join("|"), "g");
+
+  // Wirkt sich nicht auf den gespeicherten Namen aus (Suche, Anzeige an anderer
+  // Stelle bleiben unveraendert) - nur auf die hier zurueckgegebene Anzeige-
+  // Variante. Woerter ausserhalb des Woerterbuchs bleiben unveraendert, statt sie
+  // algorithmisch (und moeglicherweise falsch) zu trennen.
   function hyphenateLongWords(str) {
-    var vowels = "aeiouäöüAEIOUÄÖÜ";
-    return str.replace(/[^\s/-]{12,}/g, function (word) {
-      var out = "";
-      var sinceBreak = 0;
-      for (var i = 0; i < word.length; i++) {
-        out += word[i];
-        sinceBreak++;
-        var remaining = word.length - i - 1;
-        if (sinceBreak >= 6 && remaining >= 4 && vowels.indexOf(word[i]) === -1 && vowels.indexOf(word[i + 1]) !== -1) {
-          out += "­";
-          sinceBreak = 0;
-        }
-      }
-      return out;
-    });
+    return str.replace(GERMAN_HYPHEN_RE, function (word) { return GERMAN_HYPHEN_MAP[word]; });
   }
+
 
   // On phones/tablets the sidebar opens as an off-canvas overlay (AdminLTE
   // "sidebar-open"); after picking a node it must close again, otherwise it
