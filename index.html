@@ -1759,15 +1759,33 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     });
   }
 
-  // Nur fuer die Sidebar-Anzeige: fuegt ein weiches Trennzeichen (­) vor
-  // bekannten langen Wortbestandteilen ein, damit lange Komposita wie
-  // "Kommunikationsinfrastruktur" im schmalen Sidebar-Text an einer sinnvollen
-  // Stelle mit Trennstrich umbrechen statt roh mitten im Wort. CSS-"hyphens:
-  // auto" allein reicht nicht, weil nicht jeder Browser/jedes System ein
-  // deutsches Trennmuster mitbringt. Wirkt sich nicht auf den gespeicherten
-  // Namen aus (Suche, Anzeige an anderer Stelle bleiben unveraendert).
-  function sidebarHyphenate(name) {
-    return name.replace(/(.)(infrastruktur)/gi, "$1­$2");
+  // Fuegt weiche Trennzeichen (­) in lange zusammengesetzte Woerter ein (ab 12
+  // Zeichen am Stueck, ohne Leerzeichen/Bindestrich/Schraegstrich dazwischen),
+  // jeweils bevorzugt vor einem Konsonant-Vokal-Uebergang - das wirkt in etwa
+  // wie eine Silbentrennung, ohne ein Woerterbuch zu brauchen. Noetig, weil
+  // CSS "hyphens: auto" allein nicht reicht: nicht jeder Browser/jedes System
+  // bringt ein deutsches Trennmuster mit, und ohne Trennpunkt bricht der Text
+  // sonst roh an der Container-Kante um - dabei kann nur ein einzelnes Zeichen
+  // in der letzten Zeile stehen bleiben (z.B. "Kommunikationsinfrastruktur"
+  // oder "Rollbahnbefeuerung" in schmalen Karten/der Sidebar). Wirkt sich
+  // nicht auf den gespeicherten Namen aus (Suche, Anzeige an anderer Stelle
+  // bleiben unveraendert) - nur auf die hier zurueckgegebene Anzeige-Variante.
+  function hyphenateLongWords(str) {
+    var vowels = "aeiouäöüAEIOUÄÖÜ";
+    return str.replace(/[^\s/-]{12,}/g, function (word) {
+      var out = "";
+      var sinceBreak = 0;
+      for (var i = 0; i < word.length; i++) {
+        out += word[i];
+        sinceBreak++;
+        var remaining = word.length - i - 1;
+        if (sinceBreak >= 6 && remaining >= 4 && vowels.indexOf(word[i]) === -1 && vowels.indexOf(word[i + 1]) !== -1) {
+          out += "­";
+          sinceBreak = 0;
+        }
+      }
+      return out;
+    });
   }
 
   // On phones/tablets the sidebar opens as an off-canvas overlay (AdminLTE
@@ -1809,7 +1827,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       var chevron = isActiveCat ? "▾" : "▸";
       var catHtml = '<div class="node-row cat-row' + (isActiveCat ? " selected" : "") + '" data-node-id="' + cat.id + '">' +
         '<span class="cat-chevron">' + chevron + '</span>' +
-        '<span class="label">' + escapeHtml(sidebarHyphenate(cat.name)) + '</span>' +
+        '<span class="label">' + escapeHtml(hyphenateLongWords(cat.name)) + '</span>' +
         '<span class="cat-count">' + stats.assessed + '/' + stats.total + '</span>' +
         '</div>';
 
@@ -1818,7 +1836,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
         subHtml = '<div class="sub-list">' + cat.children.map(function (sub) {
           var subSel = activeSecondId === sub.id ? " selected" : "";
           return '<div class="node-row sub-row' + subSel + '" data-node-id="' + sub.id + '">' +
-            '<span class="label">' + escapeHtml(sidebarHyphenate(sub.name)) + '</span>' +
+            '<span class="label">' + escapeHtml(hyphenateLongWords(sub.name)) + '</span>' +
             '</div>';
         }).join("") + '</div>';
       }
@@ -1958,7 +1976,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       html += '<button type="button" class="srp-browse-card srp-landing-card" data-node-id="' + cat.id + '">' +
         '<span class="srp-browse-card-top">' +
           landingIcon(CATEGORY_ICON_KEY[cat.name]) +
-          '<span class="srp-browse-card-name">' + escapeHtml(cat.name) + '</span>' +
+          '<span class="srp-browse-card-name">' + escapeHtml(hyphenateLongWords(cat.name)) + '</span>' +
         '</span>' +
         '<span class="srp-browse-card-meta"><span><span class="dot ' + color + '" title="' + RISK_LABEL[color] + '"></span> ' +
           stats.assessed + ' von ' + stats.total + ' bewertet</span></span>' +
@@ -2543,7 +2561,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     return '<button type="button" class="srp-browse-card" data-node-id="' + child.id + '">' +
       '<span class="srp-browse-card-top">' +
         '<span class="dot ' + color + '" title="' + RISK_LABEL[color] + '"></span>' +
-        '<span class="srp-browse-card-name">' + escapeHtml(child.name) + badge + '</span>' +
+        '<span class="srp-browse-card-name">' + escapeHtml(hyphenateLongWords(child.name)) + badge + '</span>' +
       '</span>' +
       '<span class="srp-browse-card-meta"><span>' + meta + '</span></span>' +
       (trackChip ? '<span class="srp-browse-card-tracking">' + trackChip + '</span>' : '') +
