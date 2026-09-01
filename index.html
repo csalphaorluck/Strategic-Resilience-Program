@@ -1779,6 +1779,8 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     nav.querySelectorAll("[data-node-id]").forEach(function (el) {
       el.addEventListener("click", function () {
         state.selectedId = el.getAttribute("data-node-id");
+        state.view = "browse";
+        state.adminTab = "struktur";
         closeSidebarOnNarrowViewport();
         render();
       });
@@ -2816,6 +2818,8 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       results.querySelectorAll("[data-goto-search]").forEach(function (el) {
         el.addEventListener("click", function () {
           state.selectedId = el.getAttribute("data-goto-search");
+          state.view = "browse";
+          state.adminTab = "struktur";
           input.value = "";
           close();
           closeSidebarOnNarrowViewport();
