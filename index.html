@@ -491,6 +491,13 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 .srp-legend-list { list-style: none; padding-left: 0; }
 .srp-legend-list li { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 .srp-verwaltung-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.srp-page-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
 .srp-track-chip {
   display: inline-flex;
   align-items: center;
@@ -1929,9 +1936,9 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 
   // ---------- Erkl&auml;rungsseite ----------
   function renderErklaerungView(container) {
-    var html = '<div class="card srp-leaf-card"><div class="card-header">';
-    html += '<button type="button" class="btn btn-sm btn-outline-secondary" data-landing-back>&larr; Zur Startseite</button>';
-    html += '<h3 class="card-title mb-0 mt-2">Erkl&auml;rung</h3></div>';
+    var html = '<div class="card srp-leaf-card"><div class="card-header srp-page-header-row">';
+    html += '<h3 class="card-title mb-0">Erkl&auml;rung</h3>';
+    html += '<button type="button" class="btn btn-sm btn-outline-secondary" data-landing-back>&larr; Zur Startseite</button></div>';
     html += '<div class="card-body">';
     html += '<p>Das Strategic Resilience Program (SRP) bereitet den Flughafen systematisch auf ' +
       'Extremhitze-Szenarien (z. B. ab 40 &deg;C Au&szlig;entemperatur) vor. Fachbereiche tragen ihre ' +
@@ -2068,10 +2075,12 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     var measures = collectMeasures();
     var stats = computeMeasureStats(measures);
 
-    var html = '<div class="card"><div class="card-header">';
-    html += '<button type="button" class="btn btn-sm btn-outline-secondary" data-landing-back>&larr; Zur Startseite</button>';
-    html += '<h3 class="card-title mb-0 mt-2">Ma&szlig;nahmen-Tracking</h3>';
+    var html = '<div class="card"><div class="card-header srp-page-header-row">';
+    html += '<div>';
+    html += '<h3 class="card-title mb-0">Ma&szlig;nahmen-Tracking</h3>';
     html += '<div class="srp-browse-meta">Alle im System hinterlegten Ma&szlig;nahmen im &Uuml;berblick</div>';
+    html += '</div>';
+    html += '<button type="button" class="btn btn-sm btn-outline-secondary" data-landing-back>&larr; Zur Startseite</button>';
     html += '</div>';
     html += '<div class="card-body">';
 
