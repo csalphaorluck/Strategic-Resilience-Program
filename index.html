@@ -498,6 +498,10 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   gap: 20px;
   flex-wrap: wrap;
 }
+/* Bootstraps .card-header-Clearfix erzeugt ein leeres ::after, das als drittes
+   Flex-Item mitzählt und space-between auf zwei sichtbare + ein leeres Element
+   verteilt - dadurch landet der Button in der Mitte statt am rechten Rand. */
+.srp-page-header-row::after { display: none; }
 .srp-track-chip {
   display: inline-flex;
   align-items: center;
