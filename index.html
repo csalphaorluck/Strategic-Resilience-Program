@@ -155,8 +155,9 @@ input[type="date"], .srp-search-result-path {
   font-weight: 600;
   font-size: 14.5px;
   padding: 9px 16px;
-  transition: background-color .12s ease, border-color .12s ease, color .12s ease;
+  transition: background-color .12s ease, border-color .12s ease, color .12s ease, transform .12s ease, box-shadow .12s ease;
 }
+.btn:hover:not(:disabled), .btn:focus:not(:disabled) { transform: translateY(-1px); }
 .btn-primary {
   background: var(--srp-accent);
   border-color: var(--srp-accent);
@@ -444,6 +445,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   border-color: var(--srp-accent);
   box-shadow: var(--srp-shadow-md);
   outline: none;
+  transform: translateY(-3px);
 }
 .srp-browse-card-top { display: flex; align-items: center; gap: 8px; }
 .srp-browse-card-name {
@@ -534,7 +536,6 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   padding: 22px 36px 22px 20px;
   transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
 }
-.srp-landing-card:hover, .srp-landing-card:focus-visible { transform: translateY(-3px); }
 .srp-landing-card .srp-browse-card-name { font-size: 16.5px; }
 .srp-landing-card-icon {
   display: inline-flex;
@@ -548,6 +549,34 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 .srp-legend-list { list-style: none; padding-left: 0; }
 .srp-legend-list li { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 .srp-verwaltung-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.srp-segmented-tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  background: var(--srp-surface);
+  border: none;
+  border-radius: 999px;
+  padding: 4px;
+}
+.srp-segmented-tabs .nav-item { margin: 0; }
+.srp-segmented-tabs .nav-link {
+  display: inline-block;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--srp-muted);
+  background: transparent;
+  transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.srp-segmented-tabs .nav-link:hover { color: var(--srp-accent); }
+.srp-segmented-tabs .nav-link.active {
+  background: var(--srp-surface-raised);
+  color: var(--srp-accent);
+  box-shadow: var(--srp-shadow-sm);
+}
 .srp-page-header-row {
   display: flex;
   align-items: center;
@@ -2380,7 +2409,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   function renderAdminPanel() {
     populateAdminFachbereichSelect();
     var main = document.getElementById("mainPanel");
-    var html = '<ul class="nav nav-tabs mb-3" role="tablist">';
+    var html = '<ul class="nav srp-segmented-tabs mb-3" role="tablist">';
     html += '<li class="nav-item"><a href="#" class="nav-link' + (state.adminTab === "struktur" ? " active" : "") + '" data-tab="struktur">Struktur bearbeiten</a></li>';
     html += '<li class="nav-item"><a href="#" class="nav-link' + (state.adminTab === "neu" ? " active" : "") + '" data-tab="neu">Neue Nutzer-Items &Uuml;bersicht</a></li>';
     html += '<li class="nav-item"><a href="#" class="nav-link' + (state.adminTab === "verwaltung" ? " active" : "") + '" data-tab="verwaltung">Verwaltung</a></li>';
@@ -2818,8 +2847,8 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     if (!items.length) {
       html += '<div id="emptyStateAdminNew"></div>';
     } else {
-      html += '<div class="table-responsive"><table class="table table-hover table-sm">';
-      html += '<thead><tr><th>Pfad</th><th>Fachbereich</th><th>Angelegt von</th><th>Datum</th><th>Ampel</th><th></th></tr></thead><tbody>';
+      html += '<div class="srp-tracking-table-wrap"><table class="table table-hover table-sm srp-tracking-table">';
+      html += '<thead><tr><th>Pfad</th><th>Fachbereich</th><th>Angelegt von</th><th class="srp-tabular">Datum</th><th>Ampel</th><th></th></tr></thead><tbody>';
       items.forEach(function (n) {
         var path = findPath(n.id).map(function (p) { return p.name; }).join(" › ");
         var risk = n.entry ? n.entry.risk : "grau";
@@ -2827,7 +2856,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
         html += '<td><a href="#" data-goto="' + n.id + '">' + escapeHtml(path) + '</a></td>';
         html += '<td>' + escapeHtml(n.category || "") + '</td>';
         html += '<td>' + escapeHtml(n.createdBy) + '</td>';
-        html += '<td>' + escapeHtml(n.createdAt || "–") + '</td>';
+        html += '<td class="srp-tabular">' + escapeHtml(n.createdAt || "–") + '</td>';
         html += '<td><span class="dot ' + risk + '"></span> ' + RISK_LABEL[risk] + '</td>';
         html += '<td><button type="button" class="btn btn-outline-secondary btn-sm" data-ack="' + n.id + '">Als gesehen markieren</button></td>';
         html += '</tr>';
