@@ -434,6 +434,14 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   color: var(--srp-ink);
   flex: 1;
   min-width: 0;
+  /* Lange zusammengesetzte Begriffe (z.B. "Kommunikationsinfrastruktur") sonst
+     bricht word-break:break-word (siehe body-Regel oben) an beliebiger Stelle
+     um und lässt vereinzelt nur ein Zeichen in der letzten Zeile stehen -
+     hyphens:auto bricht stattdessen an sinnvollen Silbengrenzen. */
+  word-break: normal;
+  overflow-wrap: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 .srp-browse-card-meta {
   display: flex;
