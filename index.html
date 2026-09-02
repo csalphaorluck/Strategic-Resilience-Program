@@ -309,15 +309,21 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   body.sidebar-mini.sidebar-collapse .main-footer { margin-left: 0 !important; }
 }
 
-/* Startseite: eigener minimaler Einstiegsbildschirm ohne Sidebar/Rolle/
-   Ampel-Skala/Suche - unabhängig von der Bildschirmbreite, daher hier kein
-   @media wie beim AdminLTE-Sidebar-Collapse oben (der nur ab Desktopbreite
-   greift). Die App-Chrome kommt erst zurück, sobald man über eine Kachel
-   navigiert (siehe render()). */
-body.srp-landing-active .main-sidebar { display: none !important; }
-body.srp-landing-active .content-wrapper,
-body.srp-landing-active .main-header,
-body.srp-landing-active .main-footer { margin-left: 0 !important; }
+/* Startseite: eigener minimaler Einstiegsbildschirm ohne Rolle/Ampel-Skala/
+   Suche. Die Sidebar startet dort eingeklappt (sidebar-collapse, siehe
+   render()), lässt sich über den Men&uuml;-Button oben links aber weiterhin
+   normal ein-/ausblenden - daher an die bestehende sidebar-collapse-Klasse
+   gekoppelt statt eines eigenen harten "immer aus". Ab Desktopbreite wie
+   beim AdminLTE-Sidebar-Collapse oben; auf schmalen Viewports ist die
+   Sidebar durch AdminLTEs Off-Canvas-Verhalten ohnehin schon standardmäßig
+   verborgen. Die App-Chrome kommt vollständig zurück, sobald man über eine
+   Kachel navigiert (siehe render()). */
+@media (min-width: 992px) {
+  body.srp-landing-active.sidebar-collapse .main-sidebar { display: none !important; }
+  body.srp-landing-active.sidebar-collapse .content-wrapper,
+  body.srp-landing-active.sidebar-collapse .main-header,
+  body.srp-landing-active.sidebar-collapse .main-footer { margin-left: 0 !important; }
+}
 body.srp-landing-active .content-header { display: none; }
 body.srp-landing-active .content-wrapper { background: #ffffff; }
 
@@ -2033,9 +2039,19 @@ body.srp-landing-active .content-wrapper { background: #ffffff; }
     var isLandingScreen = ADMIN_PANEL_ROLES.indexOf(state.role) === -1 && !state.selectedId &&
       state.view !== "erklaerung" && state.view !== "tracking";
     // Startseite bewusst als eigener, aufgeräumter Einstiegsbildschirm ohne
-    // Sidebar/Rolle/Ampel-Skala - die App-Chrome erscheint erst wieder, sobald
-    // man über eine Kachel tatsächlich in die Struktur (oder Erklärung/Tracking) geht.
+    // Rolle/Ampel-Skala - die App-Chrome erscheint erst wieder, sobald man
+    // über eine Kachel tatsächlich in die Struktur (oder Erklärung/Tracking)
+    // geht. Die Sidebar startet dort zusätzlich eingeklappt (sidebar-collapse) -
+    // aber nur beim Betreten der Startseite, nicht bei jedem Re-Render, damit
+    // ein manuelles Aufklappen über den Menü-Button (siehe CSS oben) erhalten
+    // bleibt, solange man auf der Startseite bleibt.
+    var wasLandingActive = document.body.classList.contains("srp-landing-active");
     document.body.classList.toggle("srp-landing-active", isLandingScreen);
+    if (isLandingScreen && !wasLandingActive) {
+      document.body.classList.add("sidebar-collapse");
+    } else if (!isLandingScreen) {
+      document.body.classList.remove("sidebar-collapse");
+    }
     if (ADMIN_PANEL_ROLES.indexOf(state.role) > -1) {
       renderAdminPanel();
     } else {
