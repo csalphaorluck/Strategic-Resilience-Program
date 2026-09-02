@@ -155,8 +155,9 @@ input[type="date"], .srp-search-result-path {
   font-weight: 600;
   font-size: 14.5px;
   padding: 9px 16px;
-  transition: background-color .12s ease, border-color .12s ease, color .12s ease;
+  transition: background-color .12s ease, border-color .12s ease, color .12s ease, transform .12s ease, box-shadow .12s ease;
 }
+.btn:hover:not(:disabled), .btn:focus:not(:disabled) { transform: translateY(-1px); }
 .btn-primary {
   background: var(--srp-accent);
   border-color: var(--srp-accent);
@@ -174,6 +175,24 @@ input[type="date"], .srp-search-result-path {
   border-color: var(--srp-accent);
   color: var(--srp-accent-hover);
 }
+.srp-help-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--srp-accent-soft);
+  color: var(--srp-accent);
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px 8px 14px;
+  transition: background-color .15s ease, color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.srp-help-btn:hover, .srp-help-btn:focus {
+  background: var(--srp-accent);
+  color: #fff;
+  box-shadow: var(--srp-shadow-sm);
+  transform: translateY(-1px);
+}
+.srp-help-btn svg { flex: 0 0 auto; }
 .btn-outline-secondary {
   color: var(--srp-ink);
   border-color: var(--srp-line-strong);
@@ -304,7 +323,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 }
 .main-sidebar .brand-text { font-weight: 700; letter-spacing: -0.01em; }
 
-/* ---- Marke: fiktiver Flughafen Falkenau ---- */
+/* ---- Marke: fiktiver SoxCity Airport ---- */
 .srp-brand-mark-bg { fill: var(--srp-accent); }
 .srp-brand-mark-wing-1 { stroke: #ffffff; stroke-width: 3.6; }
 .srp-brand-mark-wing-2 { stroke: var(--srp-brand-amber); stroke-width: 3.2; }
@@ -426,6 +445,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   border-color: var(--srp-accent);
   box-shadow: var(--srp-shadow-md);
   outline: none;
+  transform: translateY(-3px);
 }
 .srp-browse-card-top { display: flex; align-items: center; gap: 8px; }
 .srp-browse-card-name {
@@ -434,6 +454,14 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   color: var(--srp-ink);
   flex: 1;
   min-width: 0;
+  /* Lange zusammengesetzte Begriffe (z.B. "Kommunikationsinfrastruktur") sonst
+     bricht word-break:break-word (siehe body-Regel oben) an beliebiger Stelle
+     um und lässt vereinzelt nur ein Zeichen in der letzten Zeile stehen -
+     hyphens:auto bricht stattdessen an sinnvollen Silbengrenzen. */
+  word-break: normal;
+  overflow-wrap: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 .srp-browse-card-meta {
   display: flex;
@@ -452,6 +480,114 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   line-height: 1;
 }
 .srp-browse-card-tracking { margin-top: -1px; }
+
+.srp-landing-title { margin-bottom: 6px; }
+.srp-landing-lead { color: var(--srp-muted); max-width: 62ch; margin-bottom: 0; }
+
+.srp-landing-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, var(--srp-accent) 0%, var(--srp-leaf-bg) 100%);
+  border-radius: var(--srp-radius);
+  padding: 32px 36px;
+  margin-bottom: 20px;
+  box-shadow: var(--srp-shadow-md);
+}
+.srp-landing-hero-main { flex: 1 1 380px; min-width: 0; }
+.srp-landing-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: rgba(255, 255, 255, .78);
+  margin-bottom: 8px;
+}
+.srp-landing-hero .srp-landing-title { color: #fff; }
+.srp-landing-hero .srp-landing-lead { color: rgba(255, 255, 255, .84); max-width: 60ch; }
+.srp-landing-hero-stat { flex: 0 0 auto; min-width: 190px; text-align: right; }
+.srp-landing-hero-stat-value { font-family: var(--srp-font-display); font-size: 34px; font-weight: 700; color: #fff; line-height: 1; }
+.srp-landing-hero-stat-label { font-size: 12.5px; color: rgba(255, 255, 255, .78); margin: 6px 0 10px; }
+.srp-progress-track-hero { background: rgba(255, 255, 255, .25); width: 190px; margin-left: auto; }
+
+.srp-landing-section {
+  border: 1px solid var(--srp-line);
+  border-radius: var(--srp-radius-sm);
+  padding: 20px;
+}
+.srp-landing-section + .srp-landing-section { margin-top: 18px; }
+.srp-landing-section-title {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: var(--srp-leaf-muted);
+}
+.srp-landing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(264px, 1fr));
+  gap: 18px;
+}
+.srp-landing-card {
+  padding: 22px 36px 22px 20px;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.srp-landing-card .srp-browse-card-name { font-size: 16.5px; }
+.srp-landing-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--srp-leaf-accent);
+  flex: 0 0 auto;
+}
+.srp-landing-card-icon svg { display: block; width: 24px; height: 24px; }
+.srp-landing-card .srp-browse-card-meta .dot { margin-right: 2px; }
+.srp-legend-list { list-style: none; padding-left: 0; }
+.srp-legend-list li { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.srp-verwaltung-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.srp-segmented-tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  background: var(--srp-surface);
+  border: none;
+  border-radius: 999px;
+  padding: 4px;
+}
+.srp-segmented-tabs .nav-item { margin: 0; }
+.srp-segmented-tabs .nav-link {
+  display: inline-block;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--srp-muted);
+  background: transparent;
+  transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.srp-segmented-tabs .nav-link:hover { color: var(--srp-accent); }
+.srp-segmented-tabs .nav-link.active {
+  background: var(--srp-surface-raised);
+  color: var(--srp-accent);
+  box-shadow: var(--srp-shadow-sm);
+}
+.srp-page-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+/* Bootstraps .card-header-Clearfix erzeugt ein leeres ::after, das als drittes
+   Flex-Item mitzählt und space-between auf zwei sichtbare + ein leeres Element
+   verteilt - dadurch landet der Button in der Mitte statt am rechten Rand. */
+.srp-page-header-row::after { display: none; }
 .srp-track-chip {
   display: inline-flex;
   align-items: center;
@@ -464,6 +600,120 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
 }
 .srp-track-chip.srp-track-done { background: #e6f4ea; color: #1e6b32; }
 .srp-track-chip.srp-track-open { background: #fdf1e0; color: #8a5a00; }
+
+/* ---- Ma&szlig;nahmen-Tracking: KPI-Kacheln, Fortschrittsbalken ---- */
+.dot.neutral { background: var(--srp-accent); }
+.srp-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.srp-stat-card {
+  border: 1px solid var(--srp-line);
+  border-left: 4px solid var(--srp-muted-2);
+  border-radius: var(--srp-radius-sm);
+  background: var(--srp-surface);
+  padding: 14px 16px;
+}
+.srp-stat-neutral { border-left-color: var(--srp-accent); }
+.srp-stat-gruen { border-left-color: var(--gruen); }
+.srp-stat-gelb { border-left-color: var(--gelb); }
+.srp-stat-rot { border-left-color: var(--rot); }
+.srp-stat-top { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.srp-stat-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  color: var(--srp-muted);
+}
+.srp-stat-value {
+  font-family: var(--srp-font-display);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--srp-ink);
+  line-height: 1.1;
+}
+.srp-stat-sub { font-size: 12.5px; color: var(--srp-muted); margin-top: 4px; }
+
+.srp-progress-row { margin-bottom: 20px; }
+.srp-progress-track {
+  display: flex;
+  height: 10px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--srp-line);
+  gap: 2px;
+}
+.srp-progress-track-sm { height: 7px; width: 140px; }
+.srp-progress-seg { height: 100%; }
+.srp-progress-gruen { background: var(--gruen); }
+.srp-progress-gelb { background: var(--gelb); }
+.srp-progress-legend { display: flex; gap: 18px; margin-top: 8px; font-size: 12.5px; color: var(--srp-muted); }
+.srp-progress-legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+.srp-tracking-list-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 32px;
+  margin-bottom: 0;
+}
+.srp-tracking-list-header .srp-section-title { margin: 0; }
+.srp-tracking-table-wrap {
+  border: 1px solid var(--srp-line);
+  border-radius: var(--srp-radius-sm);
+  overflow: hidden;
+  margin-top: 10px;
+}
+.srp-tracking-table-wrap .table-responsive { margin-bottom: 0; }
+.srp-tracking-table { margin-bottom: 0; }
+.srp-tracking-table thead th {
+  background: var(--srp-surface);
+  color: var(--srp-muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  border-top: none;
+  border-bottom: 1px solid var(--srp-line-strong);
+  padding: 10px 14px;
+  white-space: nowrap;
+}
+.srp-tracking-table td {
+  padding: 10px 14px;
+  border-top: 1px solid var(--srp-line);
+  vertical-align: middle;
+}
+.srp-tracking-table tbody tr:nth-child(even) { background: var(--srp-surface); }
+.srp-tracking-table.table-hover tbody tr:hover { background: var(--srp-accent-soft); }
+
+/* Ma&szlig;nahmen-Liste: feste Spaltenbreiten mit Zeilenumbruch statt horizontalem
+   Scrollen, damit die Liste ohne Scrollen auf einen Blick lesbar ist - &uuml;berschreibt
+   gezielt (per Selektor-Spezifit&auml;t) das globale "white-space: nowrap; min-width: 640px"
+   fuer Tabellen unter #mainPanel weiter oben. */
+#mainPanel .srp-measures-table { min-width: 0; table-layout: fixed; width: 100%; }
+#mainPanel .srp-measures-table td, #mainPanel .srp-measures-table th { white-space: normal; word-break: break-word; }
+.srp-measures-table th:nth-child(1), .srp-measures-table td:nth-child(1) { width: 20%; }
+.srp-measures-table th:nth-child(2), .srp-measures-table td:nth-child(2) { width: 9%; }
+.srp-measures-table th:nth-child(3), .srp-measures-table td:nth-child(3) { width: 38%; }
+.srp-measures-table th:nth-child(4), .srp-measures-table td:nth-child(4) { width: 17%; }
+.srp-measures-table th:nth-child(5), .srp-measures-table td:nth-child(5) { width: 16%; }
+.srp-measure-path a { font-weight: 600; }
+.srp-measure-path-cat { font-size: 11.5px; color: var(--srp-muted); margin-top: 2px; }
+
+.srp-tracking-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 24px;
+}
+.srp-tracking-check { display: flex; align-items: center; }
+.srp-tracking-date { display: flex; align-items: center; white-space: nowrap; }
+.srp-tracking-date input[type="date"] { width: auto; }
 
 /* ---- Content area helpers ---- */
 .node-title .badge { vertical-align: middle; }
@@ -772,22 +1022,23 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     <span class="badge badge-secondary ml-2 d-none d-sm-inline-block">Prototyp &middot; kein Produktivsystem</span>
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
-        <button type="button" id="szenarioInfoBtn" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#szenarioModal">
-          &#8505; Hilfe &amp; Anleitung
+        <button type="button" id="szenarioInfoBtn" class="btn btn-sm srp-help-btn" data-toggle="modal" data-target="#szenarioModal">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          <span>Hilfe &amp; Anleitung</span>
         </button>
       </li>
     </ul>
   </nav>
 
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="#" class="brand-link srp-brand">
+    <a href="#" id="brandHomeLink" class="brand-link srp-brand" title="Zur Startseite">
       <svg class="srp-brand-mark" viewBox="0 0 40 40" width="32" height="32" aria-hidden="true" focusable="false">
         <rect class="srp-brand-mark-bg" width="40" height="40" rx="11"/>
         <path d="M8 25 L20 11 L32 25" class="srp-brand-mark-wing-1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M13.5 30.5 L20 23.5 L26.5 30.5" class="srp-brand-mark-wing-2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span class="srp-brand-text">
-        <span class="srp-brand-airport">Flughafen Falkenau</span>
+        <span class="srp-brand-airport">SoxCity Airport</span>
         <span class="srp-brand-product">Strategic Resilience Program</span>
       </span>
     </a>
@@ -1162,50 +1413,9 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     var newItemKeys = {};
     NEW_ITEMS.forEach(function (n) { newItemKeys[n.row.join("|")] = n.createdAt; });
 
-    // Playbook-Durchläufe: Risikobewertung, Maßnahme, Tracking, Risiko nach Maßnahme
-    var ENTRIES = {};
-    ENTRIES["Infrastruktur|Start- und Landebahnen & Vorfeld|Runway 2 (Beton)|Betondeckschicht|Plattenaufwölbung / Blow-ups"] = function () {
-      var e = makeEntry("rot", "Fugen vor der Hitzeperiode reinigen und neu verfüllen; Plattentemperatur-Monitoring einführen; betroffene Segmente bei Grenzwertüberschreitung vorsorglich sperren.");
-      e.riskNote = "Bei anhaltender Plattentemperatur über ca. 55°C (bei 40°C Lufttemperatur realistisch) und inkompressiblem Material in den Dehnungsfugen steigt das Risiko eines Blow-ups.";
-      e.tracking = { done: true, date: "2026-07-10" };
-      e.residualRisk = "gelb";
-      e.residualNote = "Fugen erneuert; laufendes Plattentemperatur-Monitoring weiterhin erforderlich.";
-      return e;
-    };
-    ENTRIES["Infrastruktur|Terminalgebäude|Fluggastbrücken|Hydraulik- / Antriebssysteme"] = function () {
-      var e = makeEntry("gelb", "Ölkühler nachrüsten und Wartungsintervalle in Hitzeperioden verkürzen.");
-      e.riskNote = "Hydrauliköl der Hubantriebe verliert ab ca. 60°C Öltemperatur an Viskosität, dadurch ungenaue Ankopplung an die Flugzeugtür.";
-      return e;
-    };
-    ENTRIES["Flughafenbetrieb|Vorfeldprozesse|Gepäck- und Frachtabfertigung|Kühlkette Fracht / Pharma"] = function () {
-      var e = makeEntry("rot", "Mobile Kühlcontainer für Standzeiten über 15 Minuten bereitstellen; priorisierte Abfertigung bei Hitzewarnung.");
-      e.riskNote = "Pharmafracht mit 2–8°C-Kühlkette verliert bei über 40°C Vorfeldtemperatur und Standzeiten über 30 Minuten außerhalb der Kühlkette ihre Zulassung.";
-      e.tracking = { done: true, date: "2026-05-15" };
-      e.residualRisk = "gelb";
-      e.residualNote = "Kühlcontainer im Einsatz; Kapazität reicht bei Spitzenlast noch nicht für alle Standplätze.";
-      return e;
-    };
-    ENTRIES["Flughafenbetrieb|Terminalbetrieb & Passagierprozesse|Trinkwasserstationen Passagiere"] = function () {
-      var e = makeEntry("gelb", "Zusätzliche mobile Trinkwasserstationen in Sicherheitskontrolle und Gate-Zonen für Hitzeperioden.");
-      e.riskNote = "Bei über 3.000 Passagieren/Stunde in Wartebereichen und Innentemperaturen über 28°C reicht die vorhandene Anzahl Trinkwasserspender nicht aus.";
-      e.tracking = { done: true, date: "2026-06-20" };
-      e.residualRisk = "gruen";
-      e.residualNote = "Kapazität nach Aufstellung der mobilen Stationen ausreichend.";
-      return e;
-    };
-    ENTRIES["Personal & Governance|Arbeitsschutz & Gesundheit|Hitzeschutz Vorfeldpersonal|Pausenregelungen"] = function () {
-      var e = makeEntry("rot", "Stufenregelung einführen: ab 35°C 10 Min./Std. Schatten-Pause, ab 38°C 15 Min./Std.");
-      e.riskNote = "Bei gefühlten Temperaturen über 38°C auf dem Vorfeld (Asphalt-Reflexion) fehlt eine verbindliche Pausenregelung; aktuell im Ermessen der Schichtleitung.";
-      e.tracking = { done: true, date: "2026-07-01" };
-      e.residualRisk = "gelb";
-      e.residualNote = "Stufenregelung in Betriebsvereinbarung wirksam; Einhaltung bei Personalmangel weiterhin von Schichtleitung abhängig.";
-      return e;
-    };
-    ENTRIES["Personal & Governance|Personalplanung & Verfügbarkeit|Schichtplanung bei Extremhitze"] = function () {
-      var e = makeEntry("gelb", "Hitze-Bereitschaftspool definieren, der bei DWD-Hitzewarnstufe 2 automatisch aktiviert wird.");
-      e.riskNote = "Bei mehrtägigen Hitzewarnungen (mehr als 3 Tage über 35°C) steigt der kurzfristige Krankenstand im Vorfelddienst um bis zu 20% ohne Reaktion der Schichtplanung.";
-      return e;
-    };
+    // Grundzustand ist bewusst leer (kein Ampel-Status, keine Maßnahmen) - Fachbereiche
+    // befüllen die Bewertung selbst. Beispielhafte Bewertungen lassen sich über den
+    // Entwickler-Button "Demo-Daten einfügen" (siehe demoEntries()) nachträglich einspielen.
 
     var catNodes = {
       "Infrastruktur": makeNode("Infrastruktur", 1, { id: "cat_infra", category: "Infrastruktur" }),
@@ -1239,9 +1449,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
         cursor = found;
       }
       var fullKey = keyParts.join("|");
-      if (ENTRIES[fullKey]) {
-        cursor.entry = ENTRIES[fullKey]();
-      } else if (newItemKeys[fullKey]) {
+      if (newItemKeys[fullKey]) {
         cursor.entry = makeEntry("grau", "");
       }
     }
@@ -1257,8 +1465,15 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     role: "nutzer",
     adminFachbereich: "alle",
     selectedId: null,
-    adminTab: "struktur"
+    adminTab: "struktur",
+    view: "landing"
   };
+
+  function goLanding() {
+    state.view = "landing";
+    state.selectedId = null;
+    render();
+  }
 
   function load() {
     try {
@@ -1273,6 +1488,237 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   function resetDemo() {
     state.data = seedData();
     state.selectedId = null;
+    state.view = "landing";
+    save();
+    render();
+  }
+
+  // 30 beispielhafte Risikobewertungen/Maßnahmen quer über alle drei Kategorien,
+  // inkl. Playbook-Referenzfall (Landebahnbeschilderung/Kabel, siehe CLAUDE.md).
+  // Wird nur auf Knopfdruck ("Demo-Daten einfügen") eingespielt, nicht automatisch
+  // beim Start - der Grundzustand des Prototyps bleibt leer.
+  function demoEntries() {
+    var E = {};
+
+    // ---- Infrastruktur (12) ----
+    E["Infrastruktur|Start- und Landebahnen & Vorfeld|Runway 1 (Asphalt)|Asphaltdeckschicht|Spurrinnenbildung"] = function () {
+      var e = makeEntry("gelb", "Regelmäßige Spurrinnenmessung in Hitzeperioden einführen; Sanierung der kritischsten Abschnitte vorziehen.");
+      e.riskNote = "Bei Belagstemperaturen über 55°C und hoher Verkehrslast im Sommer steigt das Risiko plastischer Verformungen (Spurrinnen) auf den meistbefahrenen Rollspuren.";
+      return e;
+    };
+    E["Infrastruktur|Start- und Landebahnen & Vorfeld|Runway 2 (Beton)|Betondeckschicht|Plattenaufwölbung / Blow-ups"] = function () {
+      var e = makeEntry("rot", "Fugen vor der Hitzeperiode reinigen und neu verfüllen; Plattentemperatur-Monitoring einführen; betroffene Segmente bei Grenzwertüberschreitung vorsorglich sperren.");
+      e.riskNote = "Bei anhaltender Plattentemperatur über ca. 55°C (bei 40°C Lufttemperatur realistisch) und inkompressiblem Material in den Dehnungsfugen steigt das Risiko eines Blow-ups.";
+      e.tracking = { done: true, date: "2026-07-10" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Fugen erneuert; laufendes Plattentemperatur-Monitoring weiterhin erforderlich.";
+      return e;
+    };
+    E["Infrastruktur|Start- und Landebahnen & Vorfeld|Runway-/Rollbahnbefeuerung|Kabeltrassen"] = function () {
+      var e = makeEntry("gelb", "Thermografische Kontrolle der Kabeltrassen vor der Hitzesaison; Austauschplan für älteste Abschnitte erstellen.");
+      e.riskNote = "Erdverlegte Kabeltrassen der Bahnbefeuerung altern bei anhaltend hohen Bodentemperaturen schneller; Isolationsschäden erhöhen das Ausfallrisiko.";
+      return e;
+    };
+    // Playbook-Referenzfall aus CLAUDE.md: Kabel hält nur bis 42°C, bei 40°C Außentemperatur Rot.
+    E["Infrastruktur|Start- und Landebahnen & Vorfeld|Beschilderung Runway/Rollbahn|Kabel"] = function () {
+      var e = makeEntry("rot", "Neue Kabel verbauen, die bis 50°C ausgelegt sind.");
+      e.riskNote = "Bei 40°C Außentemperatur hält das verbaute Kabel nur bis rund 42°C aus - zu geringer Sicherheitsabstand für Hitzeperioden.";
+      e.tracking = { done: true, date: "2026-07-20" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Neue Kabel installiert; Lesbarkeit/Verformung der Beschilderung bei Extremhitze wird gesondert beobachtet.";
+      return e;
+    };
+    E["Infrastruktur|Terminalgebäude|Terminal 1 – Klimaanlage|Kältemaschinen / Chiller"] = function () {
+      var e = makeEntry("rot", "Zusätzlichen mobilen Kälteerzeuger als Redundanz vorhalten; Lastmanagement für Spitzentage einführen.");
+      e.riskNote = "Bei Außentemperaturen über 38°C sinkt die Kälteleistung der bestehenden Chiller unter den Bedarfsspitzenwert; Kühlausfall in Terminal 1 möglich.";
+      return e;
+    };
+    E["Infrastruktur|Terminalgebäude|Terminal 2 – Klimaanlage|Kühltürme"] = function () {
+      var e = makeEntry("gelb", "Zusätzliche Besprühung der Kühltürme bei Hitzewarnung; Wartungsintervall in Sommermonaten verkürzen.");
+      e.riskNote = "Kühltürme erreichen bei über 35°C Außentemperatur und hoher Luftfeuchte ihre Wirkungsgrenze, wodurch die Vorlauftemperatur ansteigt.";
+      e.tracking = { done: true, date: "2026-06-18" };
+      e.residualRisk = "gruen";
+      e.residualNote = "Zusatzbesprühung hält die Vorlauftemperatur auch bei Spitzenlast im Zielbereich.";
+      return e;
+    };
+    E["Infrastruktur|Terminalgebäude|Fluggastbrücken|Hydraulik- / Antriebssysteme"] = function () {
+      var e = makeEntry("gelb", "Ölkühler nachrüsten und Wartungsintervalle in Hitzeperioden verkürzen.");
+      e.riskNote = "Hydrauliköl der Hubantriebe verliert ab ca. 60°C Öltemperatur an Viskosität, dadurch ungenaue Ankopplung an die Flugzeugtür.";
+      return e;
+    };
+    E["Infrastruktur|Terminalgebäude|Gepäckförderanlage (BHS)|Fördermotoren / Antriebe"] = function () {
+      var e = makeEntry("gelb", "Zusätzliche Motorkühlung nachrüsten; Temperaturüberwachung mit automatischer Warnung einführen.");
+      e.riskNote = "Antriebsmotoren der Förderbänder überhitzen bei Dauerbetrieb und Umgebungstemperaturen über 35°C schneller, Ausfallrisiko in der Gepäckabfertigung steigt.";
+      return e;
+    };
+    E["Infrastruktur|Energieversorgung|Trafostationen|Kühlung Trafostation"] = function () {
+      var e = makeEntry("rot", "Zusätzliche Lüftungskapazität in den Trafostationen nachrüsten; Temperaturüberwachung mit Fernalarm.");
+      e.riskNote = "Bei unzureichender Kühlung steigt die Trafo-Innentemperatur bei Hitzeperioden über den zulässigen Grenzwert, Abschaltrisiko für angeschlossene Bereiche.";
+      e.tracking = { done: true, date: "2026-06-05" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Zusatzlüftung installiert; bei extremen Mehrtageshitzewellen weiterhin engmaschige Kontrolle nötig.";
+      return e;
+    };
+    E["Infrastruktur|Energieversorgung|Notstromversorgung|Diesel-Notstromaggregate"] = function () {
+      var e = makeEntry("gelb", "Kühlsystem der Notstromaggregate vor der Hitzesaison prüfen und Lasttest unter Hitzebedingungen durchführen.");
+      e.riskNote = "Diesel-Notstromaggregate verlieren bei hohen Umgebungstemperaturen an Kühlreserve und können bei Dauerlast im Ernstfall vorzeitig abschalten.";
+      return e;
+    };
+    E["Infrastruktur|IT- & Kommunikationsinfrastruktur|Rechenzentrum / Serverräume|Kühlsysteme Serverraum"] = function () {
+      var e = makeEntry("rot", "Redundante Kühlung (N+1) nachrüsten; automatische Lastabschaltung unkritischer Systeme bei Übertemperatur definieren.");
+      e.riskNote = "Bei Ausfall oder Überlastung der Serverraum-Kühlung während einer Hitzeperiode drohen Systemausfälle mit Auswirkung auf Flugsicherungs- und Betriebssysteme.";
+      return e;
+    };
+    E["Infrastruktur|Fracht- & Kraftstoffinfrastruktur|Kerosin-Tanklager|Tankwandtemperatur"] = function () {
+      var e = makeEntry("gelb", "Reflektierende Beschichtung der Tankaußenwände aufbringen; Druckentlastungsventile vor der Hitzesaison prüfen.");
+      e.riskNote = "Hohe Sonneneinstrahlung erhöht die Tankwandtemperatur und damit die Verdunstungsrate sowie den Innendruck in den Kerosintanks.";
+      e.tracking = { done: true, date: "2026-05-28" };
+      e.residualRisk = "gruen";
+      e.residualNote = "Beschichtung reduziert Wandtemperatur spürbar; Ventile bei letzter Prüfung unauffällig.";
+      return e;
+    };
+
+    // ---- Flughafenbetrieb (10) ----
+    E["Flughafenbetrieb|Vorfeldprozesse|Gepäck- und Frachtabfertigung|Kühlkette Fracht / Pharma"] = function () {
+      var e = makeEntry("rot", "Mobile Kühlcontainer für Standzeiten über 15 Minuten bereitstellen; priorisierte Abfertigung bei Hitzewarnung.");
+      e.riskNote = "Pharmafracht mit 2–8°C-Kühlkette verliert bei über 40°C Vorfeldtemperatur und Standzeiten über 30 Minuten außerhalb der Kühlkette ihre Zulassung.";
+      e.tracking = { done: true, date: "2026-05-15" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Kühlcontainer im Einsatz; Kapazität reicht bei Spitzenlast noch nicht für alle Standplätze.";
+      return e;
+    };
+    E["Flughafenbetrieb|Vorfeldprozesse|Betankung|Kraftstoffverdunstung"] = function () {
+      var e = makeEntry("gelb", "Betankungsfenster bei Hitzewarnung in kühlere Tagesrandzeiten verlegen, wo betrieblich möglich.");
+      e.riskNote = "Bei Vorfeldtemperaturen über 38°C steigt die Verdunstungsrate beim Betankungsvorgang, was Nachlaufmengen und Emissionen erhöht.";
+      return e;
+    };
+    E["Flughafenbetrieb|Bodengeräte & Fahrzeugtechnik|Elektrofahrzeuge|Batteriekühlung"] = function () {
+      var e = makeEntry("gelb", "Beschattete Lade- und Abstellplätze für E-Fahrzeuge einrichten; Ladezyklen an kühlere Tageszeiten anpassen.");
+      e.riskNote = "E-Fahrzeuge der Vorfeldflotte verlieren bei Batterietemperaturen über 40°C an Reichweite und Ladegeschwindigkeit, Ausfallrisiko in Spitzenzeiten steigt.";
+      return e;
+    };
+    E["Flughafenbetrieb|Bodengeräte & Fahrzeugtechnik|Reifen & Rollmaterial allgemein"] = function () {
+      var e = makeEntry("rot", "Reifendruck- und Temperaturkontrolle vor jeder Schicht in Hitzeperioden verpflichtend einführen.");
+      e.riskNote = "Bei Asphalttemperaturen über 55°C steigt das Risiko von Reifenschäden an Vorfeldfahrzeugen durch Überhitzung, insbesondere bei Dauerbetrieb.";
+      return e;
+    };
+    E["Flughafenbetrieb|Flugbetrieb & Luftraumkoordination|Startbahnperformance bei Hitze|Gewichtsbeschränkungen (Density Altitude)"] = function () {
+      var e = makeEntry("rot", "Verbindliches Verfahren zur tagesaktuellen Density-Altitude-Berechnung mit den Airlines abstimmen und kommunizieren.");
+      e.riskNote = "Bei hohen Außentemperaturen sinkt die Luftdichte (Density Altitude), wodurch die maximale Startmasse mancher Flugzeugtypen reduziert werden muss.";
+      e.tracking = { done: true, date: "2026-06-30" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Verfahren etabliert; Kommunikationsweg zu einzelnen Airlines wird noch verfeinert.";
+      return e;
+    };
+    E["Flughafenbetrieb|Terminalbetrieb & Passagierprozesse|Trinkwasserstationen Passagiere"] = function () {
+      var e = makeEntry("gelb", "Zusätzliche mobile Trinkwasserstationen in Sicherheitskontrolle und Gate-Zonen für Hitzeperioden.");
+      e.riskNote = "Bei über 3.000 Passagieren/Stunde in Wartebereichen und Innentemperaturen über 28°C reicht die vorhandene Anzahl Trinkwasserspender nicht aus.";
+      e.tracking = { done: true, date: "2026-06-20" };
+      e.residualRisk = "gruen";
+      e.residualNote = "Kapazität nach Aufstellung der mobilen Stationen ausreichend.";
+      return e;
+    };
+    E["Flughafenbetrieb|Terminalbetrieb & Passagierprozesse|Sicherheitskontrolle|Gerätekühlung (Scanner)"] = function () {
+      var e = makeEntry("gelb", "Zusätzliche mobile Klimageräte für Kontrollbereiche in Hitzeperioden bereitstellen.");
+      e.riskNote = "Sicherheitsscanner in wenig klimatisierten Kontrollbereichen fallen bei Innentemperaturen über 30°C gehäuft durch Überhitzung aus.";
+      return e;
+    };
+    E["Flughafenbetrieb|Notfall- und Krisenmanagement|Flughafenfeuerwehr|Einsatzfahrzeuge-Kühlung"] = function () {
+      var e = makeEntry("rot", "Kühlsystem-Check der Einsatzfahrzeuge vor der Hitzesaison; Standzeiten in beschatteten Bereitstellungsflächen ermöglichen.");
+      e.riskNote = "Einsatzfahrzeuge der Flughafenfeuerwehr verlieren bei Hitze und Standzeiten im Einsatz an Kühlleistung, was die Einsatzbereitschaft bei Ernstfällen einschränken kann.";
+      return e;
+    };
+    E["Flughafenbetrieb|Notfall- und Krisenmanagement|Notfallübungen / Simulationen Hitzeszenario"] = function () {
+      var e = makeEntry("gelb", "Jährliche Notfallübung mit Hitzeszenario für alle relevanten Bereiche einführen.");
+      e.riskNote = "Ohne regelmäßige Übung zu Hitzenotfallszenarien besteht Unsicherheit über Zuständigkeiten und Abläufe im Ernstfall.";
+      e.tracking = { done: true, date: "2026-05-20" };
+      e.residualRisk = "gruen";
+      e.residualNote = "Erste Übung erfolgreich durchgeführt; Wiederholung jährlich fest eingeplant.";
+      return e;
+    };
+    E["Flughafenbetrieb|Externe Dienstleister & landseitiger Verkehr|Caterer (Kühlketten Bordverpflegung)"] = function () {
+      var e = makeEntry("gelb", "Maximale Standzeit für Catering-Fahrzeuge bei Hitzewarnung festlegen und mit Caterern vertraglich verankern.");
+      e.riskNote = "Bei Standzeiten der Catering-Fahrzeuge auf dem heißen Vorfeld kann die Kühlkette der Bordverpflegung unterbrochen werden.";
+      return e;
+    };
+
+    // ---- Personal & Governance (8) ----
+    E["Personal & Governance|Arbeitsschutz & Gesundheit|Hitzeschutz Vorfeldpersonal|Pausenregelungen"] = function () {
+      var e = makeEntry("rot", "Stufenregelung einführen: ab 35°C 10 Min./Std. Schatten-Pause, ab 38°C 15 Min./Std.");
+      e.riskNote = "Bei gefühlten Temperaturen über 38°C auf dem Vorfeld (Asphalt-Reflexion) fehlt eine verbindliche Pausenregelung; aktuell im Ermessen der Schichtleitung.";
+      e.tracking = { done: true, date: "2026-07-01" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Stufenregelung in Betriebsvereinbarung wirksam; Einhaltung bei Personalmangel weiterhin von Schichtleitung abhängig.";
+      return e;
+    };
+    E["Personal & Governance|Arbeitsschutz & Gesundheit|Hitzeschutz Vorfeldpersonal|Trinkwasserversorgung"] = function () {
+      var e = makeEntry("gelb", "Zusätzliche mobile Trinkwasserstationen für Vorfeldpersonal bei Hitzewarnung bereitstellen.");
+      e.riskNote = "Bei Dauereinsatz auf dem Vorfeld über 35°C reicht die aktuelle Anzahl mobiler Trinkwasserspender an Spitzentagen nicht aus.";
+      return e;
+    };
+    E["Personal & Governance|Arbeitsschutz & Gesundheit|Klimatisierte Pausenräume"] = function () {
+      var e = makeEntry("gelb", "Bestehende Pausenräume mit mobilen Klimageräten nachrüsten, priorisiert für vorfeldnahe Standorte.");
+      e.riskNote = "Nicht alle Pausenbereiche für Vorfeld- und Reinigungspersonal verfügen über ausreichende Klimatisierung für Hitzeperioden.";
+      e.tracking = { done: true, date: "2026-06-12" };
+      e.residualRisk = "gruen";
+      e.residualNote = "Alle priorisierten Pausenräume nachgerüstet; Temperaturmessungen im Zielbereich.";
+      return e;
+    };
+    E["Personal & Governance|Personalplanung & Verfügbarkeit|Schichtplanung bei Extremhitze"] = function () {
+      var e = makeEntry("gelb", "Hitze-Bereitschaftspool definieren, der bei DWD-Hitzewarnstufe 2 automatisch aktiviert wird.");
+      e.riskNote = "Bei mehrtägigen Hitzewarnungen (mehr als 3 Tage über 35°C) steigt der kurzfristige Krankenstand im Vorfelddienst um bis zu 20% ohne Reaktion der Schichtplanung.";
+      return e;
+    };
+    E["Personal & Governance|Personalplanung & Verfügbarkeit|Krankenstands- / Ausfallprognose"] = function () {
+      var e = makeEntry("gelb", "Historische Krankenstandsdaten mit Hitzewarnstufen verknüpfen, um Personalbedarf frühzeitiger zu planen.");
+      e.riskNote = "Bei mehrtägigen Hitzeperioden fehlt eine systematische Prognose des erhöhten Krankenstands für die Personaleinsatzplanung.";
+      return e;
+    };
+    E["Personal & Governance|Schulung & Sensibilisierung|Hitzeschutz-Schulungen"] = function () {
+      var e = makeEntry("rot", "Verpflichtende jährliche Hitzeschutz-Schulung für alle vorfeld- und außennahen Tätigkeiten einführen.");
+      e.riskNote = "Ohne verpflichtende Hitzeschutz-Schulung ist nicht sichergestellt, dass alle Mitarbeitenden Symptome von Hitzeerkrankungen rechtzeitig erkennen.";
+      e.tracking = { done: true, date: "2026-06-01" };
+      e.residualRisk = "gelb";
+      e.residualNote = "Schulung für Vorfeldpersonal abgeschlossen; Rollout auf weitere Bereiche läuft.";
+      return e;
+    };
+    E["Personal & Governance|Kommunikation, Governance & Recht|Interne Warnketten / Alarmierung|Meldewege"] = function () {
+      var e = makeEntry("rot", "Einheitliche Meldekette für Hitzewarnstufen dokumentieren und an alle Schichtleitungen kommunizieren.");
+      e.riskNote = "Die Meldewege bei Erreichen kritischer Hitzeschwellen sind nicht einheitlich dokumentiert, wodurch Verzögerungen bei der Alarmierung entstehen können.";
+      return e;
+    };
+    E["Personal & Governance|Kommunikation, Governance & Recht|Externe Kommunikation (Passagiere, Presse)"] = function () {
+      var e = makeEntry("gelb", "Vorlagen und Freigabeprozess für hitzebedingte Passagier- und Presseinformationen vorbereiten.");
+      e.riskNote = "Bei hitzebedingten Betriebseinschränkungen fehlt ein abgestimmtes Kommunikationsverfahren für Passagiere und Presse.";
+      return e;
+    };
+
+    return E;
+  }
+
+  // Findet einen Knoten über seinen Namenspfad (wie in den ENTRIES-Keys), nicht
+  // über die zufällig generierte id - für das nachträgliche Einspielen der Demo-Daten.
+  function findNodeByPathKey(key) {
+    var parts = key.split("|");
+    var levelNodes = state.data;
+    var node = null;
+    for (var i = 0; i < parts.length; i++) {
+      node = null;
+      for (var j = 0; j < levelNodes.length; j++) {
+        if (levelNodes[j].name === parts[i]) { node = levelNodes[j]; break; }
+      }
+      if (!node) return null;
+      levelNodes = node.children || [];
+    }
+    return node;
+  }
+
+  function insertDemoData() {
+    var entries = demoEntries();
+    Object.keys(entries).forEach(function (key) {
+      var node = findNodeByPathKey(key);
+      if (node) node.entry = entries[key]();
+    });
     save();
     render();
   }
@@ -1361,16 +1807,106 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     });
   }
 
-  // Nur fuer die Sidebar-Anzeige: fuegt ein weiches Trennzeichen (­) vor
-  // bekannten langen Wortbestandteilen ein, damit lange Komposita wie
-  // "Kommunikationsinfrastruktur" im schmalen Sidebar-Text an einer sinnvollen
-  // Stelle mit Trennstrich umbrechen statt roh mitten im Wort. CSS-"hyphens:
-  // auto" allein reicht nicht, weil nicht jeder Browser/jedes System ein
-  // deutsches Trennmuster mitbringt. Wirkt sich nicht auf den gespeicherten
-  // Namen aus (Suche, Anzeige an anderer Stelle bleiben unveraendert).
-  function sidebarHyphenate(name) {
-    return name.replace(/(.)(infrastruktur)/gi, "$1­$2");
+  // Woerterbuch mit fachlich korrekter deutscher Silben-/Wortfugentrennung
+  // (weiches Trennzeichen \u00AD) fuer die langen zusammengesetzten Begriffe
+  // aus der Struktur (z.B. "Kommunikations\u00ADinfra\u00ADstruktur"). Nur
+  // Woerter, die in der Praxis ueberhaupt umbrechen koennen (ab 18 Zeichen am
+  // Stueck), sind gelistet - CSS "hyphens: auto" wurde verworfen, weil nicht
+  // jedes Browser/System ein deutsches Trennmuster mitbringt und der Text sonst
+  // roh an der Kante bricht (z.B. nur ein einzelnes "r" in der letzten Zeile).
+  var GERMAN_HYPHEN_MAP = {
+    "Bodenverkehrsdienstleistern": "Boden\u00ADverkehrs\u00ADdienst\u00ADleistern",
+    "Kommunikationsinfrastruktur": "Kommunikations\u00ADinfra\u00ADstruktur",
+    "Sensibilisierungskampagnen": "Sensibilisierungs\u00ADkampagnen",
+    "Bodenverkehrsdienstleister": "Boden\u00ADverkehrs\u00ADdienst\u00ADleister",
+    "Fluginformationsanzeigen": "Flug\u00ADinformations\u00ADanzeigen",
+    "Warteschlangenmanagement": "Warte\u00ADschlangen\u00ADmanagement",
+    "Sicherheitsdienstleister": "Sicherheits\u00ADdienst\u00ADleister",
+    "Kapazitätseinschränkung": "Kapazitäts\u00ADeinschränkung",
+    "Kraftstoffinfrastruktur": "Kraft\u00ADstoff\u00ADinfra\u00ADstruktur",
+    "Instandhaltungspersonal": "Instand\u00ADhaltungs\u00ADpersonal",
+    "Auffrischungsschulungen": "Auf\u00ADfrischungs\u00ADschulungen",
+    "Dokumentationspflichten": "Dokumentations\u00ADpflichten",
+    "Trockeneisverfügbarkeit": "Trocken\u00ADeis\u00ADverfügbarkeit",
+    "Regenwasserentwässerung": "Regen\u00ADwasser\u00ADentwässerung",
+    "Gewichtsbeschränkungen": "Gewichts\u00ADbeschränkungen",
+    "Standplatzmarkierungen": "Stand\u00ADplatz\u00ADmarkierungen",
+    "Betriebsvereinbarungen": "Betriebs\u00ADvereinbarungen",
+    "Trinkwasserversorgung": "Trink\u00ADwasser\u00ADversorgung",
+    "Bindemittelerweichung": "Binde\u00ADmittel\u00ADerweichung",
+    "Dokumentationspflicht": "Dokumentations\u00ADpflicht",
+    "Fahrradabstellanlagen": "Fahrrad\u00ADabstell\u00ADanlagen",
+    "Sichtweitenmessgeräte": "Sicht\u00ADweiten\u00ADmess\u00ADgeräte",
+    "Kraftstoffverdunstung": "Kraft\u00ADstoff\u00ADverdunstung",
+    "Lastaufnahmefähigkeit": "Last\u00ADaufnahme\u00ADfähigkeit",
+    "Netzwerkinfrastruktur": "Netzwerk\u00ADinfra\u00ADstruktur",
+    "Löschwasserreservoirs": "Lösch\u00ADwasser\u00ADreservoirs",
+    "Überstundenregelungen": "Über\u00ADstunden\u00ADregelungen",
+    "Glasfaserverbindungen": "Glas\u00ADfaser\u00ADverbindungen",
+    "Kühlwasserkreisläufe": "Kühl\u00ADwasser\u00ADkreis\u00ADläufe",
+    "Bahnsteigüberdachung": "Bahn\u00ADsteig\u00ADüber\u00ADdachung",
+    "Trinkwasserleitungen": "Trink\u00ADwasser\u00ADleitungen",
+    "Verpflegungsbereiche": "Verpflegungs\u00ADbereiche",
+    "Hitzeschutzmaßnahmen": "Hitze\u00ADschutz\u00ADmaßnahmen",
+    "Passagierinformation": "Passagier\u00ADinformation",
+    "Luftraumkoordination": "Luft\u00ADraum\u00ADkoordination",
+    "Trinkwasserstationen": "Trink\u00ADwasser\u00ADstationen",
+    "Startbahnperformance": "Start\u00ADbahn\u00ADperformance",
+    "Sicherheitskontrolle": "Sicherheits\u00ADkontrolle",
+    "Eskalationsprozessen": "Eskalations\u00ADprozessen",
+    "Verschattungssysteme": "Verschattungs\u00ADsysteme",
+    "Steuerungselektronik": "Steuerungs\u00ADelektronik",
+    "Lautsprecheranlagen": "Laut\u00ADsprecher\u00ADanlagen",
+    "Toilettenentsorgung": "Toiletten\u00ADentsorgung",
+    "Photovoltaikanlagen": "Photovoltaik\u00ADanlagen",
+    "Elektroinstallation": "Elektro\u00ADinstallation",
+    "Sicherheitsabstände": "Sicherheits\u00ADabstände",
+    "Kapazitätsengpässen": "Kapazitäts\u00ADengpässen",
+    "Rettungsleitstellen": "Rettungs\u00ADleitstellen",
+    "Krisenkommunikation": "Krisen\u00ADkommunikation",
+    "Fluggastabfertigung": "Fluggast\u00ADabfertigung",
+    "Mittelspannungsnetz": "Mittel\u00ADspannungs\u00ADnetz",
+    "Betankungsleitungen": "Betankungs\u00ADleitungen",
+    "Arbeitsmedizinische": "Arbeits\u00ADmedizinische",
+    "Personenbeförderung": "Personen\u00ADbeförderung",
+    "Entwässerungssystem": "Entwässerungs\u00ADsystem",
+    "Trinkwasserreserven": "Trink\u00ADwasser\u00ADreserven",
+    "Gebäudeleittechnik": "Gebäude\u00ADleit\u00ADtechnik",
+    "Katastrophenschutz": "Katastrophen\u00ADschutz",
+    "Tankwandtemperatur": "Tank\u00ADwand\u00ADtemperatur",
+    "Parkraummanagement": "Park\u00ADraum\u00ADmanagement",
+    "Temperatursensorik": "Temperatur\u00ADsensorik",
+    "Triebwerksleistung": "Triebwerks\u00ADleistung",
+    "Flughafenfeuerwehr": "Flughafen\u00ADfeuerwehr",
+    "Steuerungssoftware": "Steuerungs\u00ADsoftware",
+    "Notstromversorgung": "Notstrom\u00ADversorgung",
+    "Asphaltdeckschicht": "Asphalt\u00ADdeckschicht",
+    "Personalvertretung": "Personal\u00ADvertretung",
+    "Mobilitätsangebote": "Mobilitäts\u00ADangebote",
+    "Kantenabplatzungen": "Kanten\u00ADabplatzungen",
+    "Reinigungspersonal": "Reinigungs\u00ADpersonal",
+    "Brandschutzanlagen": "Brand\u00ADschutz\u00ADanlagen",
+    "Hitzebeständigkeit": "Hitze\u00ADbeständigkeit",
+    "Vorfeldbeleuchtung": "Vorfeld\u00ADbeleuchtung",
+    "Wärmeabzugsanlagen": "Wärme\u00ADabzugs\u00ADanlagen",
+    "Besucherparkplätze": "Besucher\u00ADparkplätze",
+    "Gepäckförderanlage": "Gepäck\u00ADförder\u00ADanlage",
+    "Navigationstechnik": "Navigations\u00ADtechnik",
+    "Brandfrüherkennung": "Brand\u00ADfrüherkennung",
+    "Löschwasseranlagen": "Lösch\u00ADwasser\u00ADanlagen",
+    "Arbeitsschutzgesetz": "Arbeits\u00ADschutz\u00ADgesetz",
+    "Rollbahnbefeuerung": "Roll\u00ADbahn\u00ADbefeuerung",
+  };
+  var GERMAN_HYPHEN_RE = new RegExp(Object.keys(GERMAN_HYPHEN_MAP).join("|"), "g");
+
+  // Wirkt sich nicht auf den gespeicherten Namen aus (Suche, Anzeige an anderer
+  // Stelle bleiben unveraendert) - nur auf die hier zurueckgegebene Anzeige-
+  // Variante. Woerter ausserhalb des Woerterbuchs bleiben unveraendert, statt sie
+  // algorithmisch (und moeglicherweise falsch) zu trennen.
+  function hyphenateLongWords(str) {
+    return str.replace(GERMAN_HYPHEN_RE, function (word) { return GERMAN_HYPHEN_MAP[word]; });
   }
+
 
   // On phones/tablets the sidebar opens as an off-canvas overlay (AdminLTE
   // "sidebar-open"); after picking a node it must close again, otherwise it
@@ -1411,7 +1947,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       var chevron = isActiveCat ? "▾" : "▸";
       var catHtml = '<div class="node-row cat-row' + (isActiveCat ? " selected" : "") + '" data-node-id="' + cat.id + '">' +
         '<span class="cat-chevron">' + chevron + '</span>' +
-        '<span class="label">' + escapeHtml(sidebarHyphenate(cat.name)) + '</span>' +
+        '<span class="label">' + escapeHtml(hyphenateLongWords(cat.name)) + '</span>' +
         '<span class="cat-count">' + stats.assessed + '/' + stats.total + '</span>' +
         '</div>';
 
@@ -1420,7 +1956,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
         subHtml = '<div class="sub-list">' + cat.children.map(function (sub) {
           var subSel = activeSecondId === sub.id ? " selected" : "";
           return '<div class="node-row sub-row' + subSel + '" data-node-id="' + sub.id + '">' +
-            '<span class="label">' + escapeHtml(sidebarHyphenate(sub.name)) + '</span>' +
+            '<span class="label">' + escapeHtml(hyphenateLongWords(sub.name)) + '</span>' +
             '</div>';
         }).join("") + '</div>';
       }
@@ -1431,6 +1967,8 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     nav.querySelectorAll("[data-node-id]").forEach(function (el) {
       el.addEventListener("click", function () {
         state.selectedId = el.getAttribute("data-node-id");
+        state.view = "browse";
+        state.adminTab = "struktur";
         closeSidebarOnNarrowViewport();
         render();
       });
@@ -1484,9 +2022,367 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       renderAdminPanel();
     } else {
       var main = document.getElementById("mainPanel");
-      buildDetailMarkup(main, findNode(state.selectedId), state.role);
+      if (state.selectedId) {
+        buildDetailMarkup(main, findNode(state.selectedId), state.role);
+      } else if (state.view === "erklaerung") {
+        renderErklaerungView(main);
+      } else if (state.view === "tracking") {
+        renderMassnahmenTrackingView(main);
+      } else {
+        renderLandingView(main);
+      }
     }
     save();
+  }
+
+  function wireLandingBack(container) {
+    container.querySelectorAll("[data-landing-back]").forEach(function (el) {
+      el.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        goLanding();
+      });
+    });
+  }
+
+  // ---------- Startseite ----------
+  // Schlichte, einheitliche Strichicons (kein Branding/keine externen Assets) für
+  // die Startseiten-Kacheln - Farbe kommt vom umgebenden Text (currentColor).
+  var LANDING_ICONS = {
+    infrastruktur: '<path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/><path d="M9 12h.01M15 12h.01M9 8h.01M15 8h.01"/>',
+    betrieb: '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>',
+    personal: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    erklaerung: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+    tracking: '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 12h6M9 16h4"/>'
+  };
+  function landingIcon(key) {
+    return '<span class="srp-landing-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+      'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + LANDING_ICONS[key] + '</svg></span>';
+  }
+
+  var CATEGORY_ICON_KEY = { "Infrastruktur": "infrastruktur", "Flughafenbetrieb": "betrieb", "Personal & Governance": "personal" };
+
+  function renderLandingView(container) {
+    var overall = { total: 0, assessed: 0 };
+    state.data.forEach(function (cat) {
+      var s = leafStats(cat);
+      overall.total += s.total;
+      overall.assessed += s.assessed;
+    });
+
+    var html = '<div class="srp-landing">';
+    html += '<div class="srp-landing-hero">';
+    html += '<div class="srp-landing-hero-main">';
+    html += '<span class="srp-landing-eyebrow">Vorbereitung auf Extremhitze</span>';
+    html += '<h2 class="srp-landing-title">Willkommen beim Strategic Resilience Program</h2>';
+    html += '<p class="srp-landing-lead">Bereiten Sie den Flughafen systematisch auf Extremhitze-Szenarien vor: ' +
+      'Risikobewertung und Ma&szlig;nahmen je Fachbereich, strukturiert nach Kategorie, Unterkategorie, ' +
+      'Themenbereich, Komponente und Sub-Komponente.</p>';
+    html += '</div>';
+    html += '<div class="srp-landing-hero-stat">';
+    html += '<div class="srp-landing-hero-stat-value">' + overall.assessed + ' / ' + overall.total + '</div>';
+    html += '<div class="srp-landing-hero-stat-label">Punkte bewertet</div>';
+    html += '<div class="srp-progress-track srp-progress-track-hero"><div class="srp-progress-seg srp-progress-gruen" style="width:' +
+      pct(overall.assessed, overall.total) + '%"></div></div>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="srp-landing-section srp-leaf-card">';
+    html += '<h3 class="srp-landing-section-title">Kategorien</h3>';
+    html += '<div class="srp-landing-grid">';
+
+    state.data.forEach(function (cat) {
+      var color = aggregateStatus(cat);
+      var stats = leafStats(cat);
+      html += '<button type="button" class="srp-browse-card srp-landing-card" data-node-id="' + cat.id + '">' +
+        '<span class="srp-browse-card-top">' +
+          landingIcon(CATEGORY_ICON_KEY[cat.name]) +
+          '<span class="srp-browse-card-name">' + escapeHtml(hyphenateLongWords(cat.name)) + '</span>' +
+        '</span>' +
+        '<span class="srp-browse-card-meta"><span><span class="dot ' + color + '" title="' + RISK_LABEL[color] + '"></span> ' +
+          stats.assessed + ' von ' + stats.total + ' bewertet</span></span>' +
+        '<span class="srp-browse-card-arrow" aria-hidden="true">&rsaquo;</span>' +
+      '</button>';
+    });
+
+    html += '</div></div>';
+
+    html += '<div class="srp-landing-section srp-leaf-card">';
+    html += '<h3 class="srp-landing-section-title">Weitere Bereiche</h3>';
+    html += '<div class="srp-landing-grid">';
+
+    html += '<button type="button" class="srp-browse-card srp-landing-card srp-landing-card-info" data-landing-goto="erklaerung">' +
+      '<span class="srp-browse-card-top">' +
+        landingIcon("erklaerung") +
+        '<span class="srp-browse-card-name">Erkl&auml;rung</span>' +
+      '</span>' +
+      '<span class="srp-browse-card-meta"><span>Wie das Tool funktioniert</span></span>' +
+      '<span class="srp-browse-card-arrow" aria-hidden="true">&rsaquo;</span>' +
+    '</button>';
+
+    html += '<button type="button" class="srp-browse-card srp-landing-card srp-landing-card-info" data-landing-goto="tracking">' +
+      '<span class="srp-browse-card-top">' +
+        landingIcon("tracking") +
+        '<span class="srp-browse-card-name">Ma&szlig;nahmen-Tracking</span>' +
+      '</span>' +
+      '<span class="srp-browse-card-meta"><span>&Uuml;bersicht der Ma&szlig;nahmen</span></span>' +
+      '<span class="srp-browse-card-arrow" aria-hidden="true">&rsaquo;</span>' +
+    '</button>';
+
+    html += '</div></div>';
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    container.querySelectorAll("[data-node-id]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        state.selectedId = el.getAttribute("data-node-id");
+        state.view = "browse";
+        render();
+      });
+    });
+    container.querySelectorAll("[data-landing-goto]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        state.view = el.getAttribute("data-landing-goto");
+        render();
+      });
+    });
+  }
+
+  // ---------- Erkl&auml;rungsseite ----------
+  function renderErklaerungView(container) {
+    var html = '<div class="card srp-leaf-card"><div class="card-header srp-page-header-row">';
+    html += '<h3 class="card-title mb-0">Erkl&auml;rung</h3>';
+    html += '<button type="button" class="btn btn-sm btn-outline-secondary" data-landing-back>&larr; Zur Startseite</button></div>';
+    html += '<div class="card-body">';
+    html += '<p>Das Strategic Resilience Program (SRP) bereitet den Flughafen systematisch auf ' +
+      'Extremhitze-Szenarien (z. B. ab 40 &deg;C Au&szlig;entemperatur) vor. Fachbereiche tragen ihre ' +
+      'Risikobewertung und passende Ma&szlig;nahmen selbst in dieses Tool ein, damit im Ernstfall vorbereitet ' +
+      'statt &uuml;berrascht reagiert wird.</p>';
+    html += '<h4 class="srp-section-title">Struktur</h4>';
+    html += '<p>Die Inhalte sind in bis zu f&uuml;nf Ebenen gegliedert: Kategorie &rarr; Unterkategorie &rarr; ' +
+      'Themenbereich &rarr; Komponente &rarr; Sub-Komponente. Eine Risikobewertung und Ma&szlig;nahme h&auml;ngt ' +
+      'jeweils am tiefsten bef&uuml;llten Punkt &ndash; eine Bef&uuml;llung ist ab Ebene 2 m&ouml;glich, nicht ' +
+      'zwingend bis Ebene 5.</p>';
+    html += '<h4 class="srp-section-title">Ampel-Skala</h4>';
+    html += '<ul class="srp-legend-list">';
+    html += '<li><span class="dot grau"></span> Grau &ndash; noch nicht bewertetes Risiko</li>';
+    html += '<li><span class="dot gruen"></span> Gr&uuml;n &ndash; kein Risiko</li>';
+    html += '<li><span class="dot gelb"></span> Gelb &ndash; tolerierbares Risiko, Ma&szlig;nahme notwendig</li>';
+    html += '<li><span class="dot rot"></span> Rot &ndash; inakzeptables Risiko, Ma&szlig;nahme-Definition erforderlich</li>';
+    html += '</ul>';
+    html += '<h4 class="srp-section-title">Ablauf je Eintrag</h4>';
+    html += '<p>Risikobewertung &amp; Ma&szlig;nahme eintragen oder neue Punkte erg&auml;nzen &rarr; im Tracking ' +
+      'festhalten, ob die Ma&szlig;nahme durchgef&uuml;hrt wurde &rarr; danach das Restrisiko neu bewerten.</p>';
+    html += '</div></div>';
+    container.innerHTML = html;
+    wireLandingBack(container);
+  }
+
+  // ---------- Ma&szlig;nahmen-Tracking ----------
+  // Sammelt alle Blattpunkte mit hinterlegter Ma&szlig;nahme (unabh&auml;ngig vom
+  // Tracking-Status) samt Navigationspfad - Grundlage f&uuml;r Kennzahlen und Liste.
+  function collectMeasures() {
+    var results = [];
+    function walk(nodes, trail) {
+      nodes.forEach(function (n) {
+        var path = trail.concat([n.name]);
+        if (n.children && n.children.length) {
+          walk(n.children, path);
+        } else if (n.entry && n.entry.measure) {
+          results.push({ node: n, path: path, entry: n.entry });
+        }
+      });
+    }
+    walk(state.data, []);
+    return results;
+  }
+
+  function pct(part, total) {
+    if (!total) return 0;
+    return Math.round((part / total) * 100);
+  }
+
+  var RISK_SHORT = { grau: "Grau", gruen: "Grün", gelb: "Gelb", rot: "Rot" };
+
+  // Gespeichert wird das Tracking-Datum im ISO-Format des <input type="date">
+  // (YYYY-MM-DD) - für Anzeige/Export in der Liste hier ins deutsche tt.mm.jjjj.
+  function formatDateDe(iso) {
+    if (!iso) return "";
+    var parts = iso.split("-");
+    if (parts.length !== 3) return iso;
+    return parts[2] + "." + parts[1] + "." + parts[0];
+  }
+
+  // Kennzahlen fuer die Executive-Summary: Gesamt/Durchgef&uuml;hrt/Offen, kritisch
+  // offene (rote) Ma&szlig;nahmen als wichtigste Handlungskennzahl, sowie Aufschl&uuml;sselung
+  // je Fachbereich.
+  function computeMeasureStats(measures) {
+    var stats = { total: measures.length, done: 0, open: 0, openRot: 0, openGelb: 0, byCategory: {} };
+    CATEGORIES.forEach(function (c) { stats.byCategory[c] = { total: 0, done: 0, open: 0 }; });
+    measures.forEach(function (m) {
+      var cat = m.path[0];
+      var isDone = !!(m.entry.tracking && m.entry.tracking.done);
+      if (isDone) { stats.done++; } else { stats.open++; }
+      if (!isDone && m.entry.risk === "rot") stats.openRot++;
+      if (!isDone && m.entry.risk === "gelb") stats.openGelb++;
+      if (stats.byCategory[cat]) {
+        stats.byCategory[cat].total++;
+        if (isDone) { stats.byCategory[cat].done++; } else { stats.byCategory[cat].open++; }
+      }
+    });
+    return stats;
+  }
+
+  // Dringendste Ma&szlig;nahmen zuerst: offen vor durchgef&uuml;hrt, innerhalb dessen
+  // nach Ampel-Schwere (Rot > Gelb > Grau > Gruen), dann alphabetisch nach Pfad.
+  function sortMeasures(measures) {
+    return measures.slice().sort(function (a, b) {
+      var aDone = a.entry.tracking && a.entry.tracking.done;
+      var bDone = b.entry.tracking && b.entry.tracking.done;
+      if (aDone !== bDone) return aDone ? 1 : -1;
+      var sev = STATUS_SEVERITY[b.entry.risk] - STATUS_SEVERITY[a.entry.risk];
+      if (sev !== 0) return sev;
+      return a.path.join(" ").localeCompare(b.path.join(" "));
+    });
+  }
+
+  // Export als CSV mit Semikolon-Trennzeichen und UTF-8-BOM, damit Excel
+  // (auch in deutscher Lokalisierung) Spalten und Umlaute korrekt erkennt.
+  function exportMeasuresCsv() {
+    var measures = sortMeasures(collectMeasures());
+    var rows = [["Pfad", "Ampel", "Maßnahme", "Status", "Datum"]];
+    measures.forEach(function (m) {
+      var done = !!(m.entry.tracking && m.entry.tracking.done);
+      rows.push([
+        m.path.join(" > "),
+        RISK_LABEL[m.entry.risk] || m.entry.risk,
+        m.entry.measure,
+        done ? "Durchgeführt" : "Offen",
+        formatDateDe(m.entry.tracking && m.entry.tracking.date)
+      ]);
+    });
+    var csv = rows.map(function (row) {
+      return row.map(function (cell) {
+        return '"' + String(cell == null ? "" : cell).replace(/"/g, '""') + '"';
+      }).join(";");
+    }).join("\r\n");
+    var blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "massnahmen-tracking.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function statTile(label, value, sub, tone) {
+    return '<div class="srp-stat-card srp-stat-' + tone + '">' +
+      '<div class="srp-stat-top"><span class="dot ' + tone + '"></span><span class="srp-stat-label">' + label + '</span></div>' +
+      '<div class="srp-stat-value">' + value + '</div>' +
+      '<div class="srp-stat-sub">' + sub + '</div>' +
+    '</div>';
+  }
+
+  function renderMassnahmenTrackingView(container) {
+    var measures = collectMeasures();
+    var stats = computeMeasureStats(measures);
+
+    var html = '<div class="card"><div class="card-header srp-page-header-row">';
+    html += '<div>';
+    html += '<h3 class="card-title mb-0">Ma&szlig;nahmen-Tracking</h3>';
+    html += '<div class="srp-browse-meta">Alle im System hinterlegten Ma&szlig;nahmen im &Uuml;berblick</div>';
+    html += '</div>';
+    html += '<button type="button" class="btn btn-sm btn-outline-secondary" data-landing-back>&larr; Zur Startseite</button>';
+    html += '</div>';
+    html += '<div class="card-body">';
+
+    html += '<div class="srp-stat-grid">';
+    html += statTile("Gesamt", stats.total, "Ma&szlig;nahmen insgesamt hinterlegt", "neutral");
+    html += statTile("Durchgef&uuml;hrt", stats.done, pct(stats.done, stats.total) + "&nbsp;% abgeschlossen", "gruen");
+    html += statTile("Offen", stats.open, pct(stats.open, stats.total) + "&nbsp;% noch umzusetzen", "gelb");
+    html += statTile("Kritisch offen", stats.openRot, "rote Ma&szlig;nahmen ohne Umsetzung", "rot");
+    html += '</div>';
+
+    html += '<div class="srp-progress-row">';
+    html += '<div class="srp-progress-track">';
+    if (stats.total) {
+      html += '<div class="srp-progress-seg srp-progress-gruen" style="width:' + pct(stats.done, stats.total) + '%"></div>';
+      html += '<div class="srp-progress-seg srp-progress-gelb" style="width:' + pct(stats.open, stats.total) + '%"></div>';
+    }
+    html += '</div>';
+    html += '<div class="srp-progress-legend">';
+    html += '<span><span class="dot gruen"></span> Durchgef&uuml;hrt (' + stats.done + ')</span>';
+    html += '<span><span class="dot gelb"></span> Offen (' + stats.open + ')</span>';
+    html += '</div></div>';
+
+    html += '<h4 class="srp-section-title mt-4">Nach Fachbereich</h4>';
+    html += '<div class="srp-tracking-table-wrap"><div class="table-responsive"><table class="table table-sm table-hover srp-tracking-table">';
+    html += '<thead><tr><th>Fachbereich</th><th class="srp-tabular">Gesamt</th><th class="srp-tabular">Durchgef&uuml;hrt</th><th class="srp-tabular">Offen</th><th>Fortschritt</th></tr></thead><tbody>';
+    CATEGORIES.forEach(function (c) {
+      var s = stats.byCategory[c];
+      html += '<tr><td>' + escapeHtml(c) + '</td><td class="srp-tabular">' + s.total + '</td><td class="srp-tabular">' + s.done + '</td><td class="srp-tabular">' + s.open + '</td>';
+      html += '<td><div class="srp-progress-track srp-progress-track-sm">' +
+        (s.total ? '<div class="srp-progress-seg srp-progress-gruen" style="width:' + pct(s.done, s.total) + '%"></div>' : '') +
+        '</div></td></tr>';
+    });
+    html += '</tbody></table></div></div>';
+
+    html += '<div class="srp-tracking-list-header">';
+    html += '<h4 class="srp-section-title mb-0">Alle Ma&szlig;nahmen (' + measures.length + ')</h4>';
+    if (measures.length) {
+      html += '<button type="button" class="btn btn-outline-secondary btn-sm" id="exportMeasuresBtn">Als Excel exportieren (CSV)</button>';
+    }
+    html += '</div>';
+    if (!measures.length) {
+      html += '<div id="emptyStateTrackingList"></div>';
+    } else {
+      html += '<div class="srp-tracking-table-wrap"><table class="table table-sm table-hover srp-tracking-table srp-measures-table">';
+      html += '<thead><tr><th>Pfad</th><th>Ampel</th><th>Ma&szlig;nahme</th><th>Status</th><th class="srp-tabular">Datum</th></tr></thead><tbody>';
+      sortMeasures(measures).forEach(function (m) {
+        var done = !!(m.entry.tracking && m.entry.tracking.done);
+        var leafName = m.path[m.path.length - 1];
+        var fullPath = m.path.join(" › ");
+        html += '<tr>';
+        html += '<td class="srp-measure-path">' +
+          '<a href="#" data-goto-measure="' + m.node.id + '" title="' + escapeHtml(fullPath) + '">' + escapeHtml(leafName) + '</a>' +
+          '<div class="srp-measure-path-cat">' + escapeHtml(m.path[0]) + '</div>' +
+        '</td>';
+        html += '<td><span class="dot ' + m.entry.risk + '" title="' + escapeHtml(RISK_LABEL[m.entry.risk]) + '"></span> ' + RISK_SHORT[m.entry.risk] + '</td>';
+        html += '<td>' + escapeHtml(m.entry.measure) + '</td>';
+        html += '<td>' + (done ?
+          '<span class="srp-track-chip srp-track-done">&#10003; Durchgef&uuml;hrt</span>' :
+          '<span class="srp-track-chip srp-track-open">Offen</span>') + '</td>';
+        html += '<td class="srp-tabular">' + escapeHtml(formatDateDe(m.entry.tracking && m.entry.tracking.date) || "–") + '</td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+    }
+
+    html += '</div></div>';
+    container.innerHTML = html;
+
+    var exportBtn = document.getElementById("exportMeasuresBtn");
+    if (exportBtn) exportBtn.addEventListener("click", exportMeasuresCsv);
+
+    if (!measures.length) {
+      mountEmptyState(document.getElementById("emptyStateTrackingList"), {
+        icon: "posteingang",
+        title: "Noch keine Ma&szlig;nahmen hinterlegt",
+        text: "Sobald Fachbereiche Risikobewertungen mit Ma&szlig;nahme eintragen, erscheinen sie hier."
+      });
+    }
+
+    wireLandingBack(container);
+    container.querySelectorAll("[data-goto-measure]").forEach(function (el) {
+      el.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        state.selectedId = el.getAttribute("data-goto-measure");
+        state.view = "browse";
+        render();
+      });
+    });
   }
 
   // Zeigt nur die Vorfahren, nicht den aktuellen Punkt selbst - der steht
@@ -1513,7 +2409,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   function renderAdminPanel() {
     populateAdminFachbereichSelect();
     var main = document.getElementById("mainPanel");
-    var html = '<ul class="nav nav-tabs mb-3" role="tablist">';
+    var html = '<ul class="nav srp-segmented-tabs mb-3" role="tablist">';
     html += '<li class="nav-item"><a href="#" class="nav-link' + (state.adminTab === "struktur" ? " active" : "") + '" data-tab="struktur">Struktur bearbeiten</a></li>';
     html += '<li class="nav-item"><a href="#" class="nav-link' + (state.adminTab === "neu" ? " active" : "") + '" data-tab="neu">Neue Nutzer-Items &Uuml;bersicht</a></li>';
     html += '<li class="nav-item"><a href="#" class="nav-link' + (state.adminTab === "verwaltung" ? " active" : "") + '" data-tab="verwaltung">Verwaltung</a></li>';
@@ -1539,20 +2435,40 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   }
 
   function renderAdminVerwaltung(container) {
-    container.innerHTML =
-      '<div class="card"><div class="card-header"><h3 class="card-title">Demo-Daten</h3></div>' +
+    var canInsertDemo = state.role === "entwickler";
+    var html = '<div class="card"><div class="card-header"><h3 class="card-title">Demo-Daten</h3></div>' +
       '<div class="card-body">' +
-        '<p>Setzt alle lokal im Browser gespeicherten Änderungen zurück (Risikobewertungen, Maßnahmen, ' +
-        'Tracking, Restrisiko sowie alle über &bdquo;Neue Unterkategorie&ldquo;/&bdquo;Neues Item&ldquo; ' +
-        'angelegten Punkte) und lädt wieder den ursprünglichen Ausgangszustand. Dies betrifft nur diesen ' +
-        'Browser und kann nicht rückgängig gemacht werden.</p>' +
+        '<p>Der Grundzustand des Prototyps ist bewusst leer - noch keine Risikobewertungen oder Ma&szlig;nahmen. ' +
+        (canInsertDemo ?
+          'Zum Vorf&uuml;hren lassen sich beispielhaft 30 Ma&szlig;nahmen quer &uuml;ber alle drei Kategorien einspielen. ' :
+          '') +
+        'Demo-Daten zur&uuml;cksetzen entfernt alle lokal im Browser gespeicherten &Auml;nderungen (Risikobewertungen, ' +
+        'Ma&szlig;nahmen, Tracking, Restrisiko sowie alle über &bdquo;Neue Unterkategorie&ldquo;/&bdquo;Neues Item&ldquo; ' +
+        'angelegten Punkte) und l&auml;dt wieder den leeren Ausgangszustand. Dies betrifft nur diesen Browser und kann ' +
+        'nicht r&uuml;ckg&auml;ngig gemacht werden.</p>' +
+        '<div class="srp-verwaltung-actions">' +
+        (canInsertDemo ? '<button type="button" id="insertDemoBtn" class="btn btn-outline-primary btn-sm">Demo-Daten einf&uuml;gen</button>' : '') +
         '<button type="button" id="resetBtn" class="btn btn-outline-danger btn-sm">Demo-Daten zur&uuml;cksetzen</button>' +
+        '</div>' +
       '</div></div>';
+    container.innerHTML = html;
+
+    if (canInsertDemo) {
+      container.querySelector("#insertDemoBtn").addEventListener("click", function () {
+        openConfirmDialog({
+          title: "Demo-Daten einfügen?",
+          message: "Fügt 30 beispielhafte Risikobewertungen und Maßnahmen quer über alle drei Kategorien ein. Bereits vorhandene Bewertungen an diesen Punkten werden dabei überschrieben.",
+          confirmText: "Einfügen",
+          danger: false,
+          onConfirm: insertDemoData
+        });
+      });
+    }
 
     container.querySelector("#resetBtn").addEventListener("click", function () {
       openConfirmDialog({
         title: "Demo-Daten zurücksetzen?",
-        message: "Alle lokalen Änderungen werden verworfen und der ursprüngliche Ausgangszustand neu geladen. Dies kann nicht rückgängig gemacht werden.",
+        message: "Alle lokalen Änderungen werden verworfen und der leere Ausgangszustand neu geladen. Dies kann nicht rückgängig gemacht werden.",
         confirmText: "Zurücksetzen",
         danger: true,
         onConfirm: resetDemo
@@ -1747,6 +2663,11 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     if (e.tracking && e.tracking.done) {
       return '<span class="srp-track-chip srp-track-done">&#10003; Durchgef&uuml;hrt</span>';
     }
+    // Grün = kein Risiko - hier braucht es von vornherein keine Maßnahme, daher
+    // nicht als "offen" anzeigen, sondern als bereits erledigt.
+    if (e.risk === "gruen") {
+      return '<span class="srp-track-chip srp-track-done">&#10003; Kein Risiko &ndash; keine Ma&szlig;nahme n&ouml;tig</span>';
+    }
     return '<span class="srp-track-chip srp-track-open">Ma&szlig;nahme offen</span>';
   }
 
@@ -1760,9 +2681,9 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     return '<button type="button" class="srp-browse-card" data-node-id="' + child.id + '">' +
       '<span class="srp-browse-card-top">' +
         '<span class="dot ' + color + '" title="' + RISK_LABEL[color] + '"></span>' +
-        '<span class="srp-browse-card-name">' + escapeHtml(child.name) + badge + '</span>' +
+        '<span class="srp-browse-card-name">' + escapeHtml(hyphenateLongWords(child.name)) + badge + '</span>' +
       '</span>' +
-      '<span class="srp-browse-card-meta"><span>Ebene ' + child.level + '</span><span>' + meta + '</span></span>' +
+      '<span class="srp-browse-card-meta"><span>' + meta + '</span></span>' +
       (trackChip ? '<span class="srp-browse-card-tracking">' + trackChip + '</span>' : '') +
       '<span class="srp-browse-card-arrow" aria-hidden="true">&rsaquo;</span>' +
     '</button>';
@@ -1825,12 +2746,12 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       var e2 = e;
       html += '<hr class="srp-divider">';
       html += '<h4 class="srp-section-title">Tracking</h4>';
-      html += '<div class="form-row align-items-center">';
-      html += '<div class="col-12 col-sm-auto mb-2 mb-sm-0"><div class="custom-control custom-checkbox">';
+      html += '<div class="srp-tracking-row">';
+      html += '<div class="custom-control custom-checkbox srp-tracking-check">';
       html += '<input type="checkbox" class="custom-control-input" id="trackingDoneChk" data-field="trackingDone"' + (e2.tracking.done ? " checked" : "") + '>';
-      html += '<label class="custom-control-label" for="trackingDoneChk">Ma&szlig;nahme durchgef&uuml;hrt</label></div></div>';
-      html += '<div class="col-12 col-sm-auto"><label class="mr-2 mb-0 small font-weight-bold text-uppercase text-muted" for="trackingDateInput">Datum</label>';
-      html += '<input type="date" id="trackingDateInput" class="form-control form-control-sm d-inline-block w-auto" data-field="trackingDate" value="' + escapeHtml(e2.tracking.date) + '"></div>';
+      html += '<label class="custom-control-label" for="trackingDoneChk">Ma&szlig;nahme durchgef&uuml;hrt</label></div>';
+      html += '<div class="srp-tracking-date"><label class="mr-2 mb-0 small font-weight-bold text-uppercase text-muted" for="trackingDateInput">Datum</label>';
+      html += '<input type="date" id="trackingDateInput" class="form-control form-control-sm" data-field="trackingDate" value="' + escapeHtml(e2.tracking.date) + '"></div>';
       html += '</div>';
 
       html += '<hr class="srp-divider">';
@@ -1926,8 +2847,8 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     if (!items.length) {
       html += '<div id="emptyStateAdminNew"></div>';
     } else {
-      html += '<div class="table-responsive"><table class="table table-hover table-sm">';
-      html += '<thead><tr><th>Pfad</th><th>Fachbereich</th><th>Angelegt von</th><th>Datum</th><th>Ampel</th><th></th></tr></thead><tbody>';
+      html += '<div class="srp-tracking-table-wrap"><table class="table table-hover table-sm srp-tracking-table">';
+      html += '<thead><tr><th>Pfad</th><th>Fachbereich</th><th>Angelegt von</th><th class="srp-tabular">Datum</th><th>Ampel</th><th></th></tr></thead><tbody>';
       items.forEach(function (n) {
         var path = findPath(n.id).map(function (p) { return p.name; }).join(" › ");
         var risk = n.entry ? n.entry.risk : "grau";
@@ -1935,7 +2856,7 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
         html += '<td><a href="#" data-goto="' + n.id + '">' + escapeHtml(path) + '</a></td>';
         html += '<td>' + escapeHtml(n.category || "") + '</td>';
         html += '<td>' + escapeHtml(n.createdBy) + '</td>';
-        html += '<td>' + escapeHtml(n.createdAt || "–") + '</td>';
+        html += '<td class="srp-tabular">' + escapeHtml(n.createdAt || "–") + '</td>';
         html += '<td><span class="dot ' + risk + '"></span> ' + RISK_LABEL[risk] + '</td>';
         html += '<td><button type="button" class="btn btn-outline-secondary btn-sm" data-ack="' + n.id + '">Als gesehen markieren</button></td>';
         html += '</tr>';
@@ -2088,6 +3009,10 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   }
 
   // ---------- Init ----------
+  document.getElementById("brandHomeLink").addEventListener("click", function (ev) {
+    ev.preventDefault();
+    goLanding();
+  });
   document.getElementById("roleSelect").addEventListener("change", function (e) {
     state.role = e.target.value;
     render();
@@ -2121,6 +3046,8 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
       results.querySelectorAll("[data-goto-search]").forEach(function (el) {
         el.addEventListener("click", function () {
           state.selectedId = el.getAttribute("data-goto-search");
+          state.view = "browse";
+          state.adminTab = "struktur";
           input.value = "";
           close();
           closeSidebarOnNarrowViewport();
