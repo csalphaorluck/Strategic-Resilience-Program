@@ -309,6 +309,18 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
   body.sidebar-mini.sidebar-collapse .main-footer { margin-left: 0 !important; }
 }
 
+/* Startseite: eigener minimaler Einstiegsbildschirm ohne Sidebar/Rolle/
+   Ampel-Skala/Suche - unabhängig von der Bildschirmbreite, daher hier kein
+   @media wie beim AdminLTE-Sidebar-Collapse oben (der nur ab Desktopbreite
+   greift). Die App-Chrome kommt erst zurück, sobald man über eine Kachel
+   navigiert (siehe render()). */
+body.srp-landing-active .main-sidebar { display: none !important; }
+body.srp-landing-active .content-wrapper,
+body.srp-landing-active .main-header,
+body.srp-landing-active .main-footer { margin-left: 0 !important; }
+body.srp-landing-active .content-header { display: none; }
+body.srp-landing-active .content-wrapper { background: #ffffff; }
+
 .main-sidebar, .main-sidebar.sidebar-dark-primary {
   background: linear-gradient(180deg, var(--srp-sidebar-bg-2), var(--srp-sidebar-bg));
   box-shadow: none;
@@ -2018,6 +2030,12 @@ body, .content-wrapper, .card, .card-body, .srp-path-item, .node-row, .badge {
     document.getElementById("roleSelect").value = state.role;
     document.getElementById("adminFachbereichWrap").style.display = ADMIN_PANEL_ROLES.indexOf(state.role) > -1 ? "block" : "none";
     renderTree();
+    var isLandingScreen = ADMIN_PANEL_ROLES.indexOf(state.role) === -1 && !state.selectedId &&
+      state.view !== "erklaerung" && state.view !== "tracking";
+    // Startseite bewusst als eigener, aufgeräumter Einstiegsbildschirm ohne
+    // Sidebar/Rolle/Ampel-Skala - die App-Chrome erscheint erst wieder, sobald
+    // man über eine Kachel tatsächlich in die Struktur (oder Erklärung/Tracking) geht.
+    document.body.classList.toggle("srp-landing-active", isLandingScreen);
     if (ADMIN_PANEL_ROLES.indexOf(state.role) > -1) {
       renderAdminPanel();
     } else {
